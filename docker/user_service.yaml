@@ -1,0 +1,37 @@
+services:
+  user_service:
+      image: user_service
+      build:
+        context: .
+        dockerfile: java-Dockerfile
+      container_name: java-workspace
+      working_dir: /workspace
+      volumes:
+        - ../user_service:/workspace
+      ports:
+        - "8080:8080"
+      command:
+        - tail
+        - -f
+        - /dev/null
+  db:
+    image: postgres:16
+    container_name: my-postgres
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app_password
+      POSTGRES_DB: appdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+  cloudbeaver:
+    image: dbeaver/cloudbeaver:latest
+    container_name: cloudbeaver
+    ports:
+      - "8978:8978"
+    stdin_open: true
+    tty: true
+volumes:
+  pgdata:
