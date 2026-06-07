@@ -1,0 +1,33 @@
+services:
+  auth-service:
+    build: .
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://auth-db:5432/authdb
+      SPRING_DATASOURCE_USERNAME: app
+      SPRING_DATASOURCE_PASSWORD: app_password
+      JWT_SECRET: your-256-bit-secret-key-change-this-in-production-please
+      JWT_EXPIRATION_MS: 86400000
+    depends_on:
+      auth-db:
+        condition: service_healthy
+
+  auth-db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: authdb
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app_password
+    ports:
+      - "5434:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d authdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:

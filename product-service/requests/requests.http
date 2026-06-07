@@ -1,0 +1,39 @@
+### Alle Produkte abrufen
+GET http://localhost:8082/products
+
+### Produkte nach Kategorie filtern
+GET http://localhost:8082/products?category=Elektronik
+
+### Einzelnes Produkt abrufen
+GET http://localhost:8082/products/1
+
+### Produkt erstellen
+POST http://localhost:8082/products
+Content-Type: application/json
+
+{
+  "title": "iPhone 15",
+  "description": "Kaum benutzt, Top-Zustand",
+  "price": 799.99,
+  "category": "Elektronik",
+  "sellerId": 1,
+  "imageUrls": [
+    "https://example.com/iphone1.jpg",
+    "https://example.com/iphone2.jpg"
+  ]
+}
+
+### Produkt bearbeiten
+PUT http://localhost:8082/products/1
+Content-Type: application/json
+
+{
+  "price": 699.99,
+  "description": "Preis reduziert!"
+}
+
+### Produkt kaufen
+POST http://localhost:8082/products/1/buy
+
+### Produkt löschen
+DELETE http://localhost:8082/products/1
