@@ -10,11 +10,7 @@ services:
         - ../auth_service:/workspace
       ports:
         - "8082:8080"
-      command:
-        - tail
-        - -f
-        - /dev/null
-      #command: mvn spring-boot:run
+      command: mvn spring-boot:run
 
   auth-db:
     image: postgres:16

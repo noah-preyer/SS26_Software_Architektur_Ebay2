@@ -1,0 +1,46 @@
+Image Service (Port 8088)
+=========================
+
+POST /image/upload
+  Upload an image (multipart form-data)
+  Fields:
+    userId: UUID (required)
+    file: File (required)
+    objectKey: string (optional — e.g. "users/1/profile.png")
+  Response 201:
+  {
+    "id": "UUID",
+    "originalFilename": "string",
+    "contentType": "string (MIME type)",
+    "fileSize": "number (bytes)",
+    "objectKey": "string",
+    "createdAt": "ISO timestamp"
+  }
+
+GET /image/{id}
+  Serve the image file (inline, displayed in browser)
+  Response 200: binary image data
+  Headers:
+    Content-Type: image/png (or original MIME type)
+    Content-Disposition: inline; filename="..."
+  Error 404: { "message": "string" }
+
+GET /image/{id}/meta
+  Get image metadata only (no file data)
+  Response 200:
+  {
+    "id": "UUID",
+    "userId": "UUID",
+    "originalFilename": "string",
+    "storedFilename": "string",
+    "contentType": "string",
+    "fileSize": "number",
+    "objectKey": "string",
+    "createdAt": "ISO timestamp"
+  }
+  Error 404: { "message": "string" }
+
+DELETE /image/{id}
+  Delete image (removes DB record + file on disk)
+  Response 204: (no content)
+  Error 404: { "message": "string" }

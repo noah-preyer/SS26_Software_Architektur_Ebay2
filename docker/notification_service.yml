@@ -10,11 +10,7 @@ services:
         - ../email_service:/workspace
       ports:
         - "8084:8080"
-      command:
-        - tail
-        - -f
-        - /dev/null
-      #command: mvn spring-boot:run
+      command: mvn spring-boot:run
 
   notification-db:
     image: postgres:16
