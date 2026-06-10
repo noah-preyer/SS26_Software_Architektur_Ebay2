@@ -1,10 +1,14 @@
-package group5.ebay2.user;
+package group5.ebay2.auth.dtos;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import java.util.UUID;
 
-public class AddUserDto{
-    record Request(
+
+public class AddUserDto {
+
+    public record Request(
 
             @NotBlank(message = "Username is required")
             String username,
@@ -19,11 +23,10 @@ public class AddUserDto{
     ) {
     }
 
-    record Response(
-            Long id,
+    public record Response(
+            UUID id,
             String username,
             String email
     ) {
     }
 }
-

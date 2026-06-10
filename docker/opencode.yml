@@ -1,0 +1,13 @@
+services:
+  opencode:
+    extends:
+      file: ${HOME}/.config/opencode/compose.yml
+      service: opencode-base
+    volumes:
+      - ../:/workspace:cached
+      - opencode-data:/home/opencode/.local/share/opencode
+      - opencode-config:/home/opencode/.config/opencode
+
+volumes:
+  opencode-data:
+  opencode-config:

@@ -1,0 +1,23 @@
+{
+  "name": "user_service",
+
+  "build": {
+    "dockerfile": "../docker/java-Dockerfile",
+    "context": ".."
+  },
+
+  "runArgs": [
+    "--add-host=host.docker.internal:host-gateway"
+  ],
+
+  "workspaceMount": "source=${localWorkspaceFolder}/user_service,target=/workspace,type=bind",
+  "workspaceFolder": "/workspace",
+
+  "forwardPorts": [8080],
+
+  "customizations": {
+    "jetbrains": {
+      "backend": "IntelliJ"
+    }
+  }
+}

@@ -1,0 +1,93 @@
+Payment Service (Port 8086)
+===========================
+
+ORDERS
+------
+
+POST /order
+  Create an order
+  Request:
+  {
+    "id": "string (required, e.g. ORDER-001)",
+    "userId": "UUID (required)",
+    "totalAmount": "number (required, min 0.01)",
+    "currency": "string (required, 3 chars — USD, EUR, etc.)"
+  }
+  Response 201:
+  {
+    "id": "string",
+    "userId": "UUID",
+    "status": "CREATED",
+    "totalAmount": "number",
+    "currency": "string",
+    "createdAt": "ISO timestamp",
+    "updatedAt": "ISO timestamp"
+  }
+  Error 409: { "message": "string" }
+
+GET /order/{orderId}
+  Get order state
+  Response 200: (same as above)
+  Error 404: { "message": "string" }
+
+PUT /order/{orderId}/status
+  Transition order status (CREATED -> SHIPPED / DELIVERED / CANCELLED)
+  Request:
+  {
+    "status": "string (required — SHIPPED, DELIVERED, or CANCELLED)"
+  }
+  Response 200: (order object)
+  Error 404: { "message": "string" }
+  Error 409: { "message": "string" }
+
+GET /order/user/{userId}
+  List orders by user
+  Response 200: [ ... array of order objects ]
+
+PAYMENTS
+--------
+
+POST /payment/process
+  Process payment (order must exist with status CREATED)
+  Request:
+  {
+    "orderId": "string (required)",
+    "userId": "UUID (required)",
+    "amount": "number (required, min 0.01)",
+    "currency": "string (required, 3 chars)",
+    "paymentMethodType": "string (required — CREDIT_CARD, PAYPAL, etc.)"
+  }
+  Response 201:
+  {
+    "id": "UUID",
+    "orderId": "string",
+    "userId": "UUID",
+    "amount": "number",
+    "currency": "string",
+    "status": "COMPLETED",
+    "paymentMethodType": "string",
+    "transactionId": "string",
+    "paidAt": "ISO timestamp"
+  }
+  Also updates order status to PAID.
+  Error 404: { "message": "string" (order not found) }
+  Error 409: { "message": "string" (order not in CREATED state) }
+
+GET /payment/{id}
+  Get payment by UUID
+  Response 200: (same payment object)
+  Error 404: { "message": "string" }
+
+POST /payment/{id}/refund
+  Refund a completed payment (also marks order as REFUNDED)
+  Request (optional):
+  {
+    "reason": "string (optional)"
+  }
+  Response 200: (payment object with status REFUNDED)
+  Error 404: { "message": "string" }
+  Error 409: { "message": "string" (already refunded or not completed) }
+
+GET /payment/order/{orderId}
+  List payments for an order
+  Response 200: [ ... array of payment objects ]

@@ -1,0 +1,23 @@
+{
+  "name": "auth_service",
+
+  "build": {
+    "dockerfile": "../../docker/java-Dockerfile",
+    "context": ".."
+  },
+
+  "runArgs": [
+    "--add-host=host.docker.internal:host-gateway"
+  ],
+
+  "workspaceMount": "source=${localWorkspaceFolder}/auth_service,target=/workspace,type=bind",
+  "workspaceFolder": "/workspace",
+
+  "forwardPorts": [8081],
+
+  "customizations": {
+    "jetbrains": {
+      "backend": "IntelliJ"
+    }
+  }
+}
