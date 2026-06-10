@@ -1,0 +1,28 @@
+services:
+  user_service:
+      image: user_service
+      build:
+        context: .
+        dockerfile: java-Dockerfile
+      container_name: user_service
+      working_dir: /workspace
+      volumes:
+        - ../user_service:/workspace
+      ports:
+        - "8080:8080"
+      command:
+        - tail
+        - -f
+        - /dev/null
+  user-db:
+    image: postgres:16
+    container_name: user-service-db
+    environment:
+      POSTGRES_USER: user_user
+      POSTGRES_PASSWORD: app_password
+      POSTGRES_DB: user_service
+    volumes:
+      - user_pgdata:/var/lib/postgresql/data
+      - ./user_db/init:/docker-entrypoint-initdb.d:ro
+volumes:
+  user_pgdata:

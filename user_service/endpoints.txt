@@ -1,0 +1,118 @@
+User Service (Port 8080)
+=======================
+
+USER PROFILES
+-------------
+
+POST /user
+  Create user profile
+  Request:
+  {
+    "authUserId": "UUID (required)",
+    "username": "string (required, max 50)",
+    "email": "string (required, valid email, max 150)",
+    "firstName": "string (required, max 100)",
+    "lastName": "string (required, max 100)",
+    "phoneNumber": "string (required, max 30)",
+    "profileImageObjectKey": "string (optional, max 500)"
+  }
+  Response 201:
+  {
+    "id": "UUID",
+    "authUserId": "UUID",
+    "username": "string",
+    "email": "string",
+    "firstName": "string",
+    "lastName": "string",
+    "phoneNumber": "string",
+    "profileImageObjectKey": "string"
+  }
+
+GET /user/{id}
+  Get user by UUID
+  Response 200: (same as above)
+  Error 404: { "message": "string" }
+
+GET /user/by-auth/{authUserId}
+  Get user by auth-service user ID
+  Response 200: (same as above)
+  Error 404: { "message": "string" }
+
+GET /user/by-email/{email}
+  Get user by email
+  Response 200: (same as above)
+  Error 404: { "message": "string" }
+
+GET /user/by-username/{username}
+  Get user by username
+  Response 200: (same as above)
+  Error 404: { "message": "string" }
+
+PUT /user/{id}
+  Update user (partial — only non-null fields are updated)
+  Request:
+  {
+    "username": "string (optional, max 50)",
+    "email": "string (optional, valid email, max 150)",
+    "firstName": "string (optional, max 100)",
+    "lastName": "string (optional, max 100)",
+    "phoneNumber": "string (optional, max 30)",
+    "profileImageObjectKey": "string (optional, max 500)"
+  }
+  Response 200: (same as above)
+  Error 404: { "message": "string" }
+
+DELETE /user/{id}
+  Delete user
+  Response 204: (no content)
+  Error 404: { "message": "string" }
+
+ADDRESSES
+---------
+
+POST /user/{userId}/address
+  Add address to user
+  Request:
+  {
+    "street": "string (required, max 150)",
+    "houseNumber": "string (required, max 20)",
+    "postalCode": "string (required, max 20)",
+    "city": "string (required, max 100)",
+    "country": "string (required, max 100)",
+    "addressTypeCode": "string (required - SHIPPING, BILLING, PRIMARY)",
+    "defaultAddress": "boolean (required)"
+  }
+  Response 201:
+  {
+    "id": "long",
+    "street": "string",
+    "houseNumber": "string",
+    "postalCode": "string",
+    "city": "string",
+    "country": "string",
+    "addressTypeCode": "string",
+    "addressTypeDisplayName": "string",
+    "defaultAddress": "boolean"
+  }
+
+GET /user/{userId}/addresses
+  List user's addresses
+  Response 200: [ ... array of address objects (same as above) ]
+
+PUT /address/{addressId}
+  Update address
+  Request: (same as POST /user/{userId}/address)
+  Response 200: (same address object)
+
+DELETE /address/{addressId}
+  Remove address
+  Response 204: (no content)
+  Error 404: { "message": "string" }
+
+GET /address/{addressId}
+  Get address by ID
+  Response 200: (address object)
+
+PUT /user/{userId}/address/{addressId}/default
+  Set address as default (clears previous default)
+  Response 200: (address object)

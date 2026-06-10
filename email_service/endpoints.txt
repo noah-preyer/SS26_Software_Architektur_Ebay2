@@ -1,0 +1,29 @@
+Email Notification Service (Port 8084)
+=======================================
+
+POST /notification/send
+  Send a templated email
+  Request:
+  {
+    "recipientEmail": "string (required, valid email)",
+    "templateCode": "string (required — ORDER_CONFIRMATION, SHIPPING_CONFIRMATION, DELIVERY_CONFIRMATION, WELCOME, PASSWORD_RESET, INVOICE)",
+    "placeholders": {
+      "key": "value"
+    }
+  }
+  Response 201:
+  {
+    "id": "UUID",
+    "recipientEmail": "string",
+    "subject": "string",
+    "body": "string",
+    "status": "string (SENT or FAILED)",
+    "sentAt": "ISO timestamp",
+    "templateCode": "string"
+  }
+  Error 404: { "message": "string" }
+
+GET /notification/{id}
+  Get notification status by UUID
+  Response 200: (same as above)
+  Error 404: { "message": "string" }

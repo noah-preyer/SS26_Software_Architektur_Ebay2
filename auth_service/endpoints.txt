@@ -1,0 +1,46 @@
+Auth Service (Port 8082)
+=======================
+
+POST /user
+  Create user
+  Request:
+  {
+    "username": "string (required)",
+    "email": "string (required, valid email)",
+    "password": "string (required, min 8 characters)"
+  }
+  Response 201:
+  {
+    "id": "UUID",
+    "username": "string",
+    "email": "string"
+  }
+  Error 409:
+  {
+    "message": "string"
+  }
+
+POST /auth
+  Login — returns JWT
+  Request:
+  {
+    "emailOrUsername": "string (required)",
+    "password": "string (required)"
+  }
+  Response 200:
+  {
+    "accessToken": "string (JWT)",
+    "message": "string"
+  }
+  Error 401:
+  {
+    "message": "string"
+  }
+
+DELETE /user/{id}
+  Delete user by UUID
+  Response 204: (no content)
+  Error 404:
+  {
+    "message": "string"
+  }

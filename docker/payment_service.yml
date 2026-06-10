@@ -1,0 +1,31 @@
+services:
+  payment_service:
+      image: payment_service
+      build:
+        context: .
+        dockerfile: java-Dockerfile
+      container_name: payment_service
+      working_dir: /workspace
+      volumes:
+        - ../payment_service:/workspace
+      ports:
+        - "8086:8080"
+      command:
+        - tail
+        - -f
+        - /dev/null
+      #command: mvn spring-boot:run
+
+  payment-db:
+    image: postgres:16
+    container_name: payment-service-db
+    environment:
+      POSTGRES_USER: payment_user
+      POSTGRES_PASSWORD: app_password
+      POSTGRES_DB: payment_service
+    volumes:
+      - payment_pgdata:/var/lib/postgresql/data
+      - ./payment_db/init:/docker-entrypoint-initdb.d:ro
+
+volumes:
+  payment_pgdata:

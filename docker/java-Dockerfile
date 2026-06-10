@@ -27,9 +27,17 @@ RUN mkdir -p ${SPRING_BOOT_CLI_HOME} \
     && rm /tmp/spring-boot-cli.tar.gz \
     && ln -s ${SPRING_BOOT_CLI_HOME}/bin/spring /usr/local/bin/spring
 
+RUN mkdir -p /home/ubuntu/.m2 /workspace \
+    && chown -R ubuntu:ubuntu /home/ubuntu /workspace
+
 RUN echo "ubuntu ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/ubuntu \
     && chmod 0440 /etc/sudoers.d/ubuntu
+
+ENV HOME=/home/ubuntu
+ENV MAVEN_CONFIG=/home/ubuntu/.m2
 
 USER ubuntu
 
 WORKDIR /workspace
+
+CMD ["sleep", "infinity"]

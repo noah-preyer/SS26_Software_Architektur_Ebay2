@@ -1,0 +1,38 @@
+services:
+  notification_service:
+      image: notification_service
+      build:
+        context: .
+        dockerfile: java-Dockerfile
+      container_name: notification_service
+      working_dir: /workspace
+      volumes:
+        - ../email_service:/workspace
+      ports:
+        - "8084:8080"
+      command:
+        - tail
+        - -f
+        - /dev/null
+      #command: mvn spring-boot:run
+
+  notification-db:
+    image: postgres:16
+    container_name: notification-service-db
+    environment:
+      POSTGRES_USER: notification_user
+      POSTGRES_PASSWORD: app_password
+      POSTGRES_DB: notification_service
+    volumes:
+      - notification_pgdata:/var/lib/postgresql/data
+      - ./notification_db/init:/docker-entrypoint-initdb.d:ro
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
+volumes:
+  notification_pgdata:

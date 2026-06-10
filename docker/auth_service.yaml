@@ -1,0 +1,31 @@
+services:
+  auth_service:
+      image: auth_service
+      build:
+        context: .
+        dockerfile: auth_service
+      container_name: auth_service
+      working_dir: /workspace
+      volumes:
+        - ../auth_service:/workspace
+      ports:
+        - "8082:8080"
+      command:
+        - tail
+        - -f
+        - /dev/null
+      #command: mvn spring-boot:run
+
+  auth-db:
+    image: postgres:16
+    container_name: auth-service-db
+    environment:
+      POSTGRES_USER: auth_user
+      POSTGRES_PASSWORD: app_password
+      POSTGRES_DB: auth_service
+    volumes:
+      - auth_pgdata:/var/lib/postgresql/data
+      - ./auth_db/init:/docker-entrypoint-initdb.d:ro
+
+volumes:
+  auth_pgdata:
