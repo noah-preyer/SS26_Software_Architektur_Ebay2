@@ -171,7 +171,7 @@ public class UserService {
     }
 
     @Transactional
-    public AddressDto.Response updateAddress(Long addressId, AddressDto.Request request) {
+    public AddressDto.Response updateAddress(UUID addressId, AddressDto.Request request) {
         Address address = findAddressById(addressId);
         AddressType addressType = findAddressType(request.addressTypeCode());
 
@@ -196,7 +196,7 @@ public class UserService {
     }
 
     @Transactional
-    public void removeAddress(Long addressId) {
+    public void removeAddress(UUID addressId) {
         Address address = findAddressById(addressId);
         address.getUserProfile().removeAddress(address);
         addressRepository.delete(address);
@@ -204,7 +204,7 @@ public class UserService {
     }
 
     @Transactional
-    public AddressDto.Response setDefaultAddress(UUID userId, Long addressId) {
+    public AddressDto.Response setDefaultAddress(UUID userId, UUID addressId) {
         UserProfile user = findUserById(userId);
         Address address = findAddressById(addressId);
 
@@ -238,7 +238,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public AddressDto.Response getAddress(Long addressId) {
+    public AddressDto.Response getAddress(UUID addressId) {
         return toResponse(findAddressById(addressId));
     }
 
@@ -247,7 +247,7 @@ public class UserService {
                 .orElseThrow(() -> new UserExceptions.UserNotFoundException("User not found: " + id));
     }
 
-    private Address findAddressById(Long id) {
+    private Address findAddressById(UUID id) {
         return addressRepository.findById(id)
                 .orElseThrow(() -> new UserExceptions.AddressNotFoundException("Address not found: " + id));
     }

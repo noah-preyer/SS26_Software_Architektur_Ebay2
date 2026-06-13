@@ -9,7 +9,7 @@ services:
       volumes:
         - ../auth_service:/workspace
       ports:
-        - "8082:8080"
+        - "8085:8080"
       command: mvn spring-boot:run
 
   auth-db:

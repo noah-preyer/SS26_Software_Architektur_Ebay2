@@ -13,9 +13,6 @@ public class OrderDto {
 
     public record CreateRequest(
 
-            @NotBlank(message = "Order ID is required")
-            String id,
-
             @NotNull(message = "User ID is required")
             UUID userId,
 
@@ -39,7 +36,7 @@ public class OrderDto {
     }
 
     public record Response(
-            String id,
+            UUID id,
             UUID userId,
             String status,
             BigDecimal totalAmount,

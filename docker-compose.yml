@@ -1,5 +1,5 @@
 include:
-  - product-service/docker-compose.yml
+  - product_service/docker-compose.yml
   - docker/auth_service.yaml
   - docker/notification_service.yml
   - docker/payment_service.yml

@@ -1,0 +1,15 @@
+Service Ports Overview
+======================
+
+Ordered by logical dependency chain:
+
+  Service             | Port  | Internal | Container                | DB Port
+ ---------------------|-------|----------|--------------------------|--------
+  auth_service        | 8080  | 8080     | auth-service-db          | 5432
+  user_service        | 8082  | 8080     | user-service-db          | 5432
+  payment_service     | 8084  | 8080     | payment-service-db       | 5436
+  email_service       | 8086  | 8080     | notification-service-db  | 5434
+  image_service       | 8088  | 8080     | image-service-db         | 5438
+
+All services map host:{Port} → container:8080.
+DB ports are the host-side mappings (container:5432).

@@ -1,0 +1,41 @@
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: auth-service
+          uri: http://auth_service:8080
+          predicates:
+            - Path=/auth/**
+
+        - id: user-service
+          uri: http://user_service:8080
+          predicates:
+            - Path=/user/**
+
+        - id: product-service
+          uri: http://product-service:8082
+          predicates:
+            - Path=/products/**
+
+        - id: payment-service
+          uri: http://payment_service:8080
+          predicates:
+            - Path=/payment/**,/order/**
+
+        - id: notification-service
+          uri: http://notification_service:8080
+          predicates:
+            - Path=/notification/**
+
+        - id: image-service
+          uri: http://image_service:8080
+          predicates:
+            - Path=/image/**
+
+server:
+  port: 8080
+
+jwt:
+  secret: your-256-bit-secret-key-change-this-in-production-please

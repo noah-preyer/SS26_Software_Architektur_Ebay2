@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import group5.ebay2.auth.dtos.AddUserDto;
 import group5.ebay2.auth.dtos.AuthDto;
 import group5.ebay2.auth.repositories.UserRepository;
-import group5.ebay2.auth.repositories.RoleRepository;
 import group5.ebay2.auth.AuthExceptions;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

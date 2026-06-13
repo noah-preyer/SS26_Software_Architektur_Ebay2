@@ -44,7 +44,7 @@ public class PaymentService {
         }
 
         Payment payment = new Payment(
-                request.orderId(), request.userId(),
+                request.orderId(), request.productId(), request.userId(),
                 request.amount(), request.currency(), request.paymentMethodType()
         );
         payment.markCompleted("txn_" + UUID.randomUUID().toString().replace("-", ""));
@@ -66,7 +66,7 @@ public class PaymentService {
     }
 
     @Transactional(readOnly = true)
-    public List<PaymentDto.Response> getPaymentsByOrder(String orderId) {
+    public List<PaymentDto.Response> getPaymentsByOrder(UUID orderId) {
         return paymentRepository.findByOrderIdOrderByCreatedAtDesc(orderId).stream()
                 .map(this::toPaymentResponse)
                 .toList();
@@ -105,13 +105,9 @@ public class PaymentService {
 
     @Transactional
     public OrderDto.Response createOrder(OrderDto.CreateRequest request) {
-        log.info("Creating order: {}", request.id());
+        log.info("Creating order for user: {}", request.userId());
 
-        if (orderRepository.existsById(request.id())) {
-            throw new PaymentExceptions.OrderAlreadyExistsException("Order already exists: " + request.id());
-        }
-
-        Order order = new Order(request.id(), request.userId(), request.totalAmount(), request.currency());
+        Order order = new Order(request.userId(), request.totalAmount(), request.currency());
         Order saved = orderRepository.save(order);
         log.info("Created order: {} status: {}", saved.getId(), saved.getStatus());
 
@@ -119,7 +115,7 @@ public class PaymentService {
     }
 
     @Transactional(readOnly = true)
-    public OrderDto.Response getOrder(String orderId) {
+    public OrderDto.Response getOrder(UUID orderId) {
         return toOrderResponse(orderRepository.findById(orderId)
                 .orElseThrow(() -> new PaymentExceptions.OrderNotFoundException("Order not found: " + orderId)));
     }
@@ -132,7 +128,7 @@ public class PaymentService {
     }
 
     @Transactional
-    public OrderDto.Response updateOrderStatus(String orderId, OrderDto.StatusUpdateRequest request) {
+    public OrderDto.Response updateOrderStatus(UUID orderId, OrderDto.StatusUpdateRequest request) {
         log.info("Updating order: {} status to: {}", orderId, request.status());
 
         Order order = orderRepository.findById(orderId)
@@ -157,7 +153,7 @@ public class PaymentService {
 
     private PaymentDto.Response toPaymentResponse(Payment payment) {
         return new PaymentDto.Response(
-                payment.getId(), payment.getOrderId(), payment.getUserId(),
+                payment.getId(), payment.getOrderId(), payment.getProductId(), payment.getUserId(),
                 payment.getAmount(), payment.getCurrency(), payment.getStatus(),
                 payment.getPaymentMethodType(), payment.getTransactionId(), payment.getPaidAt()
         );
