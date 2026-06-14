@@ -36,8 +36,10 @@ public class ProductController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Product createProduct(@Valid @RequestBody CreateProductDto dto) {
-        return productService.createProduct(dto);
+    public Product createProduct(
+            @RequestHeader("X-User-Id") UUID sellerId,
+            @Valid @RequestBody CreateProductDto dto) {
+        return productService.createProduct(dto, sellerId);
     }
 
     @PutMapping("/{id}")

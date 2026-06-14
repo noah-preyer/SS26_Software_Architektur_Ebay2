@@ -35,13 +35,13 @@ public class ProductService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
     }
 
-    public Product createProduct(CreateProductDto dto) {
+    public Product createProduct(CreateProductDto dto, UUID sellerId) {
         Product product = new Product();
         product.setTitle(dto.getTitle());
         product.setDescription(dto.getDescription());
         product.setPrice(dto.getPrice());
         product.setCategory(dto.getCategory());
-        product.setSellerId(dto.getSellerId());
+        product.setSellerId(sellerId);
         product.setImageUrls(dto.getImageUrls());
         product.setQuantity(dto.getQuantity());
         return productRepository.save(product);

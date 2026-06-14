@@ -7,7 +7,6 @@ import jakarta.validation.constraints.Positive;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.UUID;
 
 public class CreateProductDto {
 
@@ -22,9 +21,6 @@ public class CreateProductDto {
 
     private String category;
 
-    @NotNull
-    private UUID sellerId;
-
     private List<String> imageUrls;
 
     @Min(1)
@@ -38,8 +34,6 @@ public class CreateProductDto {
     public void setPrice(BigDecimal price) { this.price = price; }
     public String getCategory() { return category; }
     public void setCategory(String category) { this.category = category; }
-    public UUID getSellerId() { return sellerId; }
-    public void setSellerId(UUID sellerId) { this.sellerId = sellerId; }
     public List<String> getImageUrls() { return imageUrls; }
     public void setImageUrls(List<String> imageUrls) { this.imageUrls = imageUrls; }
     public int getQuantity() { return quantity; }
