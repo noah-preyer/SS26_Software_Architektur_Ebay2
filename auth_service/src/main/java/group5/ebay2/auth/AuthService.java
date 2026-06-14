@@ -10,6 +10,7 @@ import group5.ebay2.auth.dtos.AuthDto;
 import group5.ebay2.auth.repositories.UserRepository;
 import group5.ebay2.auth.AuthExceptions;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.client.RestClientException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Service
@@ -20,10 +21,12 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final JwtService jwtService;
+    private final UserServiceClient userServiceClient;
 
-    public AuthService(UserRepository userRepository, JwtService jwtService) {
+    public AuthService(UserRepository userRepository, JwtService jwtService, UserServiceClient userServiceClient) {
         this.userRepository = userRepository;
         this.jwtService = jwtService;
+        this.userServiceClient = userServiceClient;
     }
 
     private String hashPassword(String rawPassword) {
@@ -51,6 +54,13 @@ public class AuthService {
         );
 
         User savedUser = userRepository.save(user);
+
+        try {
+            userServiceClient.createProfile(savedUser.getId(), savedUser.getUsername(), savedUser.getEmail());
+        } catch (RestClientException e) {
+            userRepository.delete(savedUser);
+            throw new RuntimeException("Could not create user profile, registration rolled back: " + e.getMessage());
+        }
 
         return new AddUserDto.Response(
                 savedUser.getId(),
