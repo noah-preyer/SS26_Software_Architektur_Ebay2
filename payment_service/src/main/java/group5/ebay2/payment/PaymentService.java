@@ -107,7 +107,7 @@ public class PaymentService {
     public OrderDto.Response createOrder(OrderDto.CreateRequest request) {
         log.info("Creating order for user: {}", request.userId());
 
-        Order order = new Order(request.userId(), request.totalAmount(), request.currency());
+        Order order = new Order(request.userId(), request.productId(), request.totalAmount(), request.currency());
         Order saved = orderRepository.save(order);
         log.info("Created order: {} status: {}", saved.getId(), saved.getStatus());
 
@@ -161,7 +161,7 @@ public class PaymentService {
 
     private OrderDto.Response toOrderResponse(Order order) {
         return new OrderDto.Response(
-                order.getId(), order.getUserId(), order.getStatus(),
+                order.getId(), order.getUserId(), order.getProductId(), order.getStatus(),
                 order.getTotalAmount(), order.getCurrency(),
                 order.getCreatedAt(), order.getUpdatedAt()
         );

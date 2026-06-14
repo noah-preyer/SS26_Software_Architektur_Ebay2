@@ -41,6 +41,7 @@ public class DataInitializer implements CommandLineRunner {
         p.setPrice(price);
         p.setCategory(category);
         p.setSellerId(sellerId);
+        p.setQuantity(5);
         p.setStatus(ProductStatus.AVAILABLE);
         return p;
     }

@@ -42,12 +42,22 @@ public class AuthFilter implements GlobalFilter, Ordered {
         String token = authHeader.substring(BEARER_PREFIX.length());
 
         try {
-            Jwts.parser().verifyWith(key).build().parseSignedClaims(token);
+            var claims = Jwts.parser()
+                    .verifyWith(key)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+
+            String userId = claims.get("userId", String.class);
+
+            ServerWebExchange mutated = exchange.mutate()
+                    .request(r -> r.header("X-User-Id", userId != null ? userId : ""))
+                    .build();
+
+            return chain.filter(mutated);
         } catch (Exception e) {
             return unauthorized(exchange);
         }
-
-        return chain.filter(exchange);
     }
 
     private Mono<Void> unauthorized(ServerWebExchange exchange) {

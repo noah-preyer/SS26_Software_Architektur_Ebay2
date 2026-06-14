@@ -33,6 +33,9 @@ public class Product {
     @NotNull
     private UUID sellerId;
 
+    @Column(nullable = false)
+    private int quantity = 1;
+
     @Enumerated(EnumType.STRING)
     private ProductStatus status = ProductStatus.AVAILABLE;
 
@@ -59,6 +62,8 @@ public class Product {
     public void setCategory(String category) { this.category = category; }
     public UUID getSellerId() { return sellerId; }
     public void setSellerId(UUID sellerId) { this.sellerId = sellerId; }
+    public int getQuantity() { return quantity; }
+    public void setQuantity(int quantity) { this.quantity = quantity; }
     public ProductStatus getStatus() { return status; }
     public void setStatus(ProductStatus status) { this.status = status; }
     public List<String> getImageUrls() { return imageUrls; }

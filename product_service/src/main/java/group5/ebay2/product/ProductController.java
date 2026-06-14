@@ -1,5 +1,7 @@
 package group5.ebay2.product;
 
+import group5.ebay2.product.dtos.BuyProductDto;
+import group5.ebay2.product.dtos.BuyProductResponse;
 import group5.ebay2.product.dtos.CreateProductDto;
 import group5.ebay2.product.dtos.UpdateProductDto;
 import jakarta.validation.Valid;
@@ -50,7 +52,10 @@ public class ProductController {
     }
 
     @PostMapping("/{id}/buy")
-    public Product buyProduct(@PathVariable UUID id) {
-        return productService.buyProduct(id);
+    public BuyProductResponse buyProduct(
+            @PathVariable UUID id,
+            @RequestHeader("X-User-Id") UUID buyerId,
+            @Valid @RequestBody BuyProductDto dto) {
+        return productService.buyProduct(id, buyerId, dto);
     }
 }

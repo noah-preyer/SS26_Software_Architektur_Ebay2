@@ -17,6 +17,9 @@ public class Order {
     @Column(nullable = false)
     private UUID userId;
 
+    @Column(nullable = false)
+    private UUID productId;
+
     @Column(nullable = false, length = 20)
     private String status;
 
@@ -35,8 +38,9 @@ public class Order {
     protected Order() {
     }
 
-    public Order(UUID userId, BigDecimal totalAmount, String currency) {
+    public Order(UUID userId, UUID productId, BigDecimal totalAmount, String currency) {
         this.userId = userId;
+        this.productId = productId;
         this.totalAmount = totalAmount;
         this.currency = currency;
         this.status = "CREATED";
@@ -63,6 +67,10 @@ public class Order {
 
     public UUID getUserId() {
         return userId;
+    }
+
+    public UUID getProductId() {
+        return productId;
     }
 
     public String getStatus() {
