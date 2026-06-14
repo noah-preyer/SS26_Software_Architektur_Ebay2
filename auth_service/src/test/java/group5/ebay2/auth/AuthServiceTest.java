@@ -2,7 +2,6 @@ package group5.ebay2.auth;
 
 import group5.ebay2.auth.dtos.AddUserDto;
 import group5.ebay2.auth.dtos.AuthDto;
-import group5.ebay2.auth.repositories.RoleRepository;
 import group5.ebay2.auth.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,14 +24,9 @@ class AuthServiceTest {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private RoleRepository roleRepository;
-
     @BeforeEach
     void setUp() {
         userRepository.deleteAllInBatch();
-        roleRepository.deleteAllInBatch();
-        roleRepository.save(new Role("USER"));
     }
 
     @Test

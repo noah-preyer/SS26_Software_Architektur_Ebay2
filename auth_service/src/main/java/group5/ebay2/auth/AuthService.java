@@ -19,12 +19,10 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
     private final JwtService jwtService;
 
-    public AuthService(UserRepository userRepository,RoleRepository roleRepository,JwtService jwtService) {
+    public AuthService(UserRepository userRepository, JwtService jwtService) {
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
         this.jwtService = jwtService;
     }
 
@@ -46,14 +44,10 @@ public class AuthService {
         if (userRepository.existsByUsername(request.username())) {
             throw new AuthExceptions.UserAlreadyExistsException("Username already exists");
         }
-        Role defaultRole = roleRepository.findByName("USER")
-                .orElseThrow(() -> new RuntimeException("Default role USER not found"));
-
         User user = new User(
                 request.username(),
                 request.email(),
-                passwordEncoder.encode(request.password()),
-                defaultRole
+                passwordEncoder.encode(request.password())
         );
 
         User savedUser = userRepository.save(user);
