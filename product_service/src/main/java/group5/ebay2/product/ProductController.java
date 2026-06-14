@@ -41,14 +41,19 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public Product updateProduct(@PathVariable UUID id, @Valid @RequestBody UpdateProductDto dto) {
-        return productService.updateProduct(id, dto);
+    public Product updateProduct(
+            @PathVariable UUID id,
+            @RequestHeader("X-User-Id") UUID requesterId,
+            @Valid @RequestBody UpdateProductDto dto) {
+        return productService.updateProduct(id, dto, requesterId);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteProduct(@PathVariable UUID id) {
-        productService.deleteProduct(id);
+    public void deleteProduct(
+            @PathVariable UUID id,
+            @RequestHeader("X-User-Id") UUID requesterId) {
+        productService.deleteProduct(id, requesterId);
     }
 
     @PostMapping("/{id}/buy")

@@ -47,8 +47,11 @@ public class ProductService {
         return productRepository.save(product);
     }
 
-    public Product updateProduct(UUID id, UpdateProductDto dto) {
+    public Product updateProduct(UUID id, UpdateProductDto dto, UUID requesterId) {
         Product product = getProductById(id);
+        if (!product.getSellerId().equals(requesterId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not the seller of this product");
+        }
         if (dto.getTitle() != null) product.setTitle(dto.getTitle());
         if (dto.getDescription() != null) product.setDescription(dto.getDescription());
         if (dto.getPrice() != null) product.setPrice(dto.getPrice());
@@ -57,13 +60,20 @@ public class ProductService {
         return productRepository.save(product);
     }
 
-    public void deleteProduct(UUID id) {
+    public void deleteProduct(UUID id, UUID requesterId) {
         Product product = getProductById(id);
+        if (!product.getSellerId().equals(requesterId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not the seller of this product");
+        }
         productRepository.delete(product);
     }
 
     public BuyProductResponse buyProduct(UUID productId, UUID buyerId, BuyProductDto dto) {
         Product product = getProductById(productId);
+
+        if (product.getSellerId().equals(buyerId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot buy your own product");
+        }
 
         int updated = productRepository.decrementQuantity(productId);
         if (updated == 0) {
