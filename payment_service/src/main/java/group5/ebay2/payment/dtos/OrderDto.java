@@ -13,11 +13,11 @@ public class OrderDto {
 
     public record CreateRequest(
 
-            @NotBlank(message = "Order ID is required")
-            String id,
-
             @NotNull(message = "User ID is required")
             UUID userId,
+
+            @NotNull(message = "Product ID is required")
+            UUID productId,
 
             @NotNull(message = "Total amount is required")
             @DecimalMin(value = "0.01", message = "Total amount must be at least 0.01")
@@ -39,8 +39,9 @@ public class OrderDto {
     }
 
     public record Response(
-            String id,
+            UUID id,
             UUID userId,
+            UUID productId,
             String status,
             BigDecimal totalAmount,
             String currency,

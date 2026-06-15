@@ -72,13 +72,13 @@ public class UserController {
 
     @PutMapping("/address/{addressId}")
     public ResponseEntity<AddressDto.Response> updateAddress(
-            @PathVariable Long addressId,
+            @PathVariable UUID addressId,
             @Valid @RequestBody AddressDto.Request request) {
         return ResponseEntity.ok(userService.updateAddress(addressId, request));
     }
 
     @DeleteMapping("/address/{addressId}")
-    public ResponseEntity<Void> removeAddress(@PathVariable Long addressId) {
+    public ResponseEntity<Void> removeAddress(@PathVariable UUID addressId) {
         userService.removeAddress(addressId);
         return ResponseEntity.noContent().build();
     }
@@ -86,7 +86,7 @@ public class UserController {
     @PutMapping("/user/{userId}/address/{addressId}/default")
     public ResponseEntity<AddressDto.Response> setDefaultAddress(
             @PathVariable UUID userId,
-            @PathVariable Long addressId) {
+            @PathVariable UUID addressId) {
         return ResponseEntity.ok(userService.setDefaultAddress(userId, addressId));
     }
 
@@ -98,7 +98,7 @@ public class UserController {
 
     @GetMapping("/address/{addressId}")
     public ResponseEntity<AddressDto.Response> getAddress(
-            @PathVariable Long addressId) {
+            @PathVariable UUID addressId) {
         return ResponseEntity.ok(userService.getAddress(addressId));
     }
 }

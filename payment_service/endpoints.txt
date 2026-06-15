@@ -8,14 +8,13 @@ POST /order
   Create an order
   Request:
   {
-    "id": "string (required, e.g. ORDER-001)",
     "userId": "UUID (required)",
     "totalAmount": "number (required, min 0.01)",
     "currency": "string (required, 3 chars — USD, EUR, etc.)"
   }
   Response 201:
   {
-    "id": "string",
+    "id": "UUID (auto-generated)",
     "userId": "UUID",
     "status": "CREATED",
     "totalAmount": "number",
@@ -23,14 +22,13 @@ POST /order
     "createdAt": "ISO timestamp",
     "updatedAt": "ISO timestamp"
   }
-  Error 409: { "message": "string" }
 
 GET /order/{orderId}
-  Get order state
+  Get order state (orderId is UUID)
   Response 200: (same as above)
   Error 404: { "message": "string" }
 
-PUT /order/{orderId}/status
+PUT /order/{orderId}/status (orderId is UUID)
   Transition order status (CREATED -> SHIPPED / DELIVERED / CANCELLED)
   Request:
   {
@@ -51,7 +49,8 @@ POST /payment/process
   Process payment (order must exist with status CREATED)
   Request:
   {
-    "orderId": "string (required)",
+    "orderId": "UUID (required)",
+    "productId": "string (required)",
     "userId": "UUID (required)",
     "amount": "number (required, min 0.01)",
     "currency": "string (required, 3 chars)",
@@ -60,7 +59,8 @@ POST /payment/process
   Response 201:
   {
     "id": "UUID",
-    "orderId": "string",
+    "orderId": "UUID",
+    "productId": "string",
     "userId": "UUID",
     "amount": "number",
     "currency": "string",
@@ -89,5 +89,5 @@ POST /payment/{id}/refund
   Error 409: { "message": "string" (already refunded or not completed) }
 
 GET /payment/order/{orderId}
-  List payments for an order
+  List payments for an order (orderId is UUID)
   Response 200: [ ... array of payment objects ]

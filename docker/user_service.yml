@@ -9,11 +9,9 @@ services:
       volumes:
         - ../user_service:/workspace
       ports:
-        - "8080:8080"
-      command:
-        - tail
-        - -f
-        - /dev/null
+        - "8081:8080"
+      command: mvn spring-boot:run
+
   user-db:
     image: postgres:16
     container_name: user-service-db

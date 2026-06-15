@@ -2,7 +2,6 @@ package group5.ebay2.auth;
 
 import jakarta.persistence.*;
 import java.time.Instant;
-import group5.ebay2.auth.Role;
 import java.util.UUID;
 
 @Entity
@@ -22,10 +21,6 @@ public class User {
     @Column(nullable = false)
     private String passwordHash;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "role_id", nullable = true)
-    private Role role;
-
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
@@ -35,11 +30,10 @@ public class User {
     protected User() {
     }
 
-    public User(String username, String email, String passwordHash, Role role) {
+    public User(String username, String email, String passwordHash) {
         this.username = username;
         this.email = email;
         this.passwordHash = passwordHash;
-        this.role = role;
     }
 
     @PrePersist
@@ -63,10 +57,6 @@ public class User {
 
     public String getPasswordHash() {
         return passwordHash;
-    }
-
-    public Role getRole() {
-        return role;
     }
 
     public Instant getCreatedAt() {

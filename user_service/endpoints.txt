@@ -84,7 +84,7 @@ POST /user/{userId}/address
   }
   Response 201:
   {
-    "id": "long",
+    "id": "UUID",
     "street": "string",
     "houseNumber": "string",
     "postalCode": "string",
@@ -99,20 +99,20 @@ GET /user/{userId}/addresses
   List user's addresses
   Response 200: [ ... array of address objects (same as above) ]
 
-PUT /address/{addressId}
+PUT /address/{addressId} (addressId is UUID)
   Update address
   Request: (same as POST /user/{userId}/address)
   Response 200: (same address object)
 
-DELETE /address/{addressId}
+DELETE /address/{addressId} (addressId is UUID)
   Remove address
   Response 204: (no content)
   Error 404: { "message": "string" }
 
-GET /address/{addressId}
+GET /address/{addressId} (addressId is UUID)
   Get address by ID
   Response 200: (address object)
 
-PUT /user/{userId}/address/{addressId}/default
+PUT /user/{userId}/address/{addressId}/default (both UUID)
   Set address as default (clears previous default)
   Response 200: (address object)

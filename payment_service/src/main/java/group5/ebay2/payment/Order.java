@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity
@@ -11,11 +12,13 @@ import java.util.UUID;
 public class Order {
 
     @Id
-    @Column(length = 100)
-    private String id;
+    private UUID id;
 
     @Column(nullable = false)
     private UUID userId;
+
+    @Column(nullable = false)
+    private UUID productId;
 
     @Column(nullable = false, length = 20)
     private String status;
@@ -35,9 +38,9 @@ public class Order {
     protected Order() {
     }
 
-    public Order(String id, UUID userId, BigDecimal totalAmount, String currency) {
-        this.id = id;
+    public Order(UUID userId, UUID productId, BigDecimal totalAmount, String currency) {
         this.userId = userId;
+        this.productId = productId;
         this.totalAmount = totalAmount;
         this.currency = currency;
         this.status = "CREATED";
@@ -45,6 +48,9 @@ public class Order {
 
     @PrePersist
     protected void onCreate() {
+        if (id == null) {
+            id = UUID.randomUUID();
+        }
         Instant now = Instant.now();
         this.createdAt = now;
         this.updatedAt = now;
@@ -55,12 +61,16 @@ public class Order {
         this.updatedAt = Instant.now();
     }
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
     public UUID getUserId() {
         return userId;
+    }
+
+    public UUID getProductId() {
+        return productId;
     }
 
     public String getStatus() {

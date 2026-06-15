@@ -13,8 +13,11 @@ public class Payment {
     @Id
     private UUID id;
 
+    @Column(nullable = false)
+    private UUID orderId;
+
     @Column(nullable = false, length = 100)
-    private String orderId;
+    private String productId;
 
     @Column(nullable = false)
     private UUID userId;
@@ -47,8 +50,9 @@ public class Payment {
     protected Payment() {
     }
 
-    public Payment(String orderId, UUID userId, BigDecimal amount, String currency, String paymentMethodType) {
+    public Payment(UUID orderId, String productId, UUID userId, BigDecimal amount, String currency, String paymentMethodType) {
         this.orderId = orderId;
+        this.productId = productId;
         this.userId = userId;
         this.amount = amount;
         this.currency = currency;
@@ -75,8 +79,12 @@ public class Payment {
         return id;
     }
 
-    public String getOrderId() {
+    public UUID getOrderId() {
         return orderId;
+    }
+
+    public String getProductId() {
+        return productId;
     }
 
     public UUID getUserId() {

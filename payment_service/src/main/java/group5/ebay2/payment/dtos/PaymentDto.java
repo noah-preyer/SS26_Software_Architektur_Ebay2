@@ -13,8 +13,11 @@ public class PaymentDto {
 
     public record ProcessRequest(
 
-            @NotBlank(message = "Order ID is required")
-            String orderId,
+            @NotNull(message = "Order ID is required")
+            UUID orderId,
+
+            @NotBlank(message = "Product ID is required")
+            String productId,
 
             @NotNull(message = "User ID is required")
             UUID userId,
@@ -40,7 +43,8 @@ public class PaymentDto {
 
     public record Response(
             UUID id,
-            String orderId,
+            UUID orderId,
+            String productId,
             UUID userId,
             BigDecimal amount,
             String currency,

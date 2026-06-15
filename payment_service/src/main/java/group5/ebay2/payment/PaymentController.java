@@ -40,7 +40,7 @@ public class PaymentController {
 
     @GetMapping("/payment/order/{orderId}")
     public ResponseEntity<List<PaymentDto.Response>> getPaymentsByOrder(
-            @PathVariable String orderId) {
+            @PathVariable UUID orderId) {
         return ResponseEntity.ok(paymentService.getPaymentsByOrder(orderId));
     }
 
@@ -52,13 +52,13 @@ public class PaymentController {
     }
 
     @GetMapping("/order/{orderId}")
-    public ResponseEntity<OrderDto.Response> getOrder(@PathVariable String orderId) {
+    public ResponseEntity<OrderDto.Response> getOrder(@PathVariable UUID orderId) {
         return ResponseEntity.ok(paymentService.getOrder(orderId));
     }
 
     @PutMapping("/order/{orderId}/status")
     public ResponseEntity<OrderDto.Response> updateOrderStatus(
-            @PathVariable String orderId,
+            @PathVariable UUID orderId,
             @Valid @RequestBody OrderDto.StatusUpdateRequest request) {
         return ResponseEntity.ok(paymentService.updateOrderStatus(orderId, request));
     }

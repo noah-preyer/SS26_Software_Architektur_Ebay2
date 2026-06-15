@@ -8,9 +8,9 @@ import org.springframework.stereotype.Service;
 import group5.ebay2.auth.dtos.AddUserDto;
 import group5.ebay2.auth.dtos.AuthDto;
 import group5.ebay2.auth.repositories.UserRepository;
-import group5.ebay2.auth.repositories.RoleRepository;
 import group5.ebay2.auth.AuthExceptions;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.client.RestClientException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Service
@@ -20,13 +20,13 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
     private final JwtService jwtService;
+    private final UserServiceClient userServiceClient;
 
-    public AuthService(UserRepository userRepository,RoleRepository roleRepository,JwtService jwtService) {
+    public AuthService(UserRepository userRepository, JwtService jwtService, UserServiceClient userServiceClient) {
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
         this.jwtService = jwtService;
+        this.userServiceClient = userServiceClient;
     }
 
     private String hashPassword(String rawPassword) {
@@ -47,17 +47,20 @@ public class AuthService {
         if (userRepository.existsByUsername(request.username())) {
             throw new AuthExceptions.UserAlreadyExistsException("Username already exists");
         }
-        Role defaultRole = roleRepository.findByName("USER")
-                .orElseThrow(() -> new RuntimeException("Default role USER not found"));
-
         User user = new User(
                 request.username(),
                 request.email(),
-                passwordEncoder.encode(request.password()),
-                defaultRole
+                passwordEncoder.encode(request.password())
         );
 
         User savedUser = userRepository.save(user);
+
+        try {
+            userServiceClient.createProfile(savedUser.getId(), savedUser.getUsername(), savedUser.getEmail());
+        } catch (RestClientException e) {
+            userRepository.delete(savedUser);
+            throw new RuntimeException("Could not create user profile, registration rolled back: " + e.getMessage());
+        }
 
         return new AddUserDto.Response(
                 savedUser.getId(),

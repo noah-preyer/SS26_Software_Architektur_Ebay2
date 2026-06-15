@@ -1,0 +1,33 @@
+services:
+  image_service:
+      image: image_service
+      build:
+        context: .
+        dockerfile: java-Dockerfile
+      container_name: image_service
+      working_dir: /workspace
+      volumes:
+        - ../image_service:/workspace
+        - image_uploads:/workspace/uploads
+      ports:
+        - "8088:8080"
+      command:
+        - tail
+        - -f
+        - /dev/null
+      #command: mvn spring-boot:run
+
+  image-db:
+    image: postgres:16
+    container_name: image-service-db
+    environment:
+      POSTGRES_USER: image_user
+      POSTGRES_PASSWORD: app_password
+      POSTGRES_DB: image_service
+    volumes:
+      - image_pgdata:/var/lib/postgresql/data
+      - ./image_db/init:/docker-entrypoint-initdb.d:ro
+
+volumes:
+  image_uploads:
+  image_pgdata:

@@ -2,12 +2,12 @@ package group5.ebay2.auth;
 
 import group5.ebay2.auth.dtos.AddUserDto;
 import group5.ebay2.auth.dtos.AuthDto;
-import group5.ebay2.auth.repositories.RoleRepository;
 import group5.ebay2.auth.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
@@ -25,14 +25,12 @@ class AuthServiceTest {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private RoleRepository roleRepository;
+    @MockBean
+    private UserServiceClient userServiceClient;
 
     @BeforeEach
     void setUp() {
         userRepository.deleteAllInBatch();
-        roleRepository.deleteAllInBatch();
-        roleRepository.save(new Role("USER"));
     }
 
     @Test
