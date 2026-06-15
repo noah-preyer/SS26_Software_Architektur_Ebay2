@@ -1,0 +1,11 @@
+{
+  "name": "test-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Leichtgewichtiger, abhängigkeitsfreier Test-Backend für das Frontend (bildet api-gateway + auth-/product-/user-service in einem Node-Prozess nach).",
+  "scripts": {
+    "start": "node server.js",
+    "reset": "node -e \"require('fs').rmSync('data.json',{force:true});console.log('data.json gelöscht - nächster Start nutzt den Seed-Stand.')\""
+  }
+}

@@ -1,0 +1,45 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="404 – Nicht gefunden">
+  <div class="min-h-[62vh] flex flex-col items-center justify-center py-20 text-center px-4">
+
+    <div class="relative mb-10 select-none" aria-hidden="true">
+      <svg class="w-36 h-36 mx-auto" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="4" y="4" width="112" height="112" rx="18" fill="#111111"/>
+        <path d="M26 34H68L98 60L68 86H26C24.35 86 23 84.65 23 83V37C23 35.35 24.35 34 26 34Z" fill="#E8400C"/>
+        <circle cx="34" cy="60" r="7" fill="#111111"/>
+        <rect x="6" y="6" width="112" height="112" rx="18" stroke="#E8400C" stroke-width="3" fill="none"/>
+      </svg>
+      <span
+        class="absolute inset-0 flex items-center justify-end pr-7 font-black text-white tracking-tighter"
+        style="font-size: 2.4rem; line-height: 1;"
+      >
+        404
+      </span>
+    </div>
+
+    <h1 class="font-black text-[#111111] tracking-tight leading-none mb-4"
+        style="font-size: clamp(2.8rem, 8vw, 5.5rem);">
+      Bereits<br/><span class="text-[#E8400C]">verkauft.</span>
+    </h1>
+
+    <p class="text-[#666] text-lg max-w-md leading-relaxed mb-3">
+      Diese Seite existiert nicht. Oder sie hat mal existiert und wurde inzwischen höchstbietend versteigert.
+    </p>
+    <p class="text-[#999] text-sm max-w-sm mb-10">
+      Beides ist gleich wahrscheinlich und gleichzeitig dein Problem.
+    </p>
+
+    <div class="flex flex-wrap gap-3 justify-center">
+      <a href="/" class="btn-primary">← Zurück zum Marktplatz</a>
+      <a href="javascript:history.back()" class="btn-secondary">Letzte Seite</a>
+    </div>
+
+    <p class="mt-16 text-[#bbb] text-xs font-mono tracking-widest uppercase">
+      Error 404 · Seite nicht gefunden · <span class="text-[#E8400C]">LetzterPreis.</span>
+    </p>
+
+  </div>
+</Layout>

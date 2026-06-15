@@ -1,0 +1,33 @@
+---
+import Navbar from "../components/layout/Navbar.astro";
+import Footer from "../components/layout/Footer.astro";
+import "@fontsource-variable/inter";
+import "../styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title, description = "LetzterPreis - Kaufen & Verkaufen" } = Astro.props;
+const pageTitle = title ? `${title} - LetzterPreis` : "LetzterPreis";
+---
+
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{pageTitle}</title>
+  </head>
+  <body class="min-h-screen flex flex-col">
+    <Navbar />
+    <main class="max-w-screen-xl mx-auto px-5 w-full flex-1">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>
