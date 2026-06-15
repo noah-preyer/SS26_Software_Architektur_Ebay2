@@ -28,6 +28,7 @@ POST /payment/process
     "transactionId": "string",
     "paidAt": "ISO timestamp"
   }
+  
   Also calls order service to update order status to PAID.
   Error 404: { "message": "string" (order not found) }
   Error 409: { "message": "string" (order not in CREATED state) }
@@ -36,7 +37,7 @@ GET /payment/{id}
   Get payment by UUID
   Response 200: (same payment object)
   Error 404: { "message": "string" }
-
+<!-- remove -->
 POST /payment/{id}/refund
   Refund a completed payment (also calls order service to mark order as REFUNDED)
   Request (optional):
@@ -46,7 +47,7 @@ POST /payment/{id}/refund
   Response 200: (payment object with status REFUNDED)
   Error 404: { "message": "string" }
   Error 409: { "message": "string" (already refunded or not completed) }
-
+<!-- remove -->
 PUT /payment/order/{orderId}/refund
   Refund payment by order ID (used by Order Service)
   Response 200: (payment object with status REFUNDED)

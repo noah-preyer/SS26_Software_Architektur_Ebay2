@@ -19,6 +19,7 @@ services:
       - "host.docker.internal:host-gateway"
     depends_on:
       - test-backend
+    
 
 volumes:
   test-backend-data:
