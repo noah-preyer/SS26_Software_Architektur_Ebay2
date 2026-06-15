@@ -1,0 +1,17 @@
+horizontales skalieren
+wengier services
+beispielhaftes testing
+präsentation -> algemein microservices
+doku -> unsere Implementierung
+mehr besonderheiten der microservices
+aufteilen des gesammt systems
+wie synchronisiert man daten zwischen zwei datenbanken oder meheren services
+datenbank , gui sklaiereung, communikation, Präsentation erkläutern
+verschiedene programmiersprachen 
+wo macht es sinn Microservices zu nutzen und wo nicht
+Doku:
+    arc42:
+        umfang: so wie es für uns passt. 
+        kapietel anschauen zu allem was schreiben aber nur das wichitgste.
+
+
