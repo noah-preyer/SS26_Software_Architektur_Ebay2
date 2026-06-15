@@ -55,12 +55,12 @@ public class AuthService {
 
         User savedUser = userRepository.save(user);
 
-        try {
-            userServiceClient.createProfile(savedUser.getId(), savedUser.getUsername(), savedUser.getEmail());
-        } catch (RestClientException e) {
-            userRepository.delete(savedUser);
-            throw new RuntimeException("Could not create user profile, registration rolled back: " + e.getMessage());
-        }
+        //try {
+        //    userServiceClient.createProfile(savedUser.getId(), savedUser.getUsername(), savedUser.getEmail());
+        //} catch (RestClientException e) {
+        //    userRepository.delete(savedUser);
+        //    throw new RuntimeException("Could not create user profile, registration rolled back: " + e.getMessage());
+        //}
 
         return new AddUserDto.Response(
                 savedUser.getId(),

@@ -26,12 +26,6 @@ public class PaymentExceptions {
         }
     }
 
-    public static class OrderAlreadyExistsException extends RuntimeException {
-        public OrderAlreadyExistsException(String message) {
-            super(message);
-        }
-    }
-
     public static class InvalidOrderStateException extends RuntimeException {
         public InvalidOrderStateException(String message) {
             super(message);

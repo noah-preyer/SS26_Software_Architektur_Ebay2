@@ -1,8 +1,6 @@
 package group5.ebay2.payment;
 
-import group5.ebay2.payment.dtos.OrderDto;
 import group5.ebay2.payment.dtos.PaymentDto;
-import group5.ebay2.payment.repositories.OrderRepository;
 import group5.ebay2.payment.repositories.PaymentRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,37 +8,30 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 @Service
 public class PaymentService {
     private static final Logger log = LoggerFactory.getLogger(PaymentService.class);
 
-    private static final Set<String> VALID_TRANSITIONS = Set.of(
-            "SHIPPED", "DELIVERED", "CANCELLED"
-    );
-
     private final PaymentRepository paymentRepository;
-    private final OrderRepository orderRepository;
+    private final OrderServiceClient orderServiceClient;
 
     public PaymentService(PaymentRepository paymentRepository,
-                          OrderRepository orderRepository) {
+                          OrderServiceClient orderServiceClient) {
         this.paymentRepository = paymentRepository;
-        this.orderRepository = orderRepository;
+        this.orderServiceClient = orderServiceClient;
     }
 
     @Transactional
     public PaymentDto.Response processPayment(PaymentDto.ProcessRequest request) {
         log.info("Processing payment for order: {} amount: {} {}", request.orderId(), request.amount(), request.currency());
 
-        Order order = orderRepository.findById(request.orderId())
-                .orElseThrow(() -> new PaymentExceptions.OrderNotFoundException(
-                        "Order not found: " + request.orderId()));
+        OrderDto order = orderServiceClient.getOrder(request.orderId());
 
-        if (!"CREATED".equals(order.getStatus())) {
+        if (!"CREATED".equals(order.status())) {
             throw new PaymentExceptions.InvalidOrderStateException(
-                    "Cannot pay for order with status: " + order.getStatus());
+                    "Cannot pay for order with status: " + order.status());
         }
 
         Payment payment = new Payment(
@@ -49,12 +40,11 @@ public class PaymentService {
         );
         payment.markCompleted("txn_" + UUID.randomUUID().toString().replace("-", ""));
 
-        order.markPaid();
-
         paymentRepository.save(payment);
-        orderRepository.save(order);
 
-        log.info("Payment completed id: {} for order: {}", payment.getId(), order.getId());
+        orderServiceClient.markOrderPaid(request.orderId());
+
+        log.info("Payment completed id: {} for order: {}", payment.getId(), request.orderId());
 
         return toPaymentResponse(payment);
     }
@@ -87,68 +77,35 @@ public class PaymentService {
                     "Cannot refund payment with status: " + payment.getStatus());
         }
 
-        Order order = orderRepository.findById(payment.getOrderId())
-                .orElseThrow(() -> new PaymentExceptions.OrderNotFoundException(
-                        "Order not found: " + payment.getOrderId()));
-
         payment.markRefunded();
-        order.markRefunded();
-
         paymentRepository.save(payment);
-        orderRepository.save(order);
+
+        orderServiceClient.markOrderRefunded(payment.getOrderId());
 
         String reason = request != null ? request.reason() : null;
-        log.info("Refunded payment id: {} order: {} reason: {}", id, order.getId(), reason);
+        log.info("Refunded payment id: {} order: {} reason: {}", id, payment.getOrderId(), reason);
 
         return toPaymentResponse(payment);
     }
 
     @Transactional
-    public OrderDto.Response createOrder(OrderDto.CreateRequest request) {
-        log.info("Creating order for user: {}", request.userId());
+    public PaymentDto.Response refundPaymentByOrderId(UUID orderId) {
+        log.info("Refunding payment for order: {}", orderId);
 
-        Order order = new Order(request.userId(), request.productId(), request.totalAmount(), request.currency());
-        Order saved = orderRepository.save(order);
-        log.info("Created order: {} status: {}", saved.getId(), saved.getStatus());
+        List<Payment> payments = paymentRepository.findByOrderIdOrderByCreatedAtDesc(orderId);
+        
+        Payment payment = payments.stream()
+                .filter(p -> "COMPLETED".equals(p.getStatus()))
+                .findFirst()
+                .orElseThrow(() -> new PaymentExceptions.PaymentNotFoundException(
+                        "No completed payment found for order: " + orderId));
 
-        return toOrderResponse(saved);
-    }
+        payment.markRefunded();
+        paymentRepository.save(payment);
 
-    @Transactional(readOnly = true)
-    public OrderDto.Response getOrder(UUID orderId) {
-        return toOrderResponse(orderRepository.findById(orderId)
-                .orElseThrow(() -> new PaymentExceptions.OrderNotFoundException("Order not found: " + orderId)));
-    }
+        log.info("Refunded payment id: {} for order: {}", payment.getId(), orderId);
 
-    @Transactional(readOnly = true)
-    public List<OrderDto.Response> getOrdersByUser(UUID userId) {
-        return orderRepository.findByUserIdOrderByCreatedAtDesc(userId).stream()
-                .map(this::toOrderResponse)
-                .toList();
-    }
-
-    @Transactional
-    public OrderDto.Response updateOrderStatus(UUID orderId, OrderDto.StatusUpdateRequest request) {
-        log.info("Updating order: {} status to: {}", orderId, request.status());
-
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new PaymentExceptions.OrderNotFoundException("Order not found: " + orderId));
-
-        if (!VALID_TRANSITIONS.contains(request.status())) {
-            throw new PaymentExceptions.InvalidOrderStateException(
-                    "Invalid status transition: " + request.status());
-        }
-
-        switch (request.status()) {
-            case "SHIPPED" -> order.markShipped();
-            case "DELIVERED" -> order.markDelivered();
-            case "CANCELLED" -> order.markCancelled();
-        }
-
-        Order saved = orderRepository.save(order);
-        log.info("Order: {} status updated to: {}", saved.getId(), saved.getStatus());
-
-        return toOrderResponse(saved);
+        return toPaymentResponse(payment);
     }
 
     private PaymentDto.Response toPaymentResponse(Payment payment) {
@@ -156,14 +113,6 @@ public class PaymentService {
                 payment.getId(), payment.getOrderId(), payment.getProductId(), payment.getUserId(),
                 payment.getAmount(), payment.getCurrency(), payment.getStatus(),
                 payment.getPaymentMethodType(), payment.getTransactionId(), payment.getPaidAt()
-        );
-    }
-
-    private OrderDto.Response toOrderResponse(Order order) {
-        return new OrderDto.Response(
-                order.getId(), order.getUserId(), order.getProductId(), order.getStatus(),
-                order.getTotalAmount(), order.getCurrency(),
-                order.getCreatedAt(), order.getUpdatedAt()
         );
     }
 }

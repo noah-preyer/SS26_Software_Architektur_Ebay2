@@ -6,6 +6,7 @@
 /workspace/src/main/java/group5/ebay2/notification/NotificationController.java
 /workspace/src/main/java/group5/ebay2/notification/NotificationExceptions.java
 /workspace/src/main/java/group5/ebay2/notification/NotificationService.java
+/workspace/src/main/java/group5/ebay2/notification/OpenApiConfig.java
 /workspace/src/main/java/group5/ebay2/notification/dtos/EmailDto.java
 /workspace/src/main/java/group5/ebay2/notification/repositories/EmailNotificationRepository.java
 /workspace/src/main/java/group5/ebay2/notification/repositories/EmailTemplateRepository.java

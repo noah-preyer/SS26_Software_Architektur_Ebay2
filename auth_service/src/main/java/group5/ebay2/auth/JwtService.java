@@ -33,7 +33,6 @@ public class JwtService {
                 .subject(String.valueOf(user.getId()))
                 .claim("username", user.getUsername())
                 .claim("email", user.getEmail())
-                .claim("role", "USER")
                 .claim("userId", user.getId().toString())
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(expiresAt))

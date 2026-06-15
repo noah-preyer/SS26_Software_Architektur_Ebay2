@@ -1,0 +1,10 @@
+/workspace/src/main/java/group5/ebay2/ImageServiceApplication.java
+/workspace/src/main/java/group5/ebay2/error/ErrorResponse.java
+/workspace/src/main/java/group5/ebay2/error/GlobalExceptionHandler.java
+/workspace/src/main/java/group5/ebay2/image/Image.java
+/workspace/src/main/java/group5/ebay2/image/ImageController.java
+/workspace/src/main/java/group5/ebay2/image/ImageExceptions.java
+/workspace/src/main/java/group5/ebay2/image/ImageService.java
+/workspace/src/main/java/group5/ebay2/image/OpenApiConfig.java
+/workspace/src/main/java/group5/ebay2/image/dtos/ImageDto.java
+/workspace/src/main/java/group5/ebay2/image/repositories/ImageRepository.java

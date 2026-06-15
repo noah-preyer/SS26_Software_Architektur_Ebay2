@@ -99,4 +99,7 @@ public class Image {
     public String getObjectKey() {
         return objectKey;
     }
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
 }

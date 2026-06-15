@@ -7,6 +7,7 @@ import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
@@ -28,8 +29,9 @@ public class AuthFilter implements GlobalFilter, Ordered {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String path = exchange.getRequest().getPath().toString();
+        String method = exchange.getRequest().getMethod().name();
 
-        if (path.startsWith("/auth")) {
+        if (isPublicEndpoint(path, method)) {
             return chain.filter(exchange);
         }
 
@@ -58,6 +60,23 @@ public class AuthFilter implements GlobalFilter, Ordered {
         } catch (Exception e) {
             return unauthorized(exchange);
         }
+    }
+
+    private boolean isPublicEndpoint(String path, String method) {
+        if (path.startsWith("/auth")) {
+            return true;
+        }
+
+        if ("GET".equals(method)) {
+            if (path.startsWith("/products")) {
+                return true;
+            }
+            if (path.startsWith("/image")) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private Mono<Void> unauthorized(ServerWebExchange exchange) {

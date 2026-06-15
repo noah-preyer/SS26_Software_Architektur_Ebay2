@@ -19,36 +19,35 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @PostMapping("/user")
+    @PostMapping("/register")
     public ResponseEntity<?> addUser(@Valid @RequestBody AddUserDto.Request request) {
         try {
             AddUserDto.Response response = authService.addUser(request);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
-
         } catch (AuthExceptions.UserAlreadyExistsException ex) {
             return ResponseEntity
                     .status(HttpStatus.CONFLICT)
                     .body(new ErrorResponse(ex.getMessage()));
         }
     }
-    @PostMapping("/auth")
+
+    @PostMapping("/login")
     public ResponseEntity<?> authUser(@Valid @RequestBody AuthDto.Request request) {
         try {
             AuthDto.Response response = authService.authUser(request);
             return ResponseEntity.ok(response);
-
         } catch (AuthExceptions.InvalidPasswordException ex) {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
                     .body(new ErrorResponse(ex.getMessage()));
         }
     }
+
     @DeleteMapping("/user/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable UUID id) {
         try {
             authService.deleteUser(id);
             return ResponseEntity.noContent().build();
-
         } catch (AuthExceptions.UserNotFoundException ex) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)

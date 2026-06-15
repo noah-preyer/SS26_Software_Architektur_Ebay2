@@ -2,7 +2,7 @@ services:
   product-service:
     build: .
     ports:
-      - "8082:8082"
+      - "8083:8082"
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://product-db:5432/productdb
       SPRING_DATASOURCE_USERNAME: app

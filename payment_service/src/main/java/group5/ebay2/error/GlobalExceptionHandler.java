@@ -12,8 +12,7 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler({PaymentExceptions.PaymentNotFoundException.class,
-            PaymentExceptions.OrderNotFoundException.class})
+    @ExceptionHandler(PaymentExceptions.PaymentNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFound(RuntimeException ex) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
@@ -23,7 +22,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({PaymentExceptions.PaymentAlreadyRefundedException.class,
             PaymentExceptions.InvalidPaymentStateException.class,
             PaymentExceptions.InvalidOrderStateException.class,
-            PaymentExceptions.OrderAlreadyExistsException.class})
+            PaymentExceptions.OrderNotFoundException.class})
     public ResponseEntity<ErrorResponse> handleConflict(RuntimeException ex) {
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)

@@ -1,46 +1,5 @@
 Payment Service (Port 8086)
-===========================
-
-ORDERS
-------
-
-POST /order
-  Create an order
-  Request:
-  {
-    "userId": "UUID (required)",
-    "totalAmount": "number (required, min 0.01)",
-    "currency": "string (required, 3 chars — USD, EUR, etc.)"
-  }
-  Response 201:
-  {
-    "id": "UUID (auto-generated)",
-    "userId": "UUID",
-    "status": "CREATED",
-    "totalAmount": "number",
-    "currency": "string",
-    "createdAt": "ISO timestamp",
-    "updatedAt": "ISO timestamp"
-  }
-
-GET /order/{orderId}
-  Get order state (orderId is UUID)
-  Response 200: (same as above)
-  Error 404: { "message": "string" }
-
-PUT /order/{orderId}/status (orderId is UUID)
-  Transition order status (CREATED -> SHIPPED / DELIVERED / CANCELLED)
-  Request:
-  {
-    "status": "string (required — SHIPPED, DELIVERED, or CANCELLED)"
-  }
-  Response 200: (order object)
-  Error 404: { "message": "string" }
-  Error 409: { "message": "string" }
-
-GET /order/user/{userId}
-  List orders by user
-  Response 200: [ ... array of order objects ]
+==========================
 
 PAYMENTS
 --------
@@ -69,7 +28,7 @@ POST /payment/process
     "transactionId": "string",
     "paidAt": "ISO timestamp"
   }
-  Also updates order status to PAID.
+  Also calls order service to update order status to PAID.
   Error 404: { "message": "string" (order not found) }
   Error 409: { "message": "string" (order not in CREATED state) }
 
@@ -79,7 +38,7 @@ GET /payment/{id}
   Error 404: { "message": "string" }
 
 POST /payment/{id}/refund
-  Refund a completed payment (also marks order as REFUNDED)
+  Refund a completed payment (also calls order service to mark order as REFUNDED)
   Request (optional):
   {
     "reason": "string (optional)"
@@ -88,6 +47,15 @@ POST /payment/{id}/refund
   Error 404: { "message": "string" }
   Error 409: { "message": "string" (already refunded or not completed) }
 
+PUT /payment/order/{orderId}/refund
+  Refund payment by order ID (used by Order Service)
+  Response 200: (payment object with status REFUNDED)
+  Error 404: { "message": "string" (no completed payment found) }
+
 GET /payment/order/{orderId}
   List payments for an order (orderId is UUID)
   Response 200: [ ... array of payment objects ]
+
+DEPENDENCIES
+------------
+- Order Service: http://order-service:8080
