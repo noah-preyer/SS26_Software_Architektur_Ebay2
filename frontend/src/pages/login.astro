@@ -1,0 +1,55 @@
+---
+import Layout from "../layouts/Layout.astro";
+import LoginForm from "../components/auth/LoginForm.jsx";
+
+const registered = Astro.url.searchParams.get("registered") === "true";
+---
+
+<Layout title="Anmelden">
+  <div class="-mx-5 flex min-h-[calc(100vh-62px)]">
+
+    <div class="hidden lg:flex lg:w-[44%] bg-[#111111] flex-col justify-between p-14 border-r-2 border-[#111111]">
+      <div>
+        <p class="text-[#E8400C] font-black text-xs uppercase tracking-[0.2em] mb-8">LetzterPreis</p>
+        <h2 class="font-black text-white leading-none tracking-tight mb-6"
+            style="font-size: clamp(2.5rem, 4vw, 4rem);">
+          Willkommen<br/>zurück.
+        </h2>
+        <p class="text-white/50 text-base leading-relaxed max-w-xs">
+          Melde dich an und entdecke tausende Angebote - oder verkaufe selbst, was du nicht mehr brauchst.
+        </p>
+      </div>
+
+      <div class="space-y-3">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 bg-[#E8400C] border-2 border-[#E8400C] rounded-sm flex items-center justify-center shrink-0">
+            <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+            </svg>
+          </div>
+          <span class="text-white/60 text-sm font-medium">Sicher & kostenlos</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 bg-[#E8400C] border-2 border-[#E8400C] rounded-sm flex items-center justify-center shrink-0">
+            <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+          </div>
+          <span class="text-white/60 text-sm font-medium">Sofort loskaufen</span>
+        </div>
+        <div class="mt-8 pt-6 border-t border-white/10">
+          <p class="text-white/25 text-xs">2026 LetzterPreis</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex-1 flex flex-col items-center justify-center p-8 bg-[#F2EFE8]">
+      {registered && (
+        <div class="w-full max-w-md mb-6 bg-[#DCE7C8] border-2 border-[#111111] rounded-md px-4 py-3 text-sm font-bold text-[#111111] shadow-[3px_3px_0_#111111]">
+          ✓ Registrierung erfolgreich! Du kannst dich jetzt anmelden.
+        </div>
+      )}
+      <LoginForm client:load />
+    </div>
+  </div>
+</Layout>

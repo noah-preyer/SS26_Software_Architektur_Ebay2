@@ -1,0 +1,21 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import ProductDetail from "../../components/products/ProductDetail.jsx";
+import { getProduct } from "../../lib/api.js";
+
+const { id } = Astro.params;
+
+// produkt serverseitig prüfen, 404 führt direkt zur 404-seite, kein kaputtes client-rendering.
+try {
+  await getProduct(id);
+} catch (err) {
+  if ((err as any)?.status === 404) {
+    return new Response(null, { status: 404 });
+  }
+  // bei netzwerkfehlern weitermachen, der client zeigt dann sein eigenes fehlerbanner.
+}
+---
+
+<Layout title="Produkt">
+  <ProductDetail id={id} client:load />
+</Layout>

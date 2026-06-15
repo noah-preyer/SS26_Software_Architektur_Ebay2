@@ -1,0 +1,48 @@
+---
+import Layout from "../layouts/Layout.astro";
+import RegisterForm from "../components/auth/RegisterForm.jsx";
+---
+
+<Layout title="Registrieren">
+  <div class="-mx-5 flex min-h-[calc(100vh-62px)]">
+
+    <div class="hidden lg:flex lg:w-[44%] bg-[#111111] flex-col justify-between p-14 border-r-2 border-[#111111]">
+      <div>
+        <p class="text-[#E8400C] font-black text-xs uppercase tracking-[0.2em] mb-8">LetzterPreis</p>
+        <h2 class="font-black text-white leading-none tracking-tight mb-6"
+            style="font-size: clamp(2.5rem, 4vw, 4rem);">
+          Werde Teil<br/>des Markts.
+        </h2>
+        <p class="text-white/50 text-base leading-relaxed max-w-xs">
+          Kostenlos registrieren und sofort loslegen - verkaufe was du nicht mehr brauchst oder finde Schnäppchen.
+        </p>
+      </div>
+
+      <div class="space-y-3">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 bg-[#E8400C] border-2 border-[#E8400C] rounded-sm flex items-center justify-center shrink-0">
+            <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <span class="text-white/60 text-sm font-medium">100% kostenlos</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 bg-[#E8400C] border-2 border-[#E8400C] rounded-sm flex items-center justify-center shrink-0">
+            <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+            </svg>
+          </div>
+          <span class="text-white/60 text-sm font-medium">In 30 Sekunden fertig</span>
+        </div>
+        <div class="mt-8 pt-6 border-t border-white/10">
+          <p class="text-white/25 text-xs">2026 LetzterPreis</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex-1 flex items-center justify-center p-8 bg-[#F2EFE8]">
+      <RegisterForm client:load />
+    </div>
+  </div>
+</Layout>

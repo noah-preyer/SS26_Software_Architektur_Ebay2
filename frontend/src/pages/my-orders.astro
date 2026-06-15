@@ -1,0 +1,17 @@
+---
+import Layout from "../layouts/Layout.astro";
+import AuthGuard from "../components/auth/AuthGuard.jsx";
+import MyOrders from "../components/cart/MyOrders.jsx";
+---
+
+<Layout title="Meine Käufe">
+  <AuthGuard client:load>
+    <div class="pt-10 pb-8 border-b-2 border-[#111111] mb-10">
+      <p class="text-[#E8400C] font-black text-xs uppercase tracking-[0.2em] mb-3">Mein Konto</p>
+      <h1 class="page-title mb-4">Meine Käufe</h1>
+      <p class="text-[#666666] text-lg">Behalte den Überblick über alles, was du gekauft hast.</p>
+    </div>
+
+    <MyOrders client:load />
+  </AuthGuard>
+</Layout>
