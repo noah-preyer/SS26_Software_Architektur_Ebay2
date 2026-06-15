@@ -1,0 +1,54 @@
+---
+import NavAuth from "./NavAuth.jsx";
+import NavLinks from "./NavLinks.jsx";
+
+const pathname = Astro.url.pathname;
+---
+
+<header class="bg-[#111111] border-b-2 border-[#111111]">
+  <div class="max-w-screen-xl mx-auto px-5">
+    <div class="flex items-center gap-4 py-3.5">
+
+      <!-- Logo -->
+      <div class="flex-1 flex justify-start min-w-0">
+        <a href="/" class="flex items-center gap-2.5 shrink-0 group">
+          <!-- Preisschild-Icon -->
+          <svg class="w-9 h-9 shrink-0" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="2" width="36" height="36" rx="8" fill="#E8400C"/>
+            <path d="M9 11H22L32 20L22 29H9C8.45 29 8 28.55 8 28V12C8 11.45 8.45 11 9 11Z" fill="white"/>
+            <circle cx="11.5" cy="20" r="2.2" fill="#E8400C"/>
+          </svg>
+          <span class="text-lg font-light text-white tracking-tight">
+            Letzter<span class="font-black text-[#E8400C]">Preis.</span>
+          </span>
+        </a>
+      </div>
+
+      <!-- Desktop Navigation -->
+      <nav class="hidden md:flex items-center justify-center shrink-0">
+        <NavLinks pathname={pathname} />
+      </nav>
+
+      <!-- Auth + Hamburger -->
+      <div class="flex-1 flex justify-end items-center gap-3 min-w-0">
+        <NavAuth client:load />
+        <button id="menu-toggle" class="md:hidden text-white shrink-0" aria-label="Menü öffnen">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="md:hidden hidden pb-4 border-t border-white/10 mt-1 pt-3">
+      <NavLinks pathname={pathname} mobile={true} />
+    </div>
+  </div>
+</header>
+
+<script>
+  document.getElementById("menu-toggle")?.addEventListener("click", () => {
+    document.getElementById("mobile-menu")?.classList.toggle("hidden");
+  });
+</script>

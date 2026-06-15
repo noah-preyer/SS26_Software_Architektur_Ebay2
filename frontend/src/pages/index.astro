@@ -1,0 +1,21 @@
+---
+import Layout from "../layouts/Layout.astro";
+import ProductGrid from "../components/products/ProductGrid.jsx";
+---
+
+<Layout title="Startseite">
+
+  <div class="pt-10 pb-8 border-b-2 border-[#111111] mb-10">
+    <p class="text-[#E8400C] font-black text-xs uppercase tracking-[0.2em] mb-3">
+      Marktplatz · Kaufen &amp; Verkaufen
+    </p>
+    <h1 class="font-black text-[#111111] leading-none tracking-tight mb-4"
+        style="font-size: clamp(3.5rem, 10vw, 7rem);">
+      Finde deinen<br/><span style="color:#E8400C;">letzten Preis.</span>
+    </h1>
+    <p class="text-[#666666] text-lg max-w-lg leading-relaxed">
+      Stöbere durch aktuelle Anzeigen oder biete selbst etwas an.
+  </div>
+
+  <ProductGrid client:load />
+</Layout>
