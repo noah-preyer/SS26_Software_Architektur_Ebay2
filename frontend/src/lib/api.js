@@ -141,7 +141,7 @@ export async function buyProduct(id) {
 // das echte backend muss bei login {access_token, user:{id,email,username}} zurückgeben.
 // die user-id im JWT (sub) muss eine zahl sein, sonst kann der user-auth-check ncht funktionieren.
 export async function loginUser(emailOrUsername, password) {
-  const data = await apiFetch("/auth/login", {
+  const data = await apiFetch("/auth", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ emailOrUsername, password }),
@@ -152,18 +152,36 @@ export async function loginUser(emailOrUsername, password) {
   return session.user;
 }
 
-export async function registerUser(username, email, password) {
-  return apiFetch("/auth/register", {
+export async function registerUser(username, email, password, firstName, lastName) {
+  const authUser = await apiFetch("/auth/register", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username, email, password }),
   });
+
+  try {
+    await apiFetch("/user", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        authUserId: authUser.id,
+        username,
+        email,
+        firstName: firstName || null,
+        lastName: lastName || null,
+        phoneNumber: null,
+        profileImageObjectKey: null,
+      }),
+    });
+  } catch {
+    console.warn("[apiFetch] User profile creation failed — auth user already exists");
+  }
 }
 
-// wenn GET /users/{id} fehlt oder fehlschlägt, zeigt die detailseite einfach "unbekannt", kein absturz.
+// wenn GET /user/{id} fehlt oder fehlschlägt, zeigt die detailseite einfach "unbekannt", kein absturz.
 export async function getSeller(sellerId) {
   try {
-    return await apiFetch(`/users/${sellerId}`, { headers: { ...authHeader() } });
+    return await apiFetch(`/user/${sellerId}`, { headers: { ...authHeader() } });
   } catch {
     return null;
   }

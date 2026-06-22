@@ -38,7 +38,7 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/login")
+    @PostMapping("/")
     public ResponseEntity<?> authUser(@Valid @RequestBody AuthDto.Request request) {
         log.info("POST /login — emailOrUsername={}", request.emailOrUsername());
         try {

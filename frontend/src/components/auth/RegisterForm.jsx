@@ -7,6 +7,8 @@ import ErrorBanner from "../ui/ErrorBanner.jsx";
 export default function RegisterForm() {
   const [username, setUsername] = createSignal("");
   const [email, setEmail] = createSignal("");
+  const [firstName, setFirstName] = createSignal("");
+  const [lastName, setLastName] = createSignal("");
   const [password, setPassword] = createSignal("");
   const [confirmPassword, setConfirmPassword] = createSignal("");
   const [error, setError] = createSignal("");
@@ -31,7 +33,7 @@ export default function RegisterForm() {
     }
     setLoading(true);
     try {
-      await registerUser(username(), email(), password());
+      await registerUser(username(), email(), password(), firstName(), lastName());
       window.location.href = "/login?registered=true";
     } catch (err) {
       setError(errorMessage(err, { 400: "Diese E-Mail ist bereits registriert." }));
@@ -67,6 +69,26 @@ export default function RegisterForm() {
             value={email()}
             onInput={(e) => setEmail(e.target.value)}
           />
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-bold text-[#111111] mb-1.5" for="firstName">Vorname</label>
+            <input
+              id="firstName" type="text"
+              class="input-field"
+              value={firstName()}
+              onInput={(e) => setFirstName(e.target.value)}
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-[#111111] mb-1.5" for="lastName">Nachname</label>
+            <input
+              id="lastName" type="text"
+              class="input-field"
+              value={lastName()}
+              onInput={(e) => setLastName(e.target.value)}
+            />
+          </div>
         </div>
         <div>
           <label class="block text-sm font-bold text-[#111111] mb-1.5" for="password">Passwort</label>

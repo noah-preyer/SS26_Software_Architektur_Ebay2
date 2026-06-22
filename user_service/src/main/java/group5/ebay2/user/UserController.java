@@ -19,55 +19,68 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/user")
+    @PostMapping
     public ResponseEntity<UserProfileDto.Response> addUser(
             @Valid @RequestBody UserProfileDto.Request request) {
         UserProfileDto.Response response = userService.addUser(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @GetMapping("/user/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<UserProfileDto.Response> getUser(@PathVariable UUID id) {
         return ResponseEntity.ok(userService.getUser(id));
     }
 
-    @GetMapping("/user/by-auth/{authUserId}")
+    @GetMapping("/by-auth/{authUserId}")
     public ResponseEntity<UserProfileDto.Response> getUserByAuthUserId(
             @PathVariable UUID authUserId) {
         return ResponseEntity.ok(userService.getUserByAuthUserId(authUserId));
     }
 
-    @GetMapping("/user/by-email/{email}")
+    @GetMapping("/by-email/{email}")
     public ResponseEntity<UserProfileDto.Response> getUserByEmail(
             @PathVariable String email) {
         return ResponseEntity.ok(userService.getUserByEmail(email));
     }
 
-    @GetMapping("/user/by-username/{username}")
+    @GetMapping("/by-username/{username}")
     public ResponseEntity<UserProfileDto.Response> getUserByUsername(
             @PathVariable String username) {
         return ResponseEntity.ok(userService.getUserByUsername(username));
     }
 
-    @PutMapping("/user/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<UserProfileDto.Response> updateUser(
             @PathVariable UUID id,
             @Valid @RequestBody UserProfileDto.UpdateRequest request) {
         return ResponseEntity.ok(userService.updateUser(id, request));
     }
 
-    @DeleteMapping("/user/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable UUID id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/user/{userId}/address")
+    @PostMapping("/{userId}/address")
     public ResponseEntity<AddressDto.Response> addAddress(
             @PathVariable UUID userId,
             @Valid @RequestBody AddressDto.Request request) {
         AddressDto.Response response = userService.addAddress(userId, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping("/{userId}/addresses")
+    public ResponseEntity<List<AddressDto.Response>> getAddresses(
+            @PathVariable UUID userId) {
+        return ResponseEntity.ok(userService.getAddresses(userId));
+    }
+
+    @PutMapping("/{userId}/address/{addressId}/default")
+    public ResponseEntity<AddressDto.Response> setDefaultAddress(
+            @PathVariable UUID userId,
+            @PathVariable UUID addressId) {
+        return ResponseEntity.ok(userService.setDefaultAddress(userId, addressId));
     }
 
     @PutMapping("/address/{addressId}")
@@ -81,19 +94,6 @@ public class UserController {
     public ResponseEntity<Void> removeAddress(@PathVariable UUID addressId) {
         userService.removeAddress(addressId);
         return ResponseEntity.noContent().build();
-    }
-
-    @PutMapping("/user/{userId}/address/{addressId}/default")
-    public ResponseEntity<AddressDto.Response> setDefaultAddress(
-            @PathVariable UUID userId,
-            @PathVariable UUID addressId) {
-        return ResponseEntity.ok(userService.setDefaultAddress(userId, addressId));
-    }
-
-    @GetMapping("/user/{userId}/addresses")
-    public ResponseEntity<List<AddressDto.Response>> getAddresses(
-            @PathVariable UUID userId) {
-        return ResponseEntity.ok(userService.getAddresses(userId));
     }
 
     @GetMapping("/address/{addressId}")

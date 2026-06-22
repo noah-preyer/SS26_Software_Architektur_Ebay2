@@ -16,7 +16,12 @@ spring:
           predicates:
             - Path=/user/**
           filters:
-           - StripPrefix=1
+            - StripPrefix=1
+
+        - id: user-service-address
+          uri: http://user-service:8080
+          predicates:
+            - Path=/address/**
 
         - id: product-service
           uri: http://product-service:8082
