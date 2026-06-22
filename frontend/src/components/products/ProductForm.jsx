@@ -104,7 +104,7 @@ export default function ProductForm(props) {
         await updateProduct(props.product.id, payload);
       } else {
         // das echte backend sollte die sellerid aus dem jwt lesen, nicht vom client annehmen.
-        payload.sellerId = Number(getUserInfo()?.id);
+        payload.sellerId = getUserInfo()?.id;
         await createProduct(payload);
       }
 

@@ -2,3 +2,4 @@
 user_service/target
 **/opencode.yml
 docker/opencode.yml
+docker/cloudbeaver_workspace

@@ -38,7 +38,7 @@ export default function ProductDetail(props) {
   const isOwner = createMemo(() => {
     const p = product();
     const user = currentUser();
-    return !!p && !!user && user.id != null && Number(user.id) === Number(p.sellerId);
+    return !!p && !!user && user.id != null && String(user.id) === String(p.sellerId);
   });
 
   const canAddToCart = createMemo(() => {

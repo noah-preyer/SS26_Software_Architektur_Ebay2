@@ -13,13 +13,17 @@ services:
     build: .
     ports:
       - "4321:4321"
+    env_file: .env
     environment:
-      BACKEND_TARGET: ${BACKEND_TARGET_OVERRIDE:-http://test-backend:8090}
+      BACKEND_TARGET: ${BACKEND_TARGET_OVERRIDE:-http://api-gateway:8080}
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    depends_on:
-      - test-backend
-    
+    networks:
+      - ss26_software_architektur_ebay2_default
 
 volumes:
   test-backend-data:
+
+networks:
+  ss26_software_architektur_ebay2_default:
+    external: true

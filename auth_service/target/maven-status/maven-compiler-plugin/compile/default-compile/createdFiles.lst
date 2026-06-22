@@ -1,5 +1,5 @@
-group5/ebay2/auth/User.class
 group5/ebay2/auth/AuthExceptions$InvalidPasswordException.class
+group5/ebay2/auth/User.class
 group5/ebay2/auth/AuthExceptions$UserNotFoundException.class
 group5/ebay2/auth/AuthExceptions$UserAlreadyExistsException.class
 group5/ebay2/auth/JwtService.class
@@ -15,6 +15,6 @@ group5/ebay2/auth/OpenApiConfig.class
 group5/ebay2/auth/dtos/AuthDto$Response.class
 group5/ebay2/auth/AuthController.class
 group5/ebay2/auth/UserServiceClient.class
-group5/ebay2/auth/AuthExceptions.class
-group5/ebay2/auth/dtos/AuthDto.class
 group5/ebay2/AuthServiceApplication.class
+group5/ebay2/auth/dtos/AuthDto.class
+group5/ebay2/auth/AuthExceptions.class

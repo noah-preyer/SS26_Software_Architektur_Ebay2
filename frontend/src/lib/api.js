@@ -13,12 +13,17 @@ const BASE_URL = import.meta.env.SSR
 const TIMEOUT = 5000;
 
 async function apiFetch(path, options = {}) {
+  const url = BASE_URL + path;
+  const method = options.method ?? "GET";
+
+  console.log(`[apiFetch] → ${method} ${url}`, options.body ?? "");
+
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT);
 
   let response;
   try {
-    response = await fetch(BASE_URL + path, { ...options, signal: controller.signal });
+    response = await fetch(url, { ...options, signal: controller.signal });
   } catch (err) {
     if (err.name === "AbortError") {
       throw Object.assign(new Error("Zeitüberschreitung"), { kind: "TIMEOUT" });
@@ -27,6 +32,8 @@ async function apiFetch(path, options = {}) {
   } finally {
     clearTimeout(timer);
   }
+
+  console.log(`[apiFetch] ← ${response.status} ${method} ${url}`);
 
   if (!response.ok) {
     if (response.status === 401) clearSession();
@@ -133,23 +140,23 @@ export async function buyProduct(id) {
 
 // das echte backend muss bei login {access_token, user:{id,email,username}} zurückgeben.
 // die user-id im JWT (sub) muss eine zahl sein, sonst kann der user-auth-check ncht funktionieren.
-export async function loginUser(email, password) {
+export async function loginUser(emailOrUsername, password) {
   const data = await apiFetch("/auth/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ emailOrUsername, password }),
   });
 
-  const session = normalizeLoginResponse(data, email);
+  const session = normalizeLoginResponse(data, emailOrUsername);
   setSession(session);
   return session.user;
 }
 
-export async function registerUser(email, password) {
+export async function registerUser(username, email, password) {
   return apiFetch("/auth/register", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ username, email, password }),
   });
 }
 

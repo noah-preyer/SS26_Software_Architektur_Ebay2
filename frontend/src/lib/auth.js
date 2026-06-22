@@ -20,24 +20,22 @@ export function decodeToken(token) {
   }
 }
 
-// backend kann {access_token, user} oder nur {token} schicken, beide formate werden akzeptiert.
-// wenn das backend keinen user-block mitschickt, wird die id aus dem jwt sub ausgelesen.
+// backend kann {access_token, user}, {accessToken, message} oder nur {token} schicken.
+// wenn kein user-block mitgeliefert wird, werden die infos aus dem jwt dekodiert.
 export function normalizeLoginResponse(data, emailFallback) {
-  if (data.access_token) {
-    const user = data.user
-      ? { ...data.user, id: data.user.id != null ? Number(data.user.id) : null }
-      : { id: null, email: emailFallback ?? null, username: null };
-    return { token: data.access_token, user };
+  const token = data.access_token || data.accessToken || data.token;
+  if (!token) return null;
+
+  if (data.user) {
+    return { token, user: data.user };
   }
 
-  // sub muss eine zahl sein. wenn das backend dort eine e-mail speichert, bleibt id null.
-  const payload = decodeToken(data.token);
-  const subAsId = Number(payload?.sub);
+  const payload = decodeToken(token);
   return {
-    token: data.token,
+    token,
     user: {
-      id: payload?.sub != null && Number.isFinite(subAsId) ? subAsId : null,
-      email: payload?.email ?? payload?.sub ?? emailFallback ?? null,
+      id: payload?.userId ?? payload?.sub ?? null,
+      email: payload?.email ?? emailFallback ?? null,
       username: payload?.username ?? null,
     },
   };

@@ -5,6 +5,7 @@ import { registerUser, errorMessage } from "../../lib/api.js";
 import ErrorBanner from "../ui/ErrorBanner.jsx";
 
 export default function RegisterForm() {
+  const [username, setUsername] = createSignal("");
   const [email, setEmail] = createSignal("");
   const [password, setPassword] = createSignal("");
   const [confirmPassword, setConfirmPassword] = createSignal("");
@@ -16,6 +17,10 @@ export default function RegisterForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    if (!username().trim()) {
+      setError("Bitte einen Benutzernamen angeben.");
+      return;
+    }
     if (password().length < 8) {
       setError("Das Passwort muss mindestens 8 Zeichen lang sein.");
       return;
@@ -26,7 +31,7 @@ export default function RegisterForm() {
     }
     setLoading(true);
     try {
-      await registerUser(email(), password());
+      await registerUser(username(), email(), password());
       window.location.href = "/login?registered=true";
     } catch (err) {
       setError(errorMessage(err, { 400: "Diese E-Mail ist bereits registriert." }));
@@ -45,6 +50,15 @@ export default function RegisterForm() {
       </p>
 
       <form class="space-y-5" onSubmit={handleSubmit}>
+        <div>
+          <label class="block text-sm font-bold text-[#111111] mb-1.5" for="username">Benutzername</label>
+          <input
+            id="username" type="text" required
+            class="input-field"
+            value={username()}
+            onInput={(e) => setUsername(e.target.value)}
+          />
+        </div>
         <div>
           <label class="block text-sm font-bold text-[#111111] mb-1.5" for="email">E-Mail</label>
           <input
