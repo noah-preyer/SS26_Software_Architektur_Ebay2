@@ -1,7 +1,6 @@
 package group5.ebay2.auth;
 
 import org.slf4j.Logger;
-import java.util.UUID;
 
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -44,11 +43,16 @@ public class AuthService {
             throw new AuthExceptions.UserAlreadyExistsException("Email already exists");
         }
 
-        if (userRepository.existsByUsername(request.username())) {
+        // frontend schickt keinen username, also aus dem lokalteil der email ableiten.
+        String username = (request.username() == null || request.username().isBlank())
+                ? request.email().split("@")[0]
+                : request.username();
+
+        if (userRepository.existsByUsername(username)) {
             throw new AuthExceptions.UserAlreadyExistsException("Username already exists");
         }
         User user = new User(
-                request.username(),
+                username,
                 request.email(),
                 passwordEncoder.encode(request.password())
         );
@@ -69,8 +73,10 @@ public class AuthService {
         );
     }
     public AuthDto.Response authUser(AuthDto.Request request) {
+        // findByEmailOrUsername erlaubt nebenbei auch login per username, falls jemand
+        // seinen username statt der email ins email-feld eintippt.
         User user = userRepository
-                .findByEmailOrUsername(request.emailOrUsername(), request.emailOrUsername())
+                .findByEmailOrUsername(request.email(), request.email())
                 .orElseThrow(() -> new AuthExceptions.InvalidPasswordException(
                         "Invalid email/username or password"
                 ));
@@ -85,10 +91,13 @@ public class AuthService {
 
         return new AuthDto.Response(
                 accessToken,
+                "Bearer",
+                jwtService.getExpirationSeconds(),
+                new AuthDto.Response.UserInfo(user.getId(), user.getEmail(), user.getUsername()),
                 "Authentication successful"
         );
     }
-    public void deleteUser(UUID id) {
+    public void deleteUser(Long id) {
         log.info("Deleting user with id: {}", id);
 
         if (!userRepository.existsById(id)) {
