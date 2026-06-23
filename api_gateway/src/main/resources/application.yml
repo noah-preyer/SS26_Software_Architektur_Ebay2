@@ -15,43 +15,31 @@ spring:
           uri: http://user-service:8080
           predicates:
             - Path=/user/**
-          filters:
-           - StripPrefix=1
 
         - id: product-service
           uri: http://product-service:8082
           predicates:
             - Path=/products/**
-          filters:
-            - StripPrefix=1
 
         - id: order-service
           uri: http://order-service:8080
           predicates:
             - Path=/order/**
-          filters:
-            - StripPrefix=1
 
         - id: payment-service
           uri: http://payment-service:8080
           predicates:
             - Path=/payment/**
-          filters:
-            - StripPrefix=1
 
         - id: notification-service
           uri: http://notification-service:8080
           predicates:
             - Path=/notification/**
-          filters:
-            - StripPrefix=1
 
         - id: image-service
           uri: http://image-service:8080
           predicates:
             - Path=/image/**
-          filters:
-            - StripPrefix=1
 
 server:
   port: 8080
