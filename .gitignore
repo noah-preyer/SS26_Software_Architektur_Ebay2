@@ -1,4 +1,4 @@
 .idea
-user_service/target
+**/target/
 **/opencode.yml
 docker/opencode.yml
