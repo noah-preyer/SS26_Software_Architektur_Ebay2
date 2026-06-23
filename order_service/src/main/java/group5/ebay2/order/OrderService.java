@@ -63,7 +63,7 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
-    public List<OrderDto.Response> getOrdersByUser(UUID userId) {
+    public List<OrderDto.Response> getOrdersByUser(Long userId) {
         return orderRepository.findByUserIdOrderByCreatedAtDesc(userId).stream()
                 .map(this::toOrderResponse)
                 .toList();

@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class UserService {
@@ -72,12 +71,12 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public UserProfileDto.Response getUser(UUID id) {
+    public UserProfileDto.Response getUser(Long id) {
         return toResponse(findUserById(id));
     }
 
     @Transactional(readOnly = true)
-    public UserProfileDto.Response getUserByAuthUserId(UUID authUserId) {
+    public UserProfileDto.Response getUserByAuthUserId(Long authUserId) {
         return toResponse(userProfileRepository.findByAuthUserId(authUserId)
                 .orElseThrow(() -> new UserExceptions.UserNotFoundException(
                         "User not found with authUserId: " + authUserId)));
@@ -98,7 +97,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserProfileDto.Response updateUser(UUID id, UserProfileDto.UpdateRequest request) {
+    public UserProfileDto.Response updateUser(Long id, UserProfileDto.UpdateRequest request) {
         UserProfile user = findUserById(id);
 
         if (request.username() != null && !request.username().equals(user.getUsername())) {
@@ -138,14 +137,14 @@ public class UserService {
     }
 
     @Transactional
-    public void deleteUser(UUID id) {
+    public void deleteUser(Long id) {
         UserProfile user = findUserById(id);
         userProfileRepository.delete(user);
         log.info("Deleted user with id: {}", id);
     }
 
     @Transactional
-    public AddressDto.Response addAddress(UUID userId, AddressDto.Request request) {
+    public AddressDto.Response addAddress(Long userId, AddressDto.Request request) {
         UserProfile user = findUserById(userId);
         AddressType addressType = findAddressType(request.addressTypeCode());
 
@@ -171,7 +170,7 @@ public class UserService {
     }
 
     @Transactional
-    public AddressDto.Response updateAddress(UUID addressId, AddressDto.Request request) {
+    public AddressDto.Response updateAddress(Long addressId, AddressDto.Request request) {
         Address address = findAddressById(addressId);
         AddressType addressType = findAddressType(request.addressTypeCode());
 
@@ -196,7 +195,7 @@ public class UserService {
     }
 
     @Transactional
-    public void removeAddress(UUID addressId) {
+    public void removeAddress(Long addressId) {
         Address address = findAddressById(addressId);
         address.getUserProfile().removeAddress(address);
         addressRepository.delete(address);
@@ -204,7 +203,7 @@ public class UserService {
     }
 
     @Transactional
-    public AddressDto.Response setDefaultAddress(UUID userId, UUID addressId) {
+    public AddressDto.Response setDefaultAddress(Long userId, Long addressId) {
         UserProfile user = findUserById(userId);
         Address address = findAddressById(addressId);
 
@@ -230,7 +229,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public List<AddressDto.Response> getAddresses(UUID userId) {
+    public List<AddressDto.Response> getAddresses(Long userId) {
         findUserById(userId);
         return addressRepository.findByUserProfileId(userId).stream()
                 .map(this::toResponse)
@@ -238,16 +237,16 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public AddressDto.Response getAddress(UUID addressId) {
+    public AddressDto.Response getAddress(Long addressId) {
         return toResponse(findAddressById(addressId));
     }
 
-    private UserProfile findUserById(UUID id) {
+    private UserProfile findUserById(Long id) {
         return userProfileRepository.findById(id)
                 .orElseThrow(() -> new UserExceptions.UserNotFoundException("User not found: " + id));
     }
 
-    private Address findAddressById(UUID id) {
+    private Address findAddressById(Long id) {
         return addressRepository.findById(id)
                 .orElseThrow(() -> new UserExceptions.AddressNotFoundException("Address not found: " + id));
     }

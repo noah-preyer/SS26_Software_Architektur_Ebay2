@@ -4,8 +4,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
-import java.util.UUID;
-
 @Component
 public class UserServiceClient {
 
@@ -15,7 +13,7 @@ public class UserServiceClient {
         this.restClient = RestClient.builder().baseUrl(userServiceUrl).build();
     }
 
-    public void createProfile(UUID authUserId, String username, String email) {
+    public void createProfile(Long authUserId, String username, String email) {
         restClient.post()
                 .uri("/user")
                 .body(new CreateProfileRequest(authUserId, username, email, null, null, null, null))
@@ -24,7 +22,7 @@ public class UserServiceClient {
     }
 
     record CreateProfileRequest(
-            UUID authUserId,
+            Long authUserId,
             String username,
             String email,
             String firstName,

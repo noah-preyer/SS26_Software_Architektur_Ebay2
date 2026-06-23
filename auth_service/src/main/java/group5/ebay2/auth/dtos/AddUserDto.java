@@ -3,14 +3,13 @@ package group5.ebay2.auth.dtos;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import java.util.UUID;
 
 
 public class AddUserDto {
 
     public record Request(
 
-            @NotBlank(message = "Username is required")
+            // optional: frontend schickt keinen username, AuthService leitet ihn dann aus der email ab.
             String username,
 
             @NotBlank(message = "Email is required")
@@ -24,7 +23,7 @@ public class AddUserDto {
     }
 
     public record Response(
-            UUID id,
+            Long id,
             String username,
             String email
     ) {

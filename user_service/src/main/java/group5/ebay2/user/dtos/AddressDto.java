@@ -5,8 +5,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-import java.util.UUID;
-
 public class AddressDto {
 
     public record Request(
@@ -41,7 +39,7 @@ public class AddressDto {
     }
 
     public record Response(
-            UUID id,
+            Long id,
             String street,
             String houseNumber,
             String postalCode,

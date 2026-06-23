@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public interface OrderRepository extends JpaRepository<Order, UUID> {
 
-    List<Order> findByUserIdOrderByCreatedAtDesc(UUID userId);
+    List<Order> findByUserIdOrderByCreatedAtDesc(Long userId);
 
     List<Order> findByStatusAndUpdatedAtBefore(String status, Instant updatedAt);
 }

@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS roles (
     );
 
 CREATE TABLE IF NOT EXISTS users (
-                                     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                                     id BIGSERIAL PRIMARY KEY,
     username VARCHAR(100) NOT NULL UNIQUE,
     email VARCHAR(255) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
@@ -32,7 +32,7 @@ INSERT INTO users (
 )
 VALUES
     (
-        '11111111-1111-1111-1111-111111111111',
+        1,
         'admin',
         'admin@example.com',
         '$2y$10$a6nPWSEVHozK4MNcy.2wCOHbbPfGMwuxZl13GTRd/qUu3d.juJheG',
@@ -41,7 +41,7 @@ VALUES
         NOW()
     ),
     (
-        '22222222-2222-2222-2222-222222222222',
+        2,
         'lukasw',
         'lukas.weber@example.com',
         '$2y$10$caGNCMDpQ5HSoQbgWCVEheeYJQ3IbUF0/CFsc3znNBHW38fPIh5FK',
@@ -50,3 +50,7 @@ VALUES
         NOW()
     )
     ON CONFLICT (email) DO NOTHING;
+
+-- BIGSERIAL-Sequenz an die expliziten Seed-IDs anpassen, sonst kollidiert der nächste
+-- per Anwendung registrierte User mit id=1/2.
+SELECT setval(pg_get_serial_sequence('users', 'id'), GREATEST((SELECT MAX(id) FROM users), 1));

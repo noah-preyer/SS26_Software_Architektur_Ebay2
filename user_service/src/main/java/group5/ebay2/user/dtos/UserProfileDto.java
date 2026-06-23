@@ -5,14 +5,12 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-import java.util.UUID;
-
 public class UserProfileDto {
 
     public record Request(
 
             @NotNull(message = "Auth user ID is required")
-            UUID authUserId,
+            Long authUserId,
 
             @NotBlank(message = "Username is required")
             @Size(max = 50, message = "Username must not exceed 50 characters")
@@ -63,8 +61,8 @@ public class UserProfileDto {
     }
 
     public record Response(
-            UUID id,
-            UUID authUserId,
+            Long id,
+            Long authUserId,
             String username,
             String email,
             String firstName,
