@@ -13,7 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.UUID;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -21,6 +21,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @SpringBootTest
 @Transactional
 class UserServiceTest {
+
+    private static final AtomicLong ID_SEQUENCE = new AtomicLong(1);
 
     @Autowired
     private UserService userService;
@@ -35,14 +37,18 @@ class UserServiceTest {
     private AddressTypeRepository addressTypeRepository;
 
     private UserProfileDto.Request validRequest;
-    private UUID authUserId;
+    private Long authUserId;
+
+    private static Long nextId() {
+        return ID_SEQUENCE.getAndIncrement();
+    }
 
     @BeforeEach
     void setUp() {
         addressRepository.deleteAll();
         userProfileRepository.deleteAll();
 
-        authUserId = UUID.randomUUID();
+        authUserId = nextId();
         validRequest = new UserProfileDto.Request(
                 authUserId,
                 "testuser",
@@ -73,7 +79,7 @@ class UserServiceTest {
         userService.addUser(validRequest);
 
         UserProfileDto.Request duplicate = new UserProfileDto.Request(
-                UUID.randomUUID(),
+                nextId(),
                 "otheruser",
                 "test@example.com",
                 "Other",
@@ -92,7 +98,7 @@ class UserServiceTest {
         userService.addUser(validRequest);
 
         UserProfileDto.Request duplicate = new UserProfileDto.Request(
-                UUID.randomUUID(),
+                nextId(),
                 "testuser",
                 "other@example.com",
                 "Other",
@@ -136,7 +142,7 @@ class UserServiceTest {
 
     @Test
     void getUser_shouldThrowOnNotFound() {
-        assertThatThrownBy(() -> userService.getUser(UUID.randomUUID()))
+        assertThatThrownBy(() -> userService.getUser(nextId()))
                 .isInstanceOf(UserExceptions.UserNotFoundException.class)
                 .hasMessageContaining("User not found");
     }
@@ -151,7 +157,7 @@ class UserServiceTest {
 
     @Test
     void getUserByAuthUserId_shouldThrowOnNotFound() {
-        assertThatThrownBy(() -> userService.getUserByAuthUserId(UUID.randomUUID()))
+        assertThatThrownBy(() -> userService.getUserByAuthUserId(nextId()))
                 .isInstanceOf(UserExceptions.UserNotFoundException.class);
     }
 
@@ -221,7 +227,7 @@ class UserServiceTest {
         UserProfileDto.Response user1 = userService.addUser(validRequest);
 
         userService.addUser(new UserProfileDto.Request(
-                UUID.randomUUID(),
+                nextId(),
                 "otheruser",
                 "other@example.com",
                 "Other",
@@ -249,7 +255,7 @@ class UserServiceTest {
 
     @Test
     void deleteUser_shouldThrowOnNotFound() {
-        assertThatThrownBy(() -> userService.deleteUser(UUID.randomUUID()))
+        assertThatThrownBy(() -> userService.deleteUser(nextId()))
                 .isInstanceOf(UserExceptions.UserNotFoundException.class);
     }
 

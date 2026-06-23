@@ -13,8 +13,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -135,7 +133,7 @@ class AuthServiceTest {
 
     @Test
     void deleteUser_shouldThrowOnNotFound() {
-        assertThatThrownBy(() -> authService.deleteUser(UUID.randomUUID()))
+        assertThatThrownBy(() -> authService.deleteUser(987654321L))
                 .isInstanceOf(AuthExceptions.UserNotFoundException.class)
                 .hasMessageContaining("User not found");
     }
