@@ -25,8 +25,11 @@ export default function LoginForm() {
     setError("");
     setShowDemoButton(false);
     setLoading(true);
+    const fd = new FormData(e.target);
+    const emailVal = fd.get("email") || email();
+    const passwordVal = fd.get("password") || password();
     try {
-      await loginUser(email(), password());
+      await loginUser(emailVal, passwordVal);
       window.location.href = safeRedirect();
     } catch (err) {
       setError(errorMessage(err, { 400: "E-Mail oder Passwort falsch." }));
@@ -55,7 +58,7 @@ export default function LoginForm() {
         <div>
           <label class="block text-sm font-bold text-[#111111] mb-1.5" for="email">E-Mail</label>
           <input
-            id="email" type="email" required
+            id="email" name="email" type="email" required
             class="input-field"
             value={email()}
             onInput={(e) => setEmail(e.target.value)}
@@ -64,7 +67,7 @@ export default function LoginForm() {
         <div>
           <label class="block text-sm font-bold text-[#111111] mb-1.5" for="password">Passwort</label>
           <input
-            id="password" type="password" required minLength="8"
+            id="password" name="password" type="password" required minLength="8"
             class="input-field"
             value={password()}
             onInput={(e) => setPassword(e.target.value)}

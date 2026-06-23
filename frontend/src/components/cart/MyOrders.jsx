@@ -4,11 +4,12 @@ import { createSignal, createResource, createMemo, onMount, For, Show } from "so
 
 const PAGE_SIZE = 8;
 import { getProduct, errorMessage } from "../../lib/api.js";
-import { getPurchases } from "../../lib/cart.js";
+import { getPurchases, getOrderId } from "../../lib/cart.js";
 import { PRODUCT_SORT_OPTIONS, filterProducts, sortProducts } from "../../lib/productFilters.js";
 import ProductListItem from "../products/ProductListItem.jsx";
 import SearchSortBar from "../products/SearchSortBar.jsx";
 import ErrorBanner from "../ui/ErrorBanner.jsx";
+import OrderStatusBadge from "./OrderStatusBadge.jsx";
 
 async function loadOrders(ids) {
   const items = [];
@@ -74,7 +75,10 @@ export default function MyOrders() {
           <div class="space-y-4">
             <For each={visible()}>
               {(product) => (
-                <ProductListItem product={product}>
+                <ProductListItem
+                  product={product}
+                  badge={<OrderStatusBadge orderId={getOrderId(product.id)} />}
+                >
                   <a href={`/product/${product.id}`} class="btn-primary">
                     Ansehen
                   </a>

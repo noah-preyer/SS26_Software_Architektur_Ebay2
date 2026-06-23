@@ -14,6 +14,9 @@ services:
     ports:
       - "4321:4321"
     environment:
+      # Default: dummy test-backend in diesem Compose-Projekt.
+      # Fürs echte Backend (root docker-compose.yml, separat gestartet) überschreiben:
+      #   BACKEND_TARGET_OVERRIDE=http://host.docker.internal:8080 docker compose up
       BACKEND_TARGET: ${BACKEND_TARGET_OVERRIDE:-http://test-backend:8090}
     extra_hosts:
       - "host.docker.internal:host-gateway"

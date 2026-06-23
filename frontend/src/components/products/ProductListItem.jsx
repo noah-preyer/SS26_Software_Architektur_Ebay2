@@ -48,6 +48,7 @@ export default function ProductListItem(props) {
                   {isSold() ? "Verkauft" : "Verfügbar"}
                 </span>
               </Show>
+              {props.badge}
             </div>
 
             <a href={href()} class="block shrink-0">

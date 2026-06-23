@@ -161,3 +161,10 @@ export async function getSeller(sellerId) {
     return null;
   }
 }
+
+// nur fürs Demo-Status-Badge gedacht, daher ohne mock-fallback: schlägt der call fehl
+// (z.b. kein order_service erreichbar), bleibt das badge einfach aus.
+// gateway stuft GET /order/** nicht als öffentlich ein, also braucht es den auth-header.
+export async function getOrder(orderId) {
+  return apiFetch(`/order/${orderId}`, { headers: { ...authHeader() } });
+}
