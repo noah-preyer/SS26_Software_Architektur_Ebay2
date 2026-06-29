@@ -1,0 +1,31 @@
+services:
+  user-service:
+    build: .
+    ports:
+      - "8082:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://user-db:5432/user_service
+      SPRING_DATASOURCE_USERNAME: user_user
+      SPRING_DATASOURCE_PASSWORD: app_password
+    depends_on:
+      user-db:
+        condition: service_healthy
+
+  user-db:
+    image: postgres:16
+    container_name: user-service-db
+    environment:
+      POSTGRES_USER: user_user
+      POSTGRES_PASSWORD: app_password
+      POSTGRES_DB: user_service
+    volumes:
+      - user_pgdata:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user_user -d user_service"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  user_pgdata:

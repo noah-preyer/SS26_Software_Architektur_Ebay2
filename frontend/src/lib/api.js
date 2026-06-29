@@ -17,6 +17,7 @@ async function apiFetch(path, options = {}) {
   const method = options.method ?? "GET";
 
   console.log(`[apiFetch] → ${method} ${url}`, options.body ?? "");
+  console.log(`[apiFetch] Full URL: ${url}`);
 
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT);

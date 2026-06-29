@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: group5.ebay2.auth.AuthServiceTest
--------------------------------------------------------------------------------
-Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.142 s -- in group5.ebay2.auth.AuthServiceTest

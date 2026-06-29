@@ -1,11 +1,11 @@
 include:
   - product_service/docker-compose.yml
-  - docker/auth-service.yaml
-  - docker/notification-service.yml
-  - docker/payment-service.yml
-  - docker/order-service.yml
-  - docker/user-service.yml
-  - docker/image-service.yml
+  - auth_service/docker-compose.yml
+  #- docker/notification-service.yml
+  #- docker/payment-service.yml
+  - order_service/docker-compose.yml
+  - user_service/docker-compose.yml
+  #- docker/image-service.yml
 
 services:
   api-gateway:
@@ -18,6 +18,6 @@ services:
       - auth-service
       - user-service
       - order-service
-      - payment-service
-      - notification-service
-      - image-service
+      #- payment-service
+      #- notification-service
+      #- image-service
