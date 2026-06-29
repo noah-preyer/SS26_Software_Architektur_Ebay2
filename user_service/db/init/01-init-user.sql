@@ -8,9 +8,9 @@ CREATE TABLE IF NOT EXISTS user_profiles (
     username VARCHAR(50) NOT NULL UNIQUE,
     email VARCHAR(150) NOT NULL UNIQUE,
 
-    first_name VARCHAR(100) NOT NULL,
-    last_name VARCHAR(100) NOT NULL,
-    phone_number VARCHAR(30) NOT NULL,
+    first_name VARCHAR(100),
+    last_name VARCHAR(100),
+    phone_number VARCHAR(30),
 
     profile_image_object_key VARCHAR(500),
 
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS address_types (
 );
 
 CREATE TABLE IF NOT EXISTS addresses (
-    id BIGSERIAL PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
     street VARCHAR(150) NOT NULL,
     house_number VARCHAR(20) NOT NULL,

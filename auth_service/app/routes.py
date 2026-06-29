@@ -1,3 +1,4 @@
+import os
 import traceback
 import uuid
 from datetime import datetime, timezone
@@ -89,18 +90,41 @@ def register_routes(app):
         finally:
             conn.close()
 
+    @app.route("/user/<user_id>", methods=["GET"])
+    def get_user(user_id):
+        conn = get_db()
+        try:
+            with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+                cur.execute(
+                    "SELECT id, username, email, created_at FROM users WHERE id = %s",
+                    (user_id,),
+                )
+                user = cur.fetchone()
+            if not user:
+                return jsonify({"message": "User not found"}), 404
+            return jsonify({
+                "id": str(user["id"]),
+                "username": user["username"],
+                "email": user["email"],
+            }), 200
+        finally:
+            conn.close()
+
     @app.route("/delete/<user_id>", methods=["DELETE"])
     def delete_user(user_id):
         auth_header = request.headers.get("Authorization", "")
-        if not auth_header.startswith("Bearer "):
+        internal_key = request.headers.get("X-Internal-Key", "")
+
+        if internal_key == os.getenv("INTERNAL_API_KEY", "internal-key-dev"):
+            pass
+        elif auth_header.startswith("Bearer "):
+            payload = verify_token(auth_header.split(" ", 1)[1])
+            if payload is None:
+                return jsonify({"message": "Invalid or expired token"}), 401
+            if payload.get("userId") != user_id:
+                return jsonify({"message": "You can only delete your own account"}), 403
+        else:
             return jsonify({"message": "Missing or invalid Authorization header"}), 401
-
-        payload = verify_token(auth_header.split(" ", 1)[1])
-        if payload is None:
-            return jsonify({"message": "Invalid or expired token"}), 401
-
-        if payload.get("userId") != user_id:
-            return jsonify({"message": "You can only delete your own account"}), 403
 
         conn = get_db()
         try:

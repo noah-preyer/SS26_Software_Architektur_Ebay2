@@ -12,7 +12,7 @@ const BASE_URL = import.meta.env.SSR
   : "/api";
 const TIMEOUT = 5000;
 
-async function apiFetch(path, options = {}) {
+export async function apiFetch(path, options = {}) {
   const url = BASE_URL + path;
   const method = options.method ?? "GET";
 
@@ -153,30 +153,25 @@ export async function loginUser(emailOrUsername, password) {
   return session.user;
 }
 
-export async function registerUser(username, email, password, firstName, lastName) {
-  const authUser = await apiFetch("/auth/register", {
+export async function registerUser(username, email, password, firstName, lastName, phoneNumber, address) {
+  await apiFetch("/user", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, email, password }),
+    body: JSON.stringify({
+      username,
+      email,
+      password,
+      firstName: firstName || null,
+      lastName: lastName || null,
+      phoneNumber: phoneNumber || null,
+      profileImageObjectKey: null,
+      addressStreet: address?.street || null,
+      addressHouseNumber: address?.houseNumber || null,
+      addressPostalCode: address?.postalCode || null,
+      addressCity: address?.city || null,
+      addressCountry: address?.country || null,
+    }),
   });
-
-  try {
-    await apiFetch("/user", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        authUserId: authUser.id,
-        username,
-        email,
-        firstName: firstName || null,
-        lastName: lastName || null,
-        phoneNumber: null,
-        profileImageObjectKey: null,
-      }),
-    });
-  } catch {
-    console.warn("[apiFetch] User profile creation failed — auth user already exists");
-  }
 }
 
 // wenn GET /user/{id} fehlt oder fehlschlägt, zeigt die detailseite einfach "unbekannt", kein absturz.

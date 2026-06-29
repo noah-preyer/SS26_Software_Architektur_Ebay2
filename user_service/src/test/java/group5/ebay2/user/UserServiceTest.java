@@ -10,6 +10,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -17,6 +20,9 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @Transactional
@@ -34,8 +40,25 @@ class UserServiceTest {
     @Autowired
     private AddressTypeRepository addressTypeRepository;
 
+    @Autowired
+    private AuthServiceClient authServiceClient;
+
     private UserProfileDto.Request validRequest;
     private UUID authUserId;
+
+    @TestConfiguration
+    static class MockConfig {
+        @Bean
+        @Primary
+        AuthServiceClient mockAuthClient() {
+            AuthServiceClient client = mock(AuthServiceClient.class);
+            when(client.createUser(any(), any(), any()))
+                    .thenReturn(new AuthServiceClient.AuthUser(UUID.randomUUID(), "testuser", "test@example.com"));
+            when(client.getUser(any()))
+                    .thenReturn(new AuthServiceClient.AuthUser(UUID.randomUUID(), "testuser", "test@example.com"));
+            return client;
+        }
+    }
 
     @BeforeEach
     void setUp() {
@@ -43,14 +66,20 @@ class UserServiceTest {
         userProfileRepository.deleteAll();
 
         authUserId = UUID.randomUUID();
+        when(authServiceClient.createUser(any(), any(), any()))
+                .thenReturn(new AuthServiceClient.AuthUser(authUserId, "testuser", "test@example.com"));
+        when(authServiceClient.getUser(any()))
+                .thenReturn(new AuthServiceClient.AuthUser(authUserId, "testuser", "test@example.com"));
+
         validRequest = new UserProfileDto.Request(
-                authUserId,
                 "testuser",
                 "test@example.com",
+                "password123",
                 "Test",
                 "User",
                 "+491234567890",
-                null
+                null,
+                null, null, null, null, null
         );
     }
 
@@ -73,13 +102,14 @@ class UserServiceTest {
         userService.addUser(validRequest);
 
         UserProfileDto.Request duplicate = new UserProfileDto.Request(
-                UUID.randomUUID(),
                 "otheruser",
                 "test@example.com",
+                "password123",
                 "Other",
                 "User",
                 "+499999999999",
-                null
+                null,
+                null, null, null, null, null
         );
 
         assertThatThrownBy(() -> userService.addUser(duplicate))
@@ -92,37 +122,19 @@ class UserServiceTest {
         userService.addUser(validRequest);
 
         UserProfileDto.Request duplicate = new UserProfileDto.Request(
-                UUID.randomUUID(),
                 "testuser",
                 "other@example.com",
+                "password123",
                 "Other",
                 "User",
                 "+499999999999",
-                null
+                null,
+                null, null, null, null, null
         );
 
         assertThatThrownBy(() -> userService.addUser(duplicate))
                 .isInstanceOf(UserExceptions.UserAlreadyExistsException.class)
                 .hasMessageContaining("Username already exists");
-    }
-
-    @Test
-    void addUser_shouldThrowOnDuplicateAuthUserId() {
-        userService.addUser(validRequest);
-
-        UserProfileDto.Request duplicate = new UserProfileDto.Request(
-                authUserId,
-                "otheruser",
-                "other@example.com",
-                "Other",
-                "User",
-                "+499999999999",
-                null
-        );
-
-        assertThatThrownBy(() -> userService.addUser(duplicate))
-                .isInstanceOf(UserExceptions.UserAlreadyExistsException.class)
-                .hasMessageContaining("Auth user ID already exists");
     }
 
     @Test
@@ -221,13 +233,14 @@ class UserServiceTest {
         UserProfileDto.Response user1 = userService.addUser(validRequest);
 
         userService.addUser(new UserProfileDto.Request(
-                UUID.randomUUID(),
                 "otheruser",
                 "other@example.com",
+                "password123",
                 "Other",
                 "User",
                 "+499999999999",
-                null
+                null,
+                null, null, null, null, null
         ));
 
         UserProfileDto.UpdateRequest update = new UserProfileDto.UpdateRequest(

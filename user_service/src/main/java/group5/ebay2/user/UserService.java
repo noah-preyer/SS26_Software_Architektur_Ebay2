@@ -20,13 +20,16 @@ public class UserService {
     private final UserProfileRepository userProfileRepository;
     private final AddressRepository addressRepository;
     private final AddressTypeRepository addressTypeRepository;
+    private final AuthServiceClient authServiceClient;
 
     public UserService(UserProfileRepository userProfileRepository,
                        AddressRepository addressRepository,
-                       AddressTypeRepository addressTypeRepository) {
+                       AddressTypeRepository addressTypeRepository,
+                       AuthServiceClient authServiceClient) {
         this.userProfileRepository = userProfileRepository;
         this.addressRepository = addressRepository;
         this.addressTypeRepository = addressTypeRepository;
+        this.authServiceClient = authServiceClient;
     }
 
     @Transactional
@@ -45,30 +48,60 @@ public class UserService {
             );
         }
 
-        if (userProfileRepository.existsByAuthUserId(request.authUserId())) {
-            throw new UserExceptions.UserAlreadyExistsException(
-                    "Auth user ID already exists: " + request.authUserId()
+        AuthServiceClient.AuthUser authUser;
+        try {
+            authUser = authServiceClient.createUser(
+                    request.username(), request.email(), request.password());
+        } catch (Exception e) {
+            log.error("Failed to create auth user: {}", e.getMessage());
+            throw new RuntimeException("Registration failed: could not create auth user");
+        }
+
+        UUID authUserId = authUser.id();
+
+        try {
+            UserProfile userProfile = new UserProfile(authUserId, request.username(), request.email());
+            userProfile.updateProfile(
+                    request.firstName(),
+                    request.lastName(),
+                    request.phoneNumber()
             );
+            if (request.profileImageObjectKey() != null) {
+                userProfile.updateProfileImage(request.profileImageObjectKey());
+            }
+
+            UserProfile saved = userProfileRepository.save(userProfile);
+
+            if (request.addressStreet() != null && !request.addressStreet().isBlank()) {
+                AddressType addressType = addressTypeRepository.findByCodeAndActiveTrue("SHIPPING")
+                        .orElse(null);
+                if (addressType != null) {
+                    Address address = new Address(
+                            request.addressStreet(),
+                            request.addressHouseNumber(),
+                            request.addressPostalCode(),
+                            request.addressCity(),
+                            request.addressCountry(),
+                            addressType,
+                            true
+                    );
+                    saved.addAddress(address);
+                    addressRepository.save(address);
+                }
+            }
+
+            log.info("Created user with id: {}, authUserId: {}", saved.getId(), saved.getAuthUserId());
+
+            return toResponse(saved);
+        } catch (Exception e) {
+            log.error("Failed to save user profile, rolling back auth user: {}", e.getMessage());
+            try {
+                authServiceClient.deleteUser(authUserId);
+            } catch (Exception ex) {
+                log.error("Failed to delete auth user {} during rollback: {}", authUserId, ex.getMessage());
+            }
+            throw e;
         }
-
-        UserProfile userProfile = new UserProfile(
-                request.authUserId(),
-                request.username(),
-                request.email()
-        );
-        userProfile.updateProfile(
-                request.firstName(),
-                request.lastName(),
-                request.phoneNumber()
-        );
-        if (request.profileImageObjectKey() != null) {
-            userProfile.updateProfileImage(request.profileImageObjectKey());
-        }
-
-        UserProfile saved = userProfileRepository.save(userProfile);
-        log.info("Created user with id: {}, authUserId: {}", saved.getId(), saved.getAuthUserId());
-
-        return toResponse(saved);
     }
 
     @Transactional(readOnly = true)
@@ -268,11 +301,18 @@ public class UserService {
     }
 
     private UserProfileDto.Response toResponse(UserProfile user) {
+        AuthServiceClient.AuthUser authUser = null;
+        try {
+            authUser = authServiceClient.getUser(user.getAuthUserId());
+        } catch (Exception e) {
+            log.warn("Failed to fetch auth data for authUserId={}: {}", user.getAuthUserId(), e.getMessage());
+        }
+
         return new UserProfileDto.Response(
                 user.getId(),
                 user.getAuthUserId(),
-                user.getUsername(),
-                user.getEmail(),
+                authUser != null ? authUser.username() : user.getUsername(),
+                authUser != null ? authUser.email() : user.getEmail(),
                 user.getFirstName(),
                 user.getLastName(),
                 user.getPhoneNumber(),

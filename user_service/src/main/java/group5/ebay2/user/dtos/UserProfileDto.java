@@ -11,9 +11,6 @@ public class UserProfileDto {
 
     public record Request(
 
-            @NotNull(message = "Auth user ID is required")
-            UUID authUserId,
-
             @NotBlank(message = "Username is required")
             @Size(max = 50, message = "Username must not exceed 50 characters")
             String username,
@@ -22,6 +19,10 @@ public class UserProfileDto {
             @Email(message = "Email must be valid")
             @Size(max = 150, message = "Email must not exceed 150 characters")
             String email,
+
+            @NotBlank(message = "Password is required")
+            @Size(min = 8, message = "Password must be at least 8 characters")
+            String password,
 
             @Size(max = 100, message = "First name must not exceed 100 characters")
             String firstName,
@@ -33,7 +34,22 @@ public class UserProfileDto {
             String phoneNumber,
 
             @Size(max = 500, message = "Profile image object key must not exceed 500 characters")
-            String profileImageObjectKey
+            String profileImageObjectKey,
+
+            @Size(max = 150)
+            String addressStreet,
+
+            @Size(max = 20)
+            String addressHouseNumber,
+
+            @Size(max = 20)
+            String addressPostalCode,
+
+            @Size(max = 100)
+            String addressCity,
+
+            @Size(max = 100)
+            String addressCountry
 
     ) {
     }

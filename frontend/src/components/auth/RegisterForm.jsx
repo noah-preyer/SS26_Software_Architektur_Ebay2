@@ -9,6 +9,12 @@ export default function RegisterForm() {
   const [email, setEmail] = createSignal("");
   const [firstName, setFirstName] = createSignal("");
   const [lastName, setLastName] = createSignal("");
+  const [phoneNumber, setPhoneNumber] = createSignal("");
+  const [addressStreet, setAddressStreet] = createSignal("");
+  const [addressHouseNumber, setAddressHouseNumber] = createSignal("");
+  const [addressPostalCode, setAddressPostalCode] = createSignal("");
+  const [addressCity, setAddressCity] = createSignal("");
+  const [addressCountry, setAddressCountry] = createSignal("");
   const [password, setPassword] = createSignal("");
   const [confirmPassword, setConfirmPassword] = createSignal("");
   const [error, setError] = createSignal("");
@@ -33,7 +39,13 @@ export default function RegisterForm() {
     }
     setLoading(true);
     try {
-      await registerUser(username(), email(), password(), firstName(), lastName());
+      await registerUser(username(), email(), password(), firstName(), lastName(), phoneNumber(), {
+        street: addressStreet(),
+        houseNumber: addressHouseNumber(),
+        postalCode: addressPostalCode(),
+        city: addressCity(),
+        country: addressCountry(),
+      });
       window.location.href = "/login?registered=true";
     } catch (err) {
       setError(errorMessage(err, { 400: "Diese E-Mail ist bereits registriert." }));
@@ -90,6 +102,44 @@ export default function RegisterForm() {
             />
           </div>
         </div>
+        <div>
+          <label class="block text-sm font-bold text-[#111111] mb-1.5" for="phoneNumber">Telefon (optional)</label>
+          <input
+            id="phoneNumber" type="tel"
+            class="input-field"
+            value={phoneNumber()}
+            onInput={(e) => setPhoneNumber(e.target.value)}
+          />
+        </div>
+
+        <div class="pt-2">
+          <p class="text-xs font-bold text-[#666] uppercase tracking-wider mb-3">Adresse (optional)</p>
+          <div class="grid grid-cols-3 gap-3">
+            <div class="col-span-2">
+              <label class="block text-sm font-bold text-[#111111] mb-1.5" for="addressStreet">Straße</label>
+              <input id="addressStreet" type="text" class="input-field" value={addressStreet()} onInput={(e) => setAddressStreet(e.target.value)} />
+            </div>
+            <div>
+              <label class="block text-sm font-bold text-[#111111] mb-1.5" for="addressHouseNumber">Nr.</label>
+              <input id="addressHouseNumber" type="text" class="input-field" value={addressHouseNumber()} onInput={(e) => setAddressHouseNumber(e.target.value)} />
+            </div>
+          </div>
+          <div class="grid grid-cols-3 gap-3 mt-3">
+            <div>
+              <label class="block text-sm font-bold text-[#111111] mb-1.5" for="addressPostalCode">PLZ</label>
+              <input id="addressPostalCode" type="text" class="input-field" value={addressPostalCode()} onInput={(e) => setAddressPostalCode(e.target.value)} />
+            </div>
+            <div>
+              <label class="block text-sm font-bold text-[#111111] mb-1.5" for="addressCity">Stadt</label>
+              <input id="addressCity" type="text" class="input-field" value={addressCity()} onInput={(e) => setAddressCity(e.target.value)} />
+            </div>
+            <div>
+              <label class="block text-sm font-bold text-[#111111] mb-1.5" for="addressCountry">Land</label>
+              <input id="addressCountry" type="text" class="input-field" value={addressCountry()} onInput={(e) => setAddressCountry(e.target.value)} />
+            </div>
+          </div>
+        </div>
+
         <div>
           <label class="block text-sm font-bold text-[#111111] mb-1.5" for="password">Passwort</label>
           <input

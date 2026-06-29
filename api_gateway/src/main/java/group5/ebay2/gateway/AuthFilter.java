@@ -67,6 +67,10 @@ public class AuthFilter implements GlobalFilter, Ordered {
             return true;
         }
 
+        if ("POST".equals(method) && path.startsWith("/user")) {
+            return true;
+        }
+
         if ("GET".equals(method)) {
             if (path.startsWith("/products")) {
                 return true;
