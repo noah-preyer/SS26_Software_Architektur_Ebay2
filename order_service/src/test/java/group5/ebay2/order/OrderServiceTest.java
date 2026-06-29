@@ -9,7 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -68,7 +67,7 @@ class OrderServiceTest {
 
     @Test
     void getOrder_shouldThrowOnNotFound() {
-        assertThatThrownBy(() -> orderService.getOrder(UUID.randomUUID()))
+        assertThatThrownBy(() -> orderService.getOrder(999L))
                 .isInstanceOf(OrderExceptions.OrderNotFoundException.class);
     }
 
@@ -132,7 +131,7 @@ class OrderServiceTest {
 
     @Test
     void markOrderPaid_shouldThrowOnNotFound() {
-        assertThatThrownBy(() -> orderService.markOrderPaid(UUID.randomUUID()))
+        assertThatThrownBy(() -> orderService.markOrderPaid(999L))
                 .isInstanceOf(OrderExceptions.OrderNotFoundException.class);
     }
 
@@ -152,7 +151,7 @@ class OrderServiceTest {
 
     @Test
     void markOrderRefunded_shouldThrowOnNotFound() {
-        assertThatThrownBy(() -> orderService.markOrderRefunded(UUID.randomUUID()))
+        assertThatThrownBy(() -> orderService.markOrderRefunded(999L))
                 .isInstanceOf(OrderExceptions.OrderNotFoundException.class);
     }
 }

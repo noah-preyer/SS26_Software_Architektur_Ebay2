@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS address_types (
 );
 
 CREATE TABLE IF NOT EXISTS addresses (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id BIGSERIAL PRIMARY KEY,
 
     street VARCHAR(150) NOT NULL,
     house_number VARCHAR(20) NOT NULL,

@@ -4,14 +4,14 @@ import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.UUID;
 
 @Entity
 @Table(name = "orders")
 public class Order {
 
     @Id
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(nullable = false)
     private Long userId;
@@ -51,9 +51,6 @@ public class Order {
 
     @PrePersist
     protected void onCreate() {
-        if (id == null) {
-            id = UUID.randomUUID();
-        }
         Instant now = Instant.now();
         this.createdAt = now;
         this.updatedAt = now;
@@ -64,7 +61,7 @@ public class Order {
         this.updatedAt = Instant.now();
     }
 
-    public UUID getId() {
+    public Long getId() {
         return id;
     }
 

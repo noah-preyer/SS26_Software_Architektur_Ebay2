@@ -5,9 +5,8 @@ import group5.ebay2.order.Order;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.UUID;
 
-public interface OrderRepository extends JpaRepository<Order, UUID> {
+public interface OrderRepository extends JpaRepository<Order, Long> {
 
     List<Order> findByUserIdOrderByCreatedAtDesc(Long userId);
 

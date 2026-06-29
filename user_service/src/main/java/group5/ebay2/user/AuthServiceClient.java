@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
-import java.util.UUID;
-
 @Component
 public class AuthServiceClient {
 
@@ -35,7 +33,7 @@ public class AuthServiceClient {
                 .body(AuthUser.class);
     }
 
-    public void deleteUser(UUID authUserId) {
+    public void deleteUser(Long authUserId) {
         try {
             restClient.delete()
                     .uri("/delete/{id}", authUserId)
@@ -47,7 +45,7 @@ public class AuthServiceClient {
         }
     }
 
-    public AuthUser getUser(UUID authUserId) {
+    public AuthUser getUser(Long authUserId) {
         return restClient.get()
                 .uri("/user/{id}", authUserId)
                 .retrieve()
@@ -61,7 +59,7 @@ public class AuthServiceClient {
     ) {}
 
     public record AuthUser(
-            UUID id,
+            Long id,
             String username,
             String email
     ) {}

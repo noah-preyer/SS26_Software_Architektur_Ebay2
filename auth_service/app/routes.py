@@ -1,6 +1,5 @@
 import os
 import traceback
-import uuid
 from datetime import datetime, timezone
 
 import bcrypt
@@ -42,13 +41,14 @@ def register_routes(app):
 
                 now = datetime.now(timezone.utc)
                 password_hash = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
-                user_id = str(uuid.uuid4())
 
                 cur.execute(
-                    """INSERT INTO users (id, username, email, password_hash, created_at, last_password_changed_at)
-                       VALUES (%s, %s, %s, %s, %s, %s)""",
-                    (user_id, username, email, password_hash, now, now),
+                    """INSERT INTO users (username, email, password_hash, created_at, last_password_changed_at)
+                       VALUES (%s, %s, %s, %s, %s)
+                       RETURNING id""",
+                    (username, email, password_hash, now, now),
                 )
+                user_id = cur.fetchone()[0]
             conn.commit()
             return jsonify({"id": str(user_id), "username": username, "email": email}), 201
         except Exception as e:

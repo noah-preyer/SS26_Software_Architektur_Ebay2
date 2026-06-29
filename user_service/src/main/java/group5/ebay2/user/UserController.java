@@ -8,8 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
-
 @RestController
 public class UserController {
 
@@ -27,14 +25,19 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserProfileDto.Response> getUser(@PathVariable UUID id) {
+    public ResponseEntity<UserProfileDto.Response> getUser(@PathVariable Long id) {
         return ResponseEntity.ok(userService.getUser(id));
     }
 
     @GetMapping("/by-auth/{authUserId}")
     public ResponseEntity<UserProfileDto.Response> getUserByAuthUserId(
-            @PathVariable UUID authUserId) {
-        return ResponseEntity.ok(userService.getUserByAuthUserId(authUserId));
+            @PathVariable String authUserId) {
+        try {
+            Long id = Long.valueOf(authUserId);
+            return ResponseEntity.ok(userService.getUserByAuthUserId(id));
+        } catch (NumberFormatException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/by-email/{email}")
@@ -51,20 +54,20 @@ public class UserController {
 
     @PutMapping("/{id}")
     public ResponseEntity<UserProfileDto.Response> updateUser(
-            @PathVariable UUID id,
+            @PathVariable Long id,
             @Valid @RequestBody UserProfileDto.UpdateRequest request) {
         return ResponseEntity.ok(userService.updateUser(id, request));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{userId}/address")
     public ResponseEntity<AddressDto.Response> addAddress(
-            @PathVariable UUID userId,
+            @PathVariable Long userId,
             @Valid @RequestBody AddressDto.Request request) {
         AddressDto.Response response = userService.addAddress(userId, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -72,33 +75,33 @@ public class UserController {
 
     @GetMapping("/{userId}/addresses")
     public ResponseEntity<List<AddressDto.Response>> getAddresses(
-            @PathVariable UUID userId) {
+            @PathVariable Long userId) {
         return ResponseEntity.ok(userService.getAddresses(userId));
     }
 
     @PutMapping("/{userId}/address/{addressId}/default")
     public ResponseEntity<AddressDto.Response> setDefaultAddress(
-            @PathVariable UUID userId,
-            @PathVariable UUID addressId) {
+            @PathVariable Long userId,
+            @PathVariable Long addressId) {
         return ResponseEntity.ok(userService.setDefaultAddress(userId, addressId));
     }
 
     @PutMapping("/address/{addressId}")
     public ResponseEntity<AddressDto.Response> updateAddress(
-            @PathVariable UUID addressId,
+            @PathVariable Long addressId,
             @Valid @RequestBody AddressDto.Request request) {
         return ResponseEntity.ok(userService.updateAddress(addressId, request));
     }
 
     @DeleteMapping("/address/{addressId}")
-    public ResponseEntity<Void> removeAddress(@PathVariable UUID addressId) {
+    public ResponseEntity<Void> removeAddress(@PathVariable Long addressId) {
         userService.removeAddress(addressId);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/address/{addressId}")
     public ResponseEntity<AddressDto.Response> getAddress(
-            @PathVariable UUID addressId) {
+            @PathVariable Long addressId) {
         return ResponseEntity.ok(userService.getAddress(addressId));
     }
 }

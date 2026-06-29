@@ -56,7 +56,7 @@ public class UserService {
             throw new RuntimeException("Registration failed: could not create auth user");
         }
 
-        UUID authUserId = authUser.id();
+        Long authUserId = authUser.id();
 
         try {
             UserProfile userProfile = new UserProfile(authUserId, request.username(), request.email());

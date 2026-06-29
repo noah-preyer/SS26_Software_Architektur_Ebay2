@@ -5,7 +5,6 @@ import group5.ebay2.user.dtos.UserProfileDto;
 import group5.ebay2.user.repositories.AddressRepository;
 import group5.ebay2.user.repositories.AddressTypeRepository;
 import group5.ebay2.user.repositories.UserProfileRepository;
-import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,6 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -44,7 +42,7 @@ class UserServiceTest {
     private AuthServiceClient authServiceClient;
 
     private UserProfileDto.Request validRequest;
-    private UUID authUserId;
+    private Long authUserId;
 
     @TestConfiguration
     static class MockConfig {
@@ -53,9 +51,9 @@ class UserServiceTest {
         AuthServiceClient mockAuthClient() {
             AuthServiceClient client = mock(AuthServiceClient.class);
             when(client.createUser(any(), any(), any()))
-                    .thenReturn(new AuthServiceClient.AuthUser(UUID.randomUUID(), "testuser", "test@example.com"));
+                    .thenReturn(new AuthServiceClient.AuthUser(1L, "testuser", "test@example.com"));
             when(client.getUser(any()))
-                    .thenReturn(new AuthServiceClient.AuthUser(UUID.randomUUID(), "testuser", "test@example.com"));
+                    .thenReturn(new AuthServiceClient.AuthUser(1L, "testuser", "test@example.com"));
             return client;
         }
     }
@@ -65,7 +63,7 @@ class UserServiceTest {
         addressRepository.deleteAll();
         userProfileRepository.deleteAll();
 
-        authUserId = UUID.randomUUID();
+        authUserId = 1L;
         when(authServiceClient.createUser(any(), any(), any()))
                 .thenReturn(new AuthServiceClient.AuthUser(authUserId, "testuser", "test@example.com"));
         when(authServiceClient.getUser(any()))
@@ -148,7 +146,7 @@ class UserServiceTest {
 
     @Test
     void getUser_shouldThrowOnNotFound() {
-        assertThatThrownBy(() -> userService.getUser(UUID.randomUUID()))
+        assertThatThrownBy(() -> userService.getUser(999L))
                 .isInstanceOf(UserExceptions.UserNotFoundException.class)
                 .hasMessageContaining("User not found");
     }
@@ -163,7 +161,7 @@ class UserServiceTest {
 
     @Test
     void getUserByAuthUserId_shouldThrowOnNotFound() {
-        assertThatThrownBy(() -> userService.getUserByAuthUserId(UUID.randomUUID()))
+        assertThatThrownBy(() -> userService.getUserByAuthUserId(999L))
                 .isInstanceOf(UserExceptions.UserNotFoundException.class);
     }
 
@@ -262,7 +260,7 @@ class UserServiceTest {
 
     @Test
     void deleteUser_shouldThrowOnNotFound() {
-        assertThatThrownBy(() -> userService.deleteUser(UUID.randomUUID()))
+        assertThatThrownBy(() -> userService.deleteUser(999L))
                 .isInstanceOf(UserExceptions.UserNotFoundException.class);
     }
 

@@ -11,7 +11,7 @@ POST /user
   }
   Response 201:
   {
-    "id": "UUID",
+    "id": "Long (BIGSERIAL)",
     "username": "string",
     "email": "string"
   }
@@ -38,7 +38,7 @@ POST /auth
   }
 
 DELETE /user/{id}
-  Delete user by UUID
+  Delete user by ID
   Response 204: (no content)
   Error 404:
   {

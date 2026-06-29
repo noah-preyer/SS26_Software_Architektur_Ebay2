@@ -15,7 +15,9 @@ export default function UserProfile() {
     }
     try {
       const headers = { ...authHeader() };
-      const userData = await apiFetch(`/user/by-auth/${session.id}`, { headers });
+      const id = String(session.id);
+      if (!/^\d+$/.test(id)) throw new Error("invalid id");
+      const userData = await apiFetch(`/user/by-auth/${id}`, { headers });
       setUser(userData);
       try {
         const addressData = await apiFetch(`/user/${userData.id}/addresses`, { headers });

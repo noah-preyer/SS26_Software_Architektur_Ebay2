@@ -6,7 +6,6 @@ import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.UUID;
 
 public class OrderDto {
 
@@ -34,7 +33,7 @@ public class OrderDto {
     }
 
     public record Response(
-            UUID id,
+            Long id,
             Long userId,
             Long productId,
             String productTitle,

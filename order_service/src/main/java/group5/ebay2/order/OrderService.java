@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 @Service
 public class OrderService {
@@ -57,7 +56,7 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
-    public OrderDto.Response getOrder(UUID orderId) {
+    public OrderDto.Response getOrder(Long orderId) {
         return toOrderResponse(orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderExceptions.OrderNotFoundException("Order not found: " + orderId)));
     }
@@ -70,7 +69,7 @@ public class OrderService {
     }
 
     @Transactional
-    public OrderDto.Response updateOrderStatus(UUID orderId, OrderDto.StatusUpdateRequest request) {
+    public OrderDto.Response updateOrderStatus(Long orderId, OrderDto.StatusUpdateRequest request) {
         log.info("Updating order: {} status to: {}", orderId, request.status());
 
         Order order = orderRepository.findById(orderId)
@@ -108,7 +107,7 @@ public class OrderService {
     }
 
     @Transactional
-    public OrderDto.Response markOrderPaid(UUID orderId) {
+    public OrderDto.Response markOrderPaid(Long orderId) {
         log.info("Marking order: {} as paid", orderId);
 
         Order order = orderRepository.findById(orderId)
@@ -130,7 +129,7 @@ public class OrderService {
     }
 
     @Transactional
-    public OrderDto.Response markOrderShipped(UUID orderId) {
+    public OrderDto.Response markOrderShipped(Long orderId) {
         log.info("Marking order: {} as shipped", orderId);
 
         Order order = orderRepository.findById(orderId)
@@ -150,7 +149,7 @@ public class OrderService {
     }
 
     @Transactional
-    public OrderDto.Response markOrderDelivered(UUID orderId) {
+    public OrderDto.Response markOrderDelivered(Long orderId) {
         log.info("Marking order: {} as delivered", orderId);
 
         Order order = orderRepository.findById(orderId)
@@ -170,7 +169,7 @@ public class OrderService {
     }
 
     @Transactional
-    public OrderDto.Response refundOrder(UUID orderId) {
+    public OrderDto.Response refundOrder(Long orderId) {
         log.info("Processing refund for order: {}", orderId);
 
         Order order = orderRepository.findById(orderId)
@@ -194,7 +193,7 @@ public class OrderService {
     }
 
     @Transactional
-    public OrderDto.Response markOrderRefunded(UUID orderId) {
+    public OrderDto.Response markOrderRefunded(Long orderId) {
         log.info("Marking order: {} as refunded", orderId);
 
         Order order = orderRepository.findById(orderId)
