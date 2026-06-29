@@ -13,7 +13,7 @@ services:
     build: .
     ports:
       - "4321:4321"
-    env_file: .env
+    env_file: ../frontend/.env
     environment:
       BACKEND_TARGET: ${BACKEND_TARGET_OVERRIDE:-http://api-gateway:8080}
     extra_hosts:
