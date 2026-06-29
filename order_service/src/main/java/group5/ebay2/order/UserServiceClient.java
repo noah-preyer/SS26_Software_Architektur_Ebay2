@@ -5,8 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.UUID;
-
 @Component
 public class UserServiceClient {
 
@@ -20,7 +18,7 @@ public class UserServiceClient {
         this.userServiceUrl = System.getenv().getOrDefault("USER_SERVICE_URL", "http://user-service:8080");
     }
 
-    public UserDto getUser(UUID userId) {
+    public UserDto getUser(Long userId) {
         try {
             return restTemplate.getForObject(userServiceUrl + "/user/" + userId, UserDto.class);
         } catch (Exception e) {

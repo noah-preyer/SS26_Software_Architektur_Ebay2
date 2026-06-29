@@ -5,6 +5,8 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
+    "dev:test-backend": "cross-env BACKEND_TARGET=http://localhost:8090 astro dev",
+    "dev:gateway": "cross-env BACKEND_TARGET=http://localhost:8080 astro dev",
     "backend": "node test-backend/server.js",
     "build": "astro build",
     "preview": "astro preview",
@@ -21,6 +23,7 @@
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.1",
+    "cross-env": "^7.0.3",
     "playwright": "^1.60.0",
     "tailwindcss": "^4.3.1"
   }

@@ -1,9 +1,10 @@
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 CREATE TABLE IF NOT EXISTS user_profiles (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id BIGSERIAL PRIMARY KEY,
 
-    auth_user_id UUID NOT NULL UNIQUE,
+    -- entspricht users.id in auth_service (gleiche numerische id, separate datenbank).
+    auth_user_id BIGINT NOT NULL UNIQUE,
 
     username VARCHAR(50) NOT NULL UNIQUE,
     email VARCHAR(150) NOT NULL UNIQUE,
@@ -36,7 +37,7 @@ CREATE TABLE IF NOT EXISTS addresses (
     address_type_code VARCHAR(50) NOT NULL REFERENCES address_types(code),
     default_address BOOLEAN NOT NULL DEFAULT FALSE,
 
-    user_profile_id UUID NOT NULL REFERENCES user_profiles(id) ON DELETE CASCADE,
+    user_profile_id BIGINT NOT NULL REFERENCES user_profiles(id) ON DELETE CASCADE,
 
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL
@@ -49,6 +50,7 @@ VALUES
     ('PRIMARY', 'Primary')
 ON CONFLICT (code) DO NOTHING;
 
+-- auth_user_id 1/2 müssen mit den Seed-IDs in auth_db/init/01-init-auth.sql übereinstimmen.
 INSERT INTO user_profiles (
     auth_user_id,
     username,
@@ -62,7 +64,7 @@ INSERT INTO user_profiles (
 )
 VALUES
     (
-        '11111111-1111-1111-1111-111111111111',
+        1,
         'admin',
         'admin@example.com',
         'Admin',
@@ -73,7 +75,7 @@ VALUES
         NOW()
     ),
     (
-        '22222222-2222-2222-2222-222222222222',
+        2,
         'lukasw',
         'lukas.weber@example.com',
         'Lukas',
@@ -85,6 +87,8 @@ VALUES
     )
     ON CONFLICT (email) DO NOTHING;
 
+SELECT setval(pg_get_serial_sequence('user_profiles', 'id'), GREATEST((SELECT MAX(id) FROM user_profiles), 1));
+
 INSERT INTO addresses (
     street, house_number, postal_code, city, country,
     address_type_code, default_address, user_profile_id, created_at, updated_at
@@ -93,19 +97,19 @@ VALUES
     (
         'Main Street', '1', '10115', 'Berlin', 'Germany',
         'PRIMARY', TRUE,
-        (SELECT id FROM user_profiles WHERE auth_user_id = '11111111-1111-1111-1111-111111111111'),
+        (SELECT id FROM user_profiles WHERE auth_user_id = 1),
         NOW(), NOW()
     ),
     (
         'Hauptstraße', '42', '50667', 'Cologne', 'Germany',
         'SHIPPING', TRUE,
-        (SELECT id FROM user_profiles WHERE auth_user_id = '22222222-2222-2222-2222-222222222222'),
+        (SELECT id FROM user_profiles WHERE auth_user_id = 2),
         NOW(), NOW()
     ),
     (
         'Bahnhofstraße', '10', '80331', 'Munich', 'Germany',
         'BILLING', FALSE,
-        (SELECT id FROM user_profiles WHERE auth_user_id = '22222222-2222-2222-2222-222222222222'),
+        (SELECT id FROM user_profiles WHERE auth_user_id = 2),
         NOW(), NOW()
     )
     ON CONFLICT DO NOTHING;

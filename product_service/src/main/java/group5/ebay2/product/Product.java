@@ -8,15 +8,14 @@ import jakarta.validation.constraints.Positive;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Table(name = "products")
 public class Product {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @NotBlank
     private String title;
@@ -31,7 +30,7 @@ public class Product {
     private String category;
 
     @NotNull
-    private UUID sellerId;
+    private Long sellerId;
 
     @Column(nullable = false)
     private int quantity = 1;
@@ -41,7 +40,7 @@ public class Product {
 
     @ElementCollection
     @CollectionTable(name = "product_images", joinColumns = @JoinColumn(name = "product_id"))
-    @Column(name = "image_url")
+    @Column(name = "image_url", columnDefinition = "TEXT")
     private List<String> imageUrls;
 
     private LocalDateTime createdAt;
@@ -51,7 +50,7 @@ public class Product {
         createdAt = LocalDateTime.now();
     }
 
-    public UUID getId() { return id; }
+    public Long getId() { return id; }
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
     public String getDescription() { return description; }
@@ -60,8 +59,8 @@ public class Product {
     public void setPrice(BigDecimal price) { this.price = price; }
     public String getCategory() { return category; }
     public void setCategory(String category) { this.category = category; }
-    public UUID getSellerId() { return sellerId; }
-    public void setSellerId(UUID sellerId) { this.sellerId = sellerId; }
+    public Long getSellerId() { return sellerId; }
+    public void setSellerId(Long sellerId) { this.sellerId = sellerId; }
     public int getQuantity() { return quantity; }
     public void setQuantity(int quantity) { this.quantity = quantity; }
     public ProductStatus getStatus() { return status; }

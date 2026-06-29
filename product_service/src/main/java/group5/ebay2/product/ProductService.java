@@ -1,6 +1,5 @@
 package group5.ebay2.product;
 
-import group5.ebay2.product.dtos.BuyProductDto;
 import group5.ebay2.product.dtos.BuyProductResponse;
 import group5.ebay2.product.dtos.CreateProductDto;
 import group5.ebay2.product.dtos.UpdateProductDto;
@@ -9,17 +8,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class ProductService {
 
-    private final ProductRepository productRepository;
-    private final PaymentClient paymentClient;
+    private static final String DEFAULT_CURRENCY = "EUR";
 
-    public ProductService(ProductRepository productRepository, PaymentClient paymentClient) {
+    private final ProductRepository productRepository;
+    private final OrderClient orderClient;
+
+    public ProductService(ProductRepository productRepository, OrderClient orderClient) {
         this.productRepository = productRepository;
-        this.paymentClient = paymentClient;
+        this.orderClient = orderClient;
     }
 
     public List<Product> getAllProducts() {
@@ -30,12 +30,12 @@ public class ProductService {
         return productRepository.findByCategory(category);
     }
 
-    public Product getProductById(UUID id) {
+    public Product getProductById(Long id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
     }
 
-    public Product createProduct(CreateProductDto dto, UUID sellerId) {
+    public Product createProduct(CreateProductDto dto, Long sellerId) {
         Product product = new Product();
         product.setTitle(dto.getTitle());
         product.setDescription(dto.getDescription());
@@ -47,7 +47,7 @@ public class ProductService {
         return productRepository.save(product);
     }
 
-    public Product updateProduct(UUID id, UpdateProductDto dto, UUID requesterId) {
+    public Product updateProduct(Long id, UpdateProductDto dto, Long requesterId) {
         Product product = getProductById(id);
         if (!product.getSellerId().equals(requesterId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not the seller of this product");
@@ -60,7 +60,7 @@ public class ProductService {
         return productRepository.save(product);
     }
 
-    public void deleteProduct(UUID id, UUID requesterId) {
+    public void deleteProduct(Long id, Long requesterId) {
         Product product = getProductById(id);
         if (!product.getSellerId().equals(requesterId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not the seller of this product");
@@ -68,7 +68,7 @@ public class ProductService {
         productRepository.delete(product);
     }
 
-    public BuyProductResponse buyProduct(UUID productId, UUID buyerId, BuyProductDto dto) {
+    public BuyProductResponse buyProduct(Long productId, Long buyerId) {
         Product product = getProductById(productId);
 
         if (product.getSellerId().equals(buyerId)) {
@@ -88,27 +88,24 @@ public class ProductService {
         }
 
         try {
-            PaymentClient.OrderResponse order = paymentClient.createOrder(
-                    buyerId, productId, product.getPrice(), dto.getCurrency());
-
-            PaymentClient.PaymentResponse payment = paymentClient.processPayment(
-                    order.id(), productId, buyerId,
-                    product.getPrice(), dto.getCurrency(), dto.getPaymentMethodType());
+            OrderClient.OrderResponse order = orderClient.createOrder(buyerId, productId, DEFAULT_CURRENCY);
+            // Kein separater Payment-Service mehr vorhanden: Kauf gilt als sofort bezahlt,
+            // der order_service-eigene Scheduler übernimmt danach PAID -> SHIPPED -> DELIVERED.
+            OrderClient.OrderResponse paidOrder = orderClient.markOrderPaid(order.id());
 
             return new BuyProductResponse(
-                    product.getId(), product.getTitle(), product.getPrice(),
-                    product.getQuantity(), order.id(), order.status(),
-                    payment.id(), payment.status(), payment.transactionId(), payment.paidAt());
+                    product.getId(), product.getTitle(), product.getPrice(), product.getQuantity(),
+                    paidOrder.id(), paidOrder.status());
 
         } catch (Exception e) {
-            // Compensating transaction: restore stock on payment failure
+            // Compensating transaction: restore stock if order creation/payment fails
             productRepository.incrementQuantity(productId);
             if (product.getStatus() == ProductStatus.SOLD) {
                 product.setStatus(ProductStatus.AVAILABLE);
                 productRepository.save(product);
             }
             throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
-                    "Payment failed, purchase rolled back: " + e.getMessage());
+                    "Order creation failed, purchase rolled back: " + e.getMessage());
         }
     }
 }

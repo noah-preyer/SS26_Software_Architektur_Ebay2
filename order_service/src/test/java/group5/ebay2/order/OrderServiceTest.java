@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -18,22 +19,28 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Transactional
 class OrderServiceTest {
 
+    private static final AtomicLong ID_SEQUENCE = new AtomicLong(1);
+
     @Autowired
     private OrderService orderService;
 
     @Autowired
     private OrderRepository orderRepository;
 
-    private UUID userId;
+    private Long userId;
+
+    private static Long nextId() {
+        return ID_SEQUENCE.getAndIncrement();
+    }
 
     @BeforeEach
     void setUp() {
-        userId = UUID.randomUUID();
+        userId = nextId();
     }
 
     @Test
     void createOrder_shouldCreateWithCreatedStatus() {
-        UUID productId = UUID.randomUUID();
+        Long productId = nextId();
 
         OrderDto.Response response = orderService.createOrder(
                 new OrderDto.CreateRequest(userId, productId, "USD"));
@@ -46,7 +53,7 @@ class OrderServiceTest {
 
     @Test
     void getOrder_shouldReturnOrder() {
-        UUID productId = UUID.randomUUID();
+        Long productId = nextId();
 
         OrderDto.Response created = orderService.createOrder(
                 new OrderDto.CreateRequest(userId, productId, "EUR"));
@@ -67,7 +74,7 @@ class OrderServiceTest {
 
     @Test
     void updateOrderStatus_shouldTransition() {
-        UUID productId = UUID.randomUUID();
+        Long productId = nextId();
 
         OrderDto.Response created = orderService.createOrder(
                 new OrderDto.CreateRequest(userId, productId, "USD"));
@@ -87,7 +94,7 @@ class OrderServiceTest {
 
     @Test
     void updateOrderStatus_shouldThrowOnInvalidStatus() {
-        UUID productId = UUID.randomUUID();
+        Long productId = nextId();
 
         OrderDto.Response created = orderService.createOrder(
                 new OrderDto.CreateRequest(userId, productId, "USD"));
@@ -101,10 +108,10 @@ class OrderServiceTest {
     @Test
     void getOrdersByUser_shouldReturnUserOrders() {
         orderService.createOrder(
-                new OrderDto.CreateRequest(userId, UUID.randomUUID(), "USD"));
+                new OrderDto.CreateRequest(userId, nextId(), "USD"));
 
         orderService.createOrder(
-                new OrderDto.CreateRequest(userId, UUID.randomUUID(), "USD"));
+                new OrderDto.CreateRequest(userId, nextId(), "USD"));
 
         List<OrderDto.Response> orders = orderService.getOrdersByUser(userId);
 
@@ -113,7 +120,7 @@ class OrderServiceTest {
 
     @Test
     void markOrderPaid_shouldUpdateStatus() {
-        UUID productId = UUID.randomUUID();
+        Long productId = nextId();
 
         OrderDto.Response created = orderService.createOrder(
                 new OrderDto.CreateRequest(userId, productId, "USD"));
@@ -131,7 +138,7 @@ class OrderServiceTest {
 
     @Test
     void markOrderRefunded_shouldUpdateStatus() {
-        UUID productId = UUID.randomUUID();
+        Long productId = nextId();
 
         OrderDto.Response created = orderService.createOrder(
                 new OrderDto.CreateRequest(userId, productId, "USD"));

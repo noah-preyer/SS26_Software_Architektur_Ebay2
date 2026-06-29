@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
-import java.util.UUID;
 
 @Component
 public class EmailServiceClient {
@@ -23,7 +22,7 @@ public class EmailServiceClient {
         this.userServiceClient = userServiceClient;
     }
 
-    public void sendPaymentConfirmation(UUID userId, String orderId, String productTitle, String amount, String currency) {
+    public void sendPaymentConfirmation(Long userId, String orderId, String productTitle, String amount, String currency) {
         try {
             UserDto user = userServiceClient.getUser(userId);
             if (user == null || user.email() == null) {
@@ -51,7 +50,7 @@ public class EmailServiceClient {
         }
     }
 
-    public void sendShippingConfirmation(UUID userId, String orderId, String productTitle) {
+    public void sendShippingConfirmation(Long userId, String orderId, String productTitle) {
         try {
             UserDto user = userServiceClient.getUser(userId);
             if (user == null || user.email() == null) {
@@ -77,7 +76,7 @@ public class EmailServiceClient {
         }
     }
 
-    public void sendDeliveryConfirmation(UUID userId, String orderId, String productTitle) {
+    public void sendDeliveryConfirmation(Long userId, String orderId, String productTitle) {
         try {
             UserDto user = userServiceClient.getUser(userId);
             if (user == null || user.email() == null) {
@@ -103,7 +102,7 @@ public class EmailServiceClient {
         }
     }
 
-    public void sendRefundConfirmation(UUID userId, String orderId, String productTitle, String amount, String currency) {
+    public void sendRefundConfirmation(Long userId, String orderId, String productTitle, String amount, String currency) {
         try {
             UserDto user = userServiceClient.getUser(userId);
             if (user == null || user.email() == null) {

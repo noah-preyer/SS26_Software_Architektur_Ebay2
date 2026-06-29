@@ -14,10 +14,10 @@ public class Order {
     private UUID id;
 
     @Column(nullable = false)
-    private UUID userId;
+    private Long userId;
 
     @Column(nullable = false)
-    private UUID productId;
+    private Long productId;
 
     @Column(nullable = false, length = 255)
     private String productTitle;
@@ -40,7 +40,7 @@ public class Order {
     protected Order() {
     }
 
-    public Order(UUID userId, UUID productId, String productTitle, BigDecimal totalAmount, String currency) {
+    public Order(Long userId, Long productId, String productTitle, BigDecimal totalAmount, String currency) {
         this.userId = userId;
         this.productId = productId;
         this.productTitle = productTitle;
@@ -68,11 +68,11 @@ public class Order {
         return id;
     }
 
-    public UUID getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public UUID getProductId() {
+    public Long getProductId() {
         return productId;
     }
 

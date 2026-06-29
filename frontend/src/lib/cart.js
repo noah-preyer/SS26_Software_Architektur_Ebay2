@@ -4,6 +4,7 @@ import { buyProduct, getProduct } from "./api.js";
 
 const CART_KEY = "lp_cart";
 const PURCHASES_KEY = "lp_purchases";
+const ORDER_IDS_KEY = "lp_order_ids";
 const CART_EVENT = "lp-cart-updated";
 
 function hasStorage() {
@@ -77,6 +78,28 @@ function addPurchase(id) {
   }
 }
 
+// produktId -> orderId, nur fürs Order-Status-Badge auf "Meine Käufe".
+function readOrderIds() {
+  if (!hasStorage()) return {};
+  try {
+    const raw = sessionStorage.getItem(ORDER_IDS_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+function recordOrderId(productId, orderId) {
+  if (!hasStorage() || !orderId) return;
+  const map = readOrderIds();
+  map[Number(productId)] = orderId;
+  sessionStorage.setItem(ORDER_IDS_KEY, JSON.stringify(map));
+}
+
+export function getOrderId(productId) {
+  return readOrderIds()[Number(productId)] ?? null;
+}
+
 export async function loadCartItems(ids) {
   const items = [];
   for (const id of ids) {
@@ -99,8 +122,9 @@ export async function checkout() {
 
   for (const id of ids) {
     try {
-      await buyProduct(id);
+      const result = await buyProduct(id);
       addPurchase(id);
+      recordOrderId(id, result?.orderId);
       removeFromCart(id);
       purchased.push(id);
     } catch (err) {

@@ -5,18 +5,18 @@ import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Table(name = "user_profiles")
 public class UserProfile {
 
     @Id
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     // ID from auth-service
     @Column(nullable = false, unique = true)
-    private UUID authUserId;
+    private Long authUserId;
 
     @Column(nullable = false, unique = true, length = 50)
     private String username;
@@ -51,7 +51,7 @@ public class UserProfile {
     protected UserProfile() {
     }
 
-    public UserProfile(UUID authUserId, String username, String email) {
+    public UserProfile(Long authUserId, String username, String email) {
         this.authUserId = authUserId;
         this.username = username;
         this.email = email;
@@ -59,9 +59,6 @@ public class UserProfile {
 
     @PrePersist
     protected void onCreate() {
-        if (id == null) {
-            id = UUID.randomUUID();
-        }
         Instant now = Instant.now();
         this.createdAt = now;
         this.updatedAt = now;
@@ -72,11 +69,11 @@ public class UserProfile {
         this.updatedAt = Instant.now();
     }
 
-    public UUID getId() {
+    public Long getId() {
         return id;
     }
 
-    public UUID getAuthUserId() {
+    public Long getAuthUserId() {
         return authUserId;
     }
 

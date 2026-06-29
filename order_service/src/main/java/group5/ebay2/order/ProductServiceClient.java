@@ -5,8 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.UUID;
-
 @Component
 public class ProductServiceClient {
 
@@ -20,7 +18,7 @@ public class ProductServiceClient {
         this.productServiceUrl = System.getenv().getOrDefault("PRODUCT_SERVICE_URL", "http://product-service:8082");
     }
 
-    public ProductDto getProduct(UUID productId) {
+    public ProductDto getProduct(Long productId) {
         try {
             return restTemplate.getForObject(productServiceUrl + "/products/" + productId, ProductDto.class);
         } catch (Exception e) {

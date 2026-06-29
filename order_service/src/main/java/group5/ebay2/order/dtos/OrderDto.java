@@ -13,10 +13,10 @@ public class OrderDto {
     public record CreateRequest(
 
             @NotNull(message = "User ID is required")
-            UUID userId,
+            Long userId,
 
             @NotNull(message = "Product ID is required")
-            UUID productId,
+            Long productId,
 
             @NotBlank(message = "Currency is required")
             @Size(min = 3, max = 3, message = "Currency must be 3 characters")
@@ -35,8 +35,8 @@ public class OrderDto {
 
     public record Response(
             UUID id,
-            UUID userId,
-            UUID productId,
+            Long userId,
+            Long productId,
             String productTitle,
             String status,
             BigDecimal totalAmount,

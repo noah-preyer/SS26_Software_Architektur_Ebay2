@@ -3,15 +3,14 @@ package group5.ebay2.user;
 import jakarta.persistence.*;
 
 import java.time.Instant;
-import java.util.UUID;
 
 @Entity
 @Table(name = "addresses")
 public class Address {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(nullable = false, length = 150)
     private String street;
@@ -78,7 +77,7 @@ public class Address {
         this.updatedAt = Instant.now();
     }
 
-    public UUID getId() {
+    public Long getId() {
         return id;
     }
 
