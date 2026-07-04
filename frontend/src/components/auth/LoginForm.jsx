@@ -53,9 +53,9 @@ export default function LoginForm() {
 
       <form class="space-y-5" onSubmit={handleSubmit}>
         <div>
-          <label class="block text-sm font-bold text-[#111111] mb-1.5" for="email">E-Mail</label>
+          <label class="block text-sm font-bold text-[#111111] mb-1.5" for="email">E-Mail oder Benutzername</label>
           <input
-            id="email" type="email" required
+            id="email" type="text" required
             class="input-field"
             value={email()}
             onInput={(e) => setEmail(e.target.value)}

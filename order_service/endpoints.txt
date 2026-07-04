@@ -1,0 +1,73 @@
+Order Service (Port 8087)
+========================
+
+ORDERS
+------
+
+POST /order
+  Create an order (fetches product details from Product Service)
+  Request:
+  {
+    "userId": "UUID (required)",
+    "productId": "UUID (required)",
+    "currency": "string (required, 3 chars — USD, EUR, etc.)"
+  }
+  Response 201:
+  {
+    "id": "UUID (auto-generated)",
+    "userId": "UUID",
+    "productId": "UUID",
+    "productTitle": "string (from product service)",
+    "status": "CREATED",
+    "totalAmount": "number (price from product service)",
+    "currency": "string",
+    "createdAt": "ISO timestamp",
+    "updatedAt": "ISO timestamp"
+  }
+  Error 404: { "message": "string" (product not found) }
+
+GET /order/{orderId}
+  Get order state (orderId is UUID)
+  Response 200: (same as above)
+  Error 404: { "message": "string" }
+
+PUT /order/{orderId}/status (orderId is UUID)
+  Transition order status (CREATED -> SHIPPED / DELIVERED / CANCELLED)
+  Request:
+  {
+    "status": "string (required — SHIPPED, DELIVERED, or CANCELLED)"
+  }
+  Response 200: (order object)
+  Error 404: { "message": "string" }
+  Error 409: { "message": "string" }
+
+GET /order/user/{userId}
+  List orders by user
+  Response 200: [ ... array of order objects ]
+
+PUT /order/{orderId}/paid
+  Mark order as paid (called by payment service)
+  Response 200: (order object)
+  Sends payment confirmation email to user.
+  Error 404: { "message": "string" }
+
+POST /order/{orderId}/refund
+  Refund order (orchestrated flow)
+  1. Calls payment service to process refund
+  2. Marks order as REFUNDED
+  3. Sends refund confirmation email to user
+  Response 200: (order object with status REFUNDED)
+  Error 404: { "message": "string" }
+
+PUT /order/{orderId}/refunded
+  Mark order as refunded (called by payment service)
+  Response 200: (order object)
+  Sends refund confirmation email to user.
+  Error 404: { "message": "string" }
+
+DEPENDENCIES
+------------
+- Product Service: http://product-service:8082
+- Payment Service: http://payment-service:8080
+- User Service: http://user-service:8080
+- Email Service: http://notification-service:8080

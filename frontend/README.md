@@ -29,6 +29,27 @@ Alternativ alles zusammen mit:
 
 ----
 
+00b. test-backend vs. echtes backend wechseln
+
+Drei Wege, ohne `.env` von Hand zu editieren:
+
+```bash
+npm run dev:test-backend   # explizit gegen :8090 (test-backend)
+npm run dev:gateway        # gegen :8080 (echtes API-Gateway, muss separat laufen: docker compose up -d im projekt-root)
+npm run dev                # nimmt was in .env steht
+```
+
+Per Docker (dieses `docker-compose.yml`, separat vom root-`docker-compose.yml`):
+
+```bash
+docker compose up                                                   # test-backend (default)
+BACKEND_TARGET_OVERRIDE=http://host.docker.internal:8080 docker compose up   # echtes gateway (muss separat per root docker-compose.yml laufen)
+```
+
+`host.docker.internal` ist nötig, weil das echte Backend in einem anderen Compose-Projekt läuft – ohne das würde der Container versuchen, `api-gateway` im eigenen (falschen) Netzwerk aufzulösen.
+
+----
+
 Fürs einloggen gibts fünf demo-nutzer ohne festes passwort. e-mail + irgendein passwort
 ab 8 zeichen reichen aus: `max@example.com`, `anna@example.com`, `tom@example.com`, `lisa@example.com`, `demo@example.com`.
 

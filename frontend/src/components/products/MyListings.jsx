@@ -13,7 +13,7 @@ import SearchSortBar from "./SearchSortBar.jsx";
 import ErrorBanner from "../ui/ErrorBanner.jsx";
 
 export default function MyListings() {
-  const userId = () => Number(getUserInfo()?.id);
+  const userId = () => getUserInfo()?.id;
 
   const [result, { refetch }] = createResource(() => getProducts());
 
@@ -23,7 +23,7 @@ export default function MyListings() {
 
   const myProducts = () => {
     const all = result()?.data ?? [];
-    return all.filter((p) => Number(p.sellerId) === userId());
+    return all.filter((p) => String(p.sellerId) === userId());
   };
 
   const [search, setSearch] = createSignal("");
@@ -47,7 +47,7 @@ export default function MyListings() {
     const editId = params.get("edit");
     if (!editId) return;
 
-    const product = all.find((p) => Number(p.id) === Number(editId));
+    const product = all.find((p) => String(p.id) === String(editId));
     if (product) {
       setEditProduct(product);
       setShowForm(true);

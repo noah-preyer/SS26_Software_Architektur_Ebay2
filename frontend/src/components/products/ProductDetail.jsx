@@ -1,8 +1,7 @@
-// produktdetailseite: lädt produkt und verkäufer getrennt voneinander.
-// 404 schlägt immer durch. wenn GET /users/{id} fehlt, zeigt die seite einfach "unbekannt".
+// produktdetailseite: sellerUsername kommt direkt vom product-service (api composition).
 
 import { createSignal, createResource, createMemo, onMount, Show } from "solid-js";
-import { getProduct, getSeller, deleteProduct, errorMessage } from "../../lib/api.js";
+import { getProduct, deleteProduct, errorMessage } from "../../lib/api.js";
 import { getUserInfo } from "../../lib/auth.js";
 import { addToCart, isInCart, removeFromCart } from "../../lib/cart.js";
 import { formatPrice, formatDate } from "../../lib/format.js";
@@ -22,11 +21,6 @@ export default function ProductDetail(props) {
 
   const product = () => (result.error ? undefined : result()?.data);
 
-  const [seller] = createResource(
-    () => product()?.sellerId,
-    (sellerId) => getSeller(sellerId)
-  );
-
   const [inCart, setInCart] = createSignal(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = createSignal(false);
   const [deleteError, setDeleteError] = createSignal("");
@@ -38,7 +32,7 @@ export default function ProductDetail(props) {
   const isOwner = createMemo(() => {
     const p = product();
     const user = currentUser();
-    return !!p && !!user && user.id != null && Number(user.id) === Number(p.sellerId);
+    return !!p && !!user && user.id != null && String(user.id) === String(p.sellerId);
   });
 
   const canAddToCart = createMemo(() => {
@@ -132,10 +126,10 @@ export default function ProductDetail(props) {
 
               <div class="flex items-center gap-2 text-sm text-[#666]">
                 <div class="w-7 h-7 rounded-sm bg-[#E8400C] border-2 border-[#111111] flex items-center justify-center text-white font-black text-xs shrink-0">
-                  {(seller.loading ? "?" : (seller()?.username ?? "?")).charAt(0).toUpperCase()}
+                  {(product().sellerUsername ?? "?").charAt(0).toUpperCase()}
                 </div>
                 <span>
-                  <span class="font-bold text-[#111111]">{seller.loading ? "..." : (seller()?.username ?? "Unbekannt")}</span>
+                  <span class="font-bold text-[#111111]">{product().sellerUsername ?? "Unbekannt"}</span>
                   {" "}· {formatDate(product().createdAt)}
                 </span>
               </div>

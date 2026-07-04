@@ -1,0 +1,34 @@
+services:
+  order-service:
+    build: .
+    ports:
+      - "8087:8080"
+    environment:
+      USER_SERVICE_URL: http://user-service:8080
+      EMAIL_SERVICE_URL: http://notification-service:8080
+      PAYMENT_SERVICE_URL: http://payment-service:8080
+      PRODUCT_SERVICE_URL: http://product-service:8082
+      SPRING_DATASOURCE_URL: jdbc:postgresql://order-db:5432/order_service
+      SPRING_DATASOURCE_USERNAME: order_user
+      SPRING_DATASOURCE_PASSWORD: app_password
+    depends_on:
+      order-db:
+        condition: service_healthy
+
+  order-db:
+    image: postgres:16
+    container_name: order-service-db
+    environment:
+      POSTGRES_USER: order_user
+      POSTGRES_PASSWORD: app_password
+      POSTGRES_DB: order_service
+    volumes:
+      - order_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U order_user -d order_service"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  order_pgdata:

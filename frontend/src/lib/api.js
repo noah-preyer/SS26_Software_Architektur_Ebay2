@@ -12,13 +12,19 @@ const BASE_URL = import.meta.env.SSR
   : "/api";
 const TIMEOUT = 5000;
 
-async function apiFetch(path, options = {}) {
+export async function apiFetch(path, options = {}) {
+  const url = BASE_URL + path;
+  const method = options.method ?? "GET";
+
+  console.log(`[apiFetch] → ${method} ${url}`, options.body ?? "");
+  console.log(`[apiFetch] Full URL: ${url}`);
+
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT);
 
   let response;
   try {
-    response = await fetch(BASE_URL + path, { ...options, signal: controller.signal });
+    response = await fetch(url, { ...options, signal: controller.signal });
   } catch (err) {
     if (err.name === "AbortError") {
       throw Object.assign(new Error("Zeitüberschreitung"), { kind: "TIMEOUT" });
@@ -27,6 +33,8 @@ async function apiFetch(path, options = {}) {
   } finally {
     clearTimeout(timer);
   }
+
+  console.log(`[apiFetch] ← ${response.status} ${method} ${url}`);
 
   if (!response.ok) {
     if (response.status === 401) clearSession();
@@ -59,6 +67,8 @@ export function errorMessage(err, overrides = {}) {
   switch (err?.status) {
     case 401:
       return "Sitzung abgelaufen. Bitte neu einloggen.";
+    case 403:
+      return "Du kannst dein eigenes Produkt nicht kaufen.";
     case 404:
       return "Nicht gefunden.";
     case 409:
@@ -133,31 +143,51 @@ export async function buyProduct(id) {
 
 // das echte backend muss bei login {access_token, user:{id,email,username}} zurückgeben.
 // die user-id im JWT (sub) muss eine zahl sein, sonst kann der user-auth-check ncht funktionieren.
-export async function loginUser(email, password) {
-  const data = await apiFetch("/auth/login", {
+export async function loginUser(emailOrUsername, password) {
+  const data = await apiFetch("/auth", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ emailOrUsername, password }),
   });
 
-  const session = normalizeLoginResponse(data, email);
+  const session = normalizeLoginResponse(data, emailOrUsername);
   setSession(session);
   return session.user;
 }
 
-export async function registerUser(email, password) {
-  return apiFetch("/auth/register", {
+export async function registerUser(username, email, password, firstName, lastName, phoneNumber, address) {
+  await apiFetch("/user", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({
+      username,
+      email,
+      password,
+      firstName: firstName || null,
+      lastName: lastName || null,
+      phoneNumber: phoneNumber || null,
+      profileImageObjectKey: null,
+      addressStreet: address?.street || null,
+      addressHouseNumber: address?.houseNumber || null,
+      addressPostalCode: address?.postalCode || null,
+      addressCity: address?.city || null,
+      addressCountry: address?.country || null,
+    }),
   });
 }
 
-// wenn GET /users/{id} fehlt oder fehlschlägt, zeigt die detailseite einfach "unbekannt", kein absturz.
+// wenn GET /user/{id} fehlt oder fehlschlägt, zeigt die detailseite einfach "unbekannt", kein absturz.
 export async function getSeller(sellerId) {
   try {
-    return await apiFetch(`/users/${sellerId}`, { headers: { ...authHeader() } });
+    return await apiFetch(`/user/${sellerId}`, { headers: { ...authHeader() } });
   } catch {
     return null;
   }
+}
+
+// nur fürs Demo-Status-Badge gedacht, daher ohne mock-fallback: schlägt der call fehl
+// (z.b. kein order_service erreichbar), bleibt das badge einfach aus.
+// gateway stuft GET /order/** nicht als öffentlich ein, also braucht es den auth-header.
+export async function getOrder(orderId) {
+  return apiFetch(`/order/${orderId}`, { headers: { ...authHeader() } });
 }

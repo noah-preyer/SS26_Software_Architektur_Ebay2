@@ -1,0 +1,18 @@
+services:
+  cloudbeaver:
+    image: dbeaver/cloudbeaver:latest
+    container_name: cloudbeaver
+    restart: unless-stopped
+    ports:
+      - "8978:8978"
+    volumes:
+      - cloudbeaver_workspace:/opt/cloudbeaver/workspace
+    networks:
+      - ss26_software_architektur_ebay2_default
+
+volumes:
+  cloudbeaver_workspace:
+
+networks:
+  ss26_software_architektur_ebay2_default:
+    external: true

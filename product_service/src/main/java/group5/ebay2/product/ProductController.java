@@ -1,15 +1,14 @@
 package group5.ebay2.product;
 
-import group5.ebay2.product.dtos.BuyProductDto;
 import group5.ebay2.product.dtos.BuyProductResponse;
 import group5.ebay2.product.dtos.CreateProductDto;
+import group5.ebay2.product.dtos.ProductResponse;
 import group5.ebay2.product.dtos.UpdateProductDto;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/products")
@@ -22,7 +21,7 @@ public class ProductController {
     }
 
     @GetMapping
-    public List<Product> getAllProducts(@RequestParam(required = false) String category) {
+    public List<ProductResponse> getAllProducts(@RequestParam(required = false) String category) {
         if (category != null) {
             return productService.getProductsByCategory(category);
         }
@@ -30,22 +29,22 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public Product getProductById(@PathVariable UUID id) {
+    public ProductResponse getProductById(@PathVariable Long id) {
         return productService.getProductById(id);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Product createProduct(
-            @RequestHeader("X-User-Id") UUID sellerId,
+            @RequestHeader("X-User-Id") Long sellerId,
             @Valid @RequestBody CreateProductDto dto) {
         return productService.createProduct(dto, sellerId);
     }
 
     @PutMapping("/{id}")
     public Product updateProduct(
-            @PathVariable UUID id,
-            @RequestHeader("X-User-Id") UUID requesterId,
+            @PathVariable Long id,
+            @RequestHeader("X-User-Id") Long requesterId,
             @Valid @RequestBody UpdateProductDto dto) {
         return productService.updateProduct(id, dto, requesterId);
     }
@@ -53,16 +52,15 @@ public class ProductController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteProduct(
-            @PathVariable UUID id,
-            @RequestHeader("X-User-Id") UUID requesterId) {
+            @PathVariable Long id,
+            @RequestHeader("X-User-Id") Long requesterId) {
         productService.deleteProduct(id, requesterId);
     }
 
     @PostMapping("/{id}/buy")
     public BuyProductResponse buyProduct(
-            @PathVariable UUID id,
-            @RequestHeader("X-User-Id") UUID buyerId,
-            @Valid @RequestBody BuyProductDto dto) {
-        return productService.buyProduct(id, buyerId, dto);
+            @PathVariable Long id,
+            @RequestHeader("X-User-Id") Long buyerId) {
+        return productService.buyProduct(id, buyerId);
     }
 }

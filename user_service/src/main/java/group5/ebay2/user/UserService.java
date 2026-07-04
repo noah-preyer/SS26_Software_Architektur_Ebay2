@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class UserService {
@@ -20,13 +19,16 @@ public class UserService {
     private final UserProfileRepository userProfileRepository;
     private final AddressRepository addressRepository;
     private final AddressTypeRepository addressTypeRepository;
+    private final AuthServiceClient authServiceClient;
 
     public UserService(UserProfileRepository userProfileRepository,
                        AddressRepository addressRepository,
-                       AddressTypeRepository addressTypeRepository) {
+                       AddressTypeRepository addressTypeRepository,
+                       AuthServiceClient authServiceClient) {
         this.userProfileRepository = userProfileRepository;
         this.addressRepository = addressRepository;
         this.addressTypeRepository = addressTypeRepository;
+        this.authServiceClient = authServiceClient;
     }
 
     @Transactional
@@ -45,39 +47,69 @@ public class UserService {
             );
         }
 
-        if (userProfileRepository.existsByAuthUserId(request.authUserId())) {
-            throw new UserExceptions.UserAlreadyExistsException(
-                    "Auth user ID already exists: " + request.authUserId()
+        AuthServiceClient.AuthUser authUser;
+        try {
+            authUser = authServiceClient.createUser(
+                    request.username(), request.email(), request.password());
+        } catch (Exception e) {
+            log.error("Failed to create auth user: {}", e.getMessage());
+            throw new RuntimeException("Registration failed: could not create auth user");
+        }
+
+        Long authUserId = authUser.id();
+
+        try {
+            UserProfile userProfile = new UserProfile(authUserId, request.username(), request.email());
+            userProfile.updateProfile(
+                    request.firstName(),
+                    request.lastName(),
+                    request.phoneNumber()
             );
+            if (request.profileImageObjectKey() != null) {
+                userProfile.updateProfileImage(request.profileImageObjectKey());
+            }
+
+            UserProfile saved = userProfileRepository.save(userProfile);
+
+            if (request.addressStreet() != null && !request.addressStreet().isBlank()) {
+                AddressType addressType = addressTypeRepository.findByCodeAndActiveTrue("SHIPPING")
+                        .orElse(null);
+                if (addressType != null) {
+                    Address address = new Address(
+                            request.addressStreet(),
+                            request.addressHouseNumber(),
+                            request.addressPostalCode(),
+                            request.addressCity(),
+                            request.addressCountry(),
+                            addressType,
+                            true
+                    );
+                    saved.addAddress(address);
+                    addressRepository.save(address);
+                }
+            }
+
+            log.info("Created user with id: {}, authUserId: {}", saved.getId(), saved.getAuthUserId());
+
+            return toResponse(saved);
+        } catch (Exception e) {
+            log.error("Failed to save user profile, rolling back auth user: {}", e.getMessage());
+            try {
+                authServiceClient.deleteUser(authUserId);
+            } catch (Exception ex) {
+                log.error("Failed to delete auth user {} during rollback: {}", authUserId, ex.getMessage());
+            }
+            throw e;
         }
-
-        UserProfile userProfile = new UserProfile(
-                request.authUserId(),
-                request.username(),
-                request.email()
-        );
-        userProfile.updateProfile(
-                request.firstName(),
-                request.lastName(),
-                request.phoneNumber()
-        );
-        if (request.profileImageObjectKey() != null) {
-            userProfile.updateProfileImage(request.profileImageObjectKey());
-        }
-
-        UserProfile saved = userProfileRepository.save(userProfile);
-        log.info("Created user with id: {}, authUserId: {}", saved.getId(), saved.getAuthUserId());
-
-        return toResponse(saved);
     }
 
     @Transactional(readOnly = true)
-    public UserProfileDto.Response getUser(UUID id) {
+    public UserProfileDto.Response getUser(Long id) {
         return toResponse(findUserById(id));
     }
 
     @Transactional(readOnly = true)
-    public UserProfileDto.Response getUserByAuthUserId(UUID authUserId) {
+    public UserProfileDto.Response getUserByAuthUserId(Long authUserId) {
         return toResponse(userProfileRepository.findByAuthUserId(authUserId)
                 .orElseThrow(() -> new UserExceptions.UserNotFoundException(
                         "User not found with authUserId: " + authUserId)));
@@ -98,7 +130,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserProfileDto.Response updateUser(UUID id, UserProfileDto.UpdateRequest request) {
+    public UserProfileDto.Response updateUser(Long id, UserProfileDto.UpdateRequest request) {
         UserProfile user = findUserById(id);
 
         if (request.username() != null && !request.username().equals(user.getUsername())) {
@@ -138,14 +170,14 @@ public class UserService {
     }
 
     @Transactional
-    public void deleteUser(UUID id) {
+    public void deleteUser(Long id) {
         UserProfile user = findUserById(id);
         userProfileRepository.delete(user);
         log.info("Deleted user with id: {}", id);
     }
 
     @Transactional
-    public AddressDto.Response addAddress(UUID userId, AddressDto.Request request) {
+    public AddressDto.Response addAddress(Long userId, AddressDto.Request request) {
         UserProfile user = findUserById(userId);
         AddressType addressType = findAddressType(request.addressTypeCode());
 
@@ -171,7 +203,7 @@ public class UserService {
     }
 
     @Transactional
-    public AddressDto.Response updateAddress(UUID addressId, AddressDto.Request request) {
+    public AddressDto.Response updateAddress(Long addressId, AddressDto.Request request) {
         Address address = findAddressById(addressId);
         AddressType addressType = findAddressType(request.addressTypeCode());
 
@@ -196,7 +228,7 @@ public class UserService {
     }
 
     @Transactional
-    public void removeAddress(UUID addressId) {
+    public void removeAddress(Long addressId) {
         Address address = findAddressById(addressId);
         address.getUserProfile().removeAddress(address);
         addressRepository.delete(address);
@@ -204,7 +236,7 @@ public class UserService {
     }
 
     @Transactional
-    public AddressDto.Response setDefaultAddress(UUID userId, UUID addressId) {
+    public AddressDto.Response setDefaultAddress(Long userId, Long addressId) {
         UserProfile user = findUserById(userId);
         Address address = findAddressById(addressId);
 
@@ -230,7 +262,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public List<AddressDto.Response> getAddresses(UUID userId) {
+    public List<AddressDto.Response> getAddresses(Long userId) {
         findUserById(userId);
         return addressRepository.findByUserProfileId(userId).stream()
                 .map(this::toResponse)
@@ -238,16 +270,16 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public AddressDto.Response getAddress(UUID addressId) {
+    public AddressDto.Response getAddress(Long addressId) {
         return toResponse(findAddressById(addressId));
     }
 
-    private UserProfile findUserById(UUID id) {
+    private UserProfile findUserById(Long id) {
         return userProfileRepository.findById(id)
                 .orElseThrow(() -> new UserExceptions.UserNotFoundException("User not found: " + id));
     }
 
-    private Address findAddressById(UUID id) {
+    private Address findAddressById(Long id) {
         return addressRepository.findById(id)
                 .orElseThrow(() -> new UserExceptions.AddressNotFoundException("Address not found: " + id));
     }
@@ -268,11 +300,18 @@ public class UserService {
     }
 
     private UserProfileDto.Response toResponse(UserProfile user) {
+        AuthServiceClient.AuthUser authUser = null;
+        try {
+            authUser = authServiceClient.getUser(user.getAuthUserId());
+        } catch (Exception e) {
+            log.warn("Failed to fetch auth data for authUserId={}: {}", user.getAuthUserId(), e.getMessage());
+        }
+
         return new UserProfileDto.Response(
                 user.getId(),
                 user.getAuthUserId(),
-                user.getUsername(),
-                user.getEmail(),
+                authUser != null ? authUser.username() : user.getUsername(),
+                authUser != null ? authUser.email() : user.getEmail(),
                 user.getFirstName(),
                 user.getLastName(),
                 user.getPhoneNumber(),

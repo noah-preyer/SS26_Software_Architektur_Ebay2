@@ -1,14 +1,24 @@
 include:
+  - frontend/docker-compose.yml
   - product_service/docker-compose.yml
-  - docker/auth_service.yaml
-  - docker/notification_service.yml
-  - docker/payment_service.yml
-  - docker/user_service.yml
+  - auth_service/docker-compose.yml
+  #- docker/notification-service.yml
+  #- docker/payment-service.yml
+  - order_service/docker-compose.yml
+  - user_service/docker-compose.yml
+  #- docker/image-service.yml
 
 services:
   api-gateway:
-    build: ./api-gateway
+    container_name: api-gateway
+    build: ./api_gateway
     ports:
       - "8080:8080"
     depends_on:
       - product-service
+      - auth-service
+      - user-service
+      - order-service
+      #- payment-service
+      #- notification-service
+      #- image-service

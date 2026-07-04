@@ -1,0 +1,14 @@
+group5/ebay2/image/repositories/ImageRepository.class
+group5/ebay2/ImageServiceApplication.class
+group5/ebay2/image/ImageService.class
+group5/ebay2/image/dtos/ImageDto.class
+group5/ebay2/image/ImageExceptions$ImageStorageException.class
+group5/ebay2/error/GlobalExceptionHandler.class
+group5/ebay2/image/OpenApiConfig.class
+group5/ebay2/image/Image.class
+group5/ebay2/image/ImageExceptions$ImageNotFoundException.class
+group5/ebay2/error/ErrorResponse.class
+group5/ebay2/image/dtos/ImageDto$Response.class
+group5/ebay2/image/dtos/ImageDto$UploadResponse.class
+group5/ebay2/image/ImageExceptions.class
+group5/ebay2/image/ImageController.class

@@ -100,6 +100,12 @@ export default function NavAuth() {
                 <p class="text-[10px] font-bold text-[#666] uppercase tracking-wider">Angemeldet als</p>
                 <p class="text-sm font-bold text-[#111111] truncate mt-0.5">{displayName()}</p>
               </div>
+              <a
+                href="/user"
+                class="block px-4 py-2 text-sm font-semibold text-[#111111] hover:bg-[#F2EFE8] transition-colors"
+              >
+                Profil
+              </a>
               <button
                 type="button"
                 onClick={handleLogout}

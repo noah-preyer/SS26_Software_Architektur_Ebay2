@@ -13,12 +13,11 @@ services:
     build: .
     ports:
       - "4321:4321"
+    env_file: ../frontend/.env
     environment:
-      BACKEND_TARGET: ${BACKEND_TARGET_OVERRIDE:-http://test-backend:8090}
+      BACKEND_TARGET: ${BACKEND_TARGET_OVERRIDE:-http://api-gateway:8080}
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    depends_on:
-      - test-backend
 
 volumes:
   test-backend-data:
