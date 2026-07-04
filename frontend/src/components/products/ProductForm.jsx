@@ -1,12 +1,11 @@
-// formular zum anlegen und bearbeiten von anzeigen, inkl. bild-zuschneiden und komprimierung.
+// formular zum anlegen und bearbeiten von anzeigen. bilder werden als URLs hinzugefügt.
 // Ohne Bild wird automatisch ein Picsum-Platzhalter gesetzt.
 
 import { createSignal, Show, For } from "solid-js";
 import { KATEGORIEN } from "../../lib/mockData.js";
 import { createProduct, updateProduct, errorMessage } from "../../lib/api.js";
 import { getUserInfo } from "../../lib/auth.js";
-import { compressToDataUrl, MAX_IMAGES, IMAGE_ASPECT_RATIO } from "../../lib/images.js";
-import ImageCropper from "../media/ImageCropper.jsx";
+import { MAX_IMAGES } from "../../lib/images.js";
 import ErrorBanner from "../ui/ErrorBanner.jsx";
 
 const MAX_TITLE_LENGTH = 80;
@@ -20,44 +19,42 @@ export default function ProductForm(props) {
   const [price, setPrice] = createSignal(props.product?.price ?? "");
   const [category, setCategory] = createSignal(props.product?.category ?? "");
   const [images, setImages] = createSignal(props.product?.imageUrls ?? []);
-
-  const [cropSrc, setCropSrc] = createSignal(null);
-  const [compressing, setCompressing] = createSignal(false);
+  const [imageUrl, setImageUrl] = createSignal("");
 
   const [titleError, setTitleError] = createSignal("");
   const [priceError, setPriceError] = createSignal("");
   const [error, setError] = createSignal("");
   const [loading, setLoading] = createSignal(false);
 
-  const handleFileChange = (e) => {
-    const file = e.target.files?.[0];
-    e.target.value = ""; // erlaubt erneutes Auswählen derselben Datei
-    if (!file) return;
+  const isValidUrl = (value) => {
+    try {
+      const url = new URL(value);
+      return url.protocol === "http:" || url.protocol === "https:";
+    } catch {
+      return false;
+    }
+  };
+
+  const addImageUrl = () => {
+    const url = imageUrl().trim();
+    if (!url) return;
 
     if (images().length >= MAX_IMAGES) {
       setError(`Maximal ${MAX_IMAGES} Bilder pro Anzeige.`);
       return;
     }
+    if (!isValidUrl(url)) {
+      setError("Bitte einen gültigen Link (http/https) angeben.");
+      return;
+    }
+    if (images().includes(url)) {
+      setError("Dieser Link wurde bereits hinzugefügt.");
+      return;
+    }
 
     setError("");
-    setCropSrc(URL.createObjectURL(file));
-  };
-
-  const handleCrop = async (blob) => {
-    setCropSrc(null);
-    setCompressing(true);
-    try {
-      const dataUrl = await compressToDataUrl(blob);
-      setImages((prev) => [...prev, dataUrl]);
-    } catch {
-      setError("Bild konnte nicht verarbeitet werden.");
-    } finally {
-      setCompressing(false);
-    }
-  };
-
-  const handleCancelCrop = () => {
-    setCropSrc(null);
+    setImages((prev) => [...prev, url]);
+    setImageUrl("");
   };
 
   const removeImage = (index) => {
@@ -226,12 +223,29 @@ export default function ProductForm(props) {
           </div>
 
           <Show when={images().length < MAX_IMAGES}>
-            <label class="btn-secondary inline-block cursor-pointer">
-              {compressing() ? "Wird verarbeitet..." : "Bild hinzufügen"}
-              <input type="file" accept="image/*" class="hidden" onChange={handleFileChange} disabled={compressing()} />
-            </label>
+            <div class="flex gap-2">
+              <input
+                type="url"
+                inputmode="url"
+                placeholder="https://beispiel.de/bild.jpg"
+                class="input-field flex-1"
+                value={imageUrl()}
+                onInput={(e) => setImageUrl(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    addImageUrl();
+                  }
+                }}
+              />
+              <button type="button" onClick={addImageUrl} class="btn-secondary shrink-0">
+                Hinzufügen
+              </button>
+            </div>
           </Show>
-          <p class="text-xs text-[#999] mt-1">Ohne Bild wird automatisch ein Platzhalter verwendet.</p>
+          <p class="text-xs text-[#999] mt-1">
+            Bis zu {MAX_IMAGES} Bild-Links einfügen. Ohne Bild wird automatisch ein Platzhalter verwendet.
+          </p>
         </div>
 
         <Show when={error()}>
@@ -247,10 +261,6 @@ export default function ProductForm(props) {
           </button>
         </div>
       </form>
-
-      <Show when={cropSrc()}>
-        <ImageCropper imageSrc={cropSrc()} aspectRatio={IMAGE_ASPECT_RATIO} onCrop={handleCrop} onCancel={handleCancelCrop} />
-      </Show>
     </div>
   );
 }

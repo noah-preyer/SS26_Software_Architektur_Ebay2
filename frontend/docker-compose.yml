@@ -18,12 +18,6 @@ services:
       BACKEND_TARGET: ${BACKEND_TARGET_OVERRIDE:-http://api-gateway:8080}
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    networks:
-      - ss26_software_architektur_ebay2_default
 
 volumes:
   test-backend-data:
-
-networks:
-  ss26_software_architektur_ebay2_default:
-    external: true
