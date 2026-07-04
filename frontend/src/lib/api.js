@@ -67,6 +67,8 @@ export function errorMessage(err, overrides = {}) {
   switch (err?.status) {
     case 401:
       return "Sitzung abgelaufen. Bitte neu einloggen.";
+    case 403:
+      return "Du kannst dein eigenes Produkt nicht kaufen.";
     case 404:
       return "Nicht gefunden.";
     case 409:
