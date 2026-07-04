@@ -2,6 +2,7 @@ package group5.ebay2.product;
 
 import group5.ebay2.product.dtos.BuyProductResponse;
 import group5.ebay2.product.dtos.CreateProductDto;
+import group5.ebay2.product.dtos.ProductResponse;
 import group5.ebay2.product.dtos.UpdateProductDto;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/products")
 public class ProductController {
 
     private final ProductService productService;
@@ -19,7 +21,7 @@ public class ProductController {
     }
 
     @GetMapping
-    public List<Product> getAllProducts(@RequestParam(required = false) String category) {
+    public List<ProductResponse> getAllProducts(@RequestParam(required = false) String category) {
         if (category != null) {
             return productService.getProductsByCategory(category);
         }
@@ -27,7 +29,7 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public Product getProductById(@PathVariable Long id) {
+    public ProductResponse getProductById(@PathVariable Long id) {
         return productService.getProductById(id);
     }
 
