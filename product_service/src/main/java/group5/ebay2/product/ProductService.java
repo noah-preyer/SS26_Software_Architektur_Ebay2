@@ -2,6 +2,7 @@ package group5.ebay2.product;
 
 import group5.ebay2.product.dtos.BuyProductResponse;
 import group5.ebay2.product.dtos.CreateProductDto;
+import group5.ebay2.product.dtos.ProductResponse;
 import group5.ebay2.product.dtos.UpdateProductDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -16,21 +17,34 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final OrderClient orderClient;
+    private final UserClient userClient;
 
-    public ProductService(ProductRepository productRepository, OrderClient orderClient) {
+    public ProductService(ProductRepository productRepository, OrderClient orderClient, UserClient userClient) {
         this.productRepository = productRepository;
         this.orderClient = orderClient;
+        this.userClient = userClient;
     }
 
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    public List<ProductResponse> getAllProducts() {
+        return productRepository.findByStatus(ProductStatus.AVAILABLE).stream()
+                .map(p -> ProductResponse.from(p, null))
+                .toList();
     }
 
-    public List<Product> getProductsByCategory(String category) {
-        return productRepository.findByCategory(category);
+    public List<ProductResponse> getProductsByCategory(String category) {
+        return productRepository.findByCategoryAndStatus(category, ProductStatus.AVAILABLE).stream()
+                .map(p -> ProductResponse.from(p, null))
+                .toList();
     }
 
-    public Product getProductById(Long id) {
+    public ProductResponse getProductById(Long id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
+        String sellerUsername = userClient.getUsernameById(product.getSellerId());
+        return ProductResponse.from(product, sellerUsername);
+    }
+
+    private Product getProductEntityById(Long id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
     }
@@ -43,12 +57,11 @@ public class ProductService {
         product.setCategory(dto.getCategory());
         product.setSellerId(sellerId);
         product.setImageUrls(dto.getImageUrls());
-        product.setQuantity(dto.getQuantity());
         return productRepository.save(product);
     }
 
     public Product updateProduct(Long id, UpdateProductDto dto, Long requesterId) {
-        Product product = getProductById(id);
+        Product product = getProductEntityById(id);
         if (!product.getSellerId().equals(requesterId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not the seller of this product");
         }
@@ -61,7 +74,7 @@ public class ProductService {
     }
 
     public void deleteProduct(Long id, Long requesterId) {
-        Product product = getProductById(id);
+        Product product = getProductEntityById(id);
         if (!product.getSellerId().equals(requesterId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not the seller of this product");
         }
@@ -69,41 +82,28 @@ public class ProductService {
     }
 
     public BuyProductResponse buyProduct(Long productId, Long buyerId) {
-        Product product = getProductById(productId);
+        Product product = getProductEntityById(productId);
 
         if (product.getSellerId().equals(buyerId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot buy your own product");
         }
 
-        int updated = productRepository.decrementQuantity(productId);
+        int updated = productRepository.markAsSold(productId);
         if (updated == 0) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Product is out of stock");
-        }
-
-        // Reload to get current quantity after decrement
-        product = getProductById(productId);
-        if (product.getQuantity() == 0) {
-            product.setStatus(ProductStatus.SOLD);
-            productRepository.save(product);
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Product is already sold");
         }
 
         try {
             OrderClient.OrderResponse order = orderClient.createOrder(buyerId, productId, DEFAULT_CURRENCY);
-            // Kein separater Payment-Service mehr vorhanden: Kauf gilt als sofort bezahlt,
-            // der order_service-eigene Scheduler übernimmt danach PAID -> SHIPPED -> DELIVERED.
             OrderClient.OrderResponse paidOrder = orderClient.markOrderPaid(order.id());
 
             return new BuyProductResponse(
-                    product.getId(), product.getTitle(), product.getPrice(), product.getQuantity(),
+                    product.getId(), product.getTitle(), product.getPrice(),
                     paidOrder.id(), paidOrder.status());
 
         } catch (Exception e) {
-            // Compensating transaction: restore stock if order creation/payment fails
-            productRepository.incrementQuantity(productId);
-            if (product.getStatus() == ProductStatus.SOLD) {
-                product.setStatus(ProductStatus.AVAILABLE);
-                productRepository.save(product);
-            }
+            // Compensating transaction: restore availability if order creation fails
+            productRepository.markAsAvailable(productId);
             throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
                     "Order creation failed, purchase rolled back: " + e.getMessage());
         }

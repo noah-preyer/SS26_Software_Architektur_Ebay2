@@ -6,7 +6,6 @@ public record BuyProductResponse(
         Long productId,
         String productTitle,
         BigDecimal price,
-        int remainingQuantity,
         Long orderId,
         String orderStatus
 ) {}

@@ -4,6 +4,7 @@
 import { createSignal, onMount, Show } from "solid-js";
 import { formatPrice, formatDate } from "../../lib/format.js";
 import { addToCart, isInCart, removeFromCart } from "../../lib/cart.js";
+import { getUserInfo } from "../../lib/auth.js";
 
 const PLACEHOLDER = "https://picsum.photos/seed/no-image/400/300";
 
@@ -22,7 +23,16 @@ export default function ProductCard(props) {
   const isSold = () => props.product.status === "SOLD";
 
   const [inCart, setInCart] = createSignal(false);
-  onMount(() => setInCart(isInCart(props.product.id)));
+  const [currentUser, setCurrentUser] = createSignal(null);
+  onMount(() => {
+    setCurrentUser(getUserInfo());
+    setInCart(isInCart(props.product.id));
+  });
+
+  const isOwner = () => {
+    const user = currentUser();
+    return !!user && user.id != null && String(user.id) === String(props.product.sellerId);
+  };
 
   const toggleCart = (e) => {
     e.preventDefault();
@@ -74,14 +84,15 @@ export default function ProductCard(props) {
           {formatPrice(props.product.price)}
         </p>
 
-        <Show
-          when={!isSold()}
-          fallback={
-            <button disabled class="p-2 rounded-sm border-2 border-[#ddd] text-[#ccc] cursor-not-allowed" aria-label="Nicht verfügbar">
-              <CartIcon />
-            </button>
-          }
-        >
+        <Show when={!isOwner()}>
+          <Show
+            when={!isSold()}
+            fallback={
+              <button disabled class="p-2 rounded-sm border-2 border-[#ddd] text-[#ccc] cursor-not-allowed" aria-label="Nicht verfügbar">
+                <CartIcon />
+              </button>
+            }
+          >
           <button
             type="button"
             onClick={toggleCart}
@@ -94,6 +105,7 @@ export default function ProductCard(props) {
           >
             <CartIcon />
           </button>
+          </Show>
         </Show>
       </div>
     </div>

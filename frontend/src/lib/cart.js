@@ -131,6 +131,9 @@ export async function checkout() {
       if (err?.status === 409) {
         removeFromCart(id);
         conflicts.push(id);
+      } else if (err?.status === 403) {
+        removeFromCart(id);
+        errors.push({ id, error: err });
       } else {
         errors.push({ id, error: err });
       }

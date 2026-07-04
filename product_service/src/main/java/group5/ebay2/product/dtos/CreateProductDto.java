@@ -1,6 +1,5 @@
 package group5.ebay2.product.dtos;
 
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -23,9 +22,6 @@ public class CreateProductDto {
 
     private List<String> imageUrls;
 
-    @Min(1)
-    private int quantity = 1;
-
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
     public String getDescription() { return description; }
@@ -36,6 +32,4 @@ public class CreateProductDto {
     public void setCategory(String category) { this.category = category; }
     public List<String> getImageUrls() { return imageUrls; }
     public void setImageUrls(List<String> imageUrls) { this.imageUrls = imageUrls; }
-    public int getQuantity() { return quantity; }
-    public void setQuantity(int quantity) { this.quantity = quantity; }
 }

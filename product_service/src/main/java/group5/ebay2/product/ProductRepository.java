@@ -9,16 +9,17 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
-    List<Product> findByCategory(String category);
+    List<Product> findByStatus(ProductStatus status);
+    List<Product> findByCategoryAndStatus(String category, ProductStatus status);
     List<Product> findBySellerId(Long sellerId);
 
     @Modifying
     @Transactional
-    @Query("UPDATE Product p SET p.quantity = p.quantity - 1 WHERE p.id = :id AND p.quantity > 0")
-    int decrementQuantity(@Param("id") Long id);
+    @Query(value = "UPDATE products SET status = 'SOLD' WHERE id = :id AND status = 'AVAILABLE'", nativeQuery = true)
+    int markAsSold(@Param("id") Long id);
 
     @Modifying
     @Transactional
-    @Query("UPDATE Product p SET p.quantity = p.quantity + 1 WHERE p.id = :id")
-    void incrementQuantity(@Param("id") Long id);
+    @Query(value = "UPDATE products SET status = 'AVAILABLE' WHERE id = :id", nativeQuery = true)
+    void markAsAvailable(@Param("id") Long id);
 }

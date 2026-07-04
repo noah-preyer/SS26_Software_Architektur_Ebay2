@@ -11,7 +11,6 @@ public record ProductDto(
         BigDecimal price,
         String category,
         Long sellerId,
-        int quantity,
         String status,
         List<String> imageUrls,
         LocalDateTime createdAt
