@@ -84,6 +84,28 @@ VALUES
         NULL,
         NOW(),
         NOW()
+    ),
+    (
+        3,
+        'annam',
+        'anna.mueller@example.com',
+        'Anna',
+        'Müller',
+        '+493333333333',
+        NULL,
+        NOW(),
+        NOW()
+    ),
+    (
+        4,
+        'maxk',
+        'max.klein@example.com',
+        'Max',
+        'Klein',
+        '+494444444444',
+        NULL,
+        NOW(),
+        NOW()
     )
     ON CONFLICT (email) DO NOTHING;
 
