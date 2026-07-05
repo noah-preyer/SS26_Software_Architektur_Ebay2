@@ -71,12 +71,15 @@ onMount(async () => {
       <h1 class="page-title mb-6">Kasse</h1>
 
       <Show when={orderResult()?.purchased.length > 0}>
-        <ErrorBanner
-          type="warning"
-          message={`Bestellung erfolgreich! Bestätigung würde an ${
-            getUserInfo()?.email ?? "deine E-Mail-Adresse"
-          } gesendet (Demo, kein E-Mail-Versand).`}
-        />
+        <div class="card p-10 text-center space-y-5">
+          <svg viewBox="0 0 80 80" class="w-20 h-20 mx-auto" fill="none">
+            <rect x="6" y="6" width="68" height="68" rx="34" fill="#E8400C" />
+            <path d="M28 42l8 8 16-16" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <h2 class="text-3xl font-black tracking-tight">Vielen Dank für deinen Kauf!</h2>
+          <p class="text-sm text-[#666666]">Deine Bestellung wurde erfolgreich aufgegeben.</p>
+          <a href="/my-orders" class="btn-primary inline-block mt-2">Zu meinen Käufen</a>
+        </div>
       </Show>
 
       <Show when={orderResult()?.conflicts.length > 0}>
@@ -180,11 +183,6 @@ onMount(async () => {
         </Show>
       </Show>
 
-      <Show when={orderResult()?.purchased.length > 0 && ids().length === 0}>
-        <a href="/my-orders" class="btn-secondary inline-block mt-6">
-          Zu meinen Käufen
-        </a>
-      </Show>
     </div>
   );
 }
