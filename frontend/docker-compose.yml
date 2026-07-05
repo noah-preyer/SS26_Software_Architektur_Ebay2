@@ -1,13 +1,13 @@
 services:
-  test-backend:
-    build: ./test-backend
-    ports:
-      - "8090:8090"
-    environment:
-      PORT: "8090"
-      DATA_FILE: /data/data.json # Persistenz auf dem Volume unten
-    volumes:
-      - test-backend-data:/data
+  #test-backend:
+  #  build: ./test-backend
+  #  ports:
+  #    - "8090:8090"
+  #  environment:
+  #    PORT: "8090"
+  #    DATA_FILE: /data/data.json # Persistenz auf dem Volume unten
+  #  volumes:
+  #    - test-backend-data:/data
 
   frontend:
     build: .
