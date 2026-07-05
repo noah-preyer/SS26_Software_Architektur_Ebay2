@@ -23,8 +23,8 @@ spring:
           predicates:
             - Path=/address/**
 
-        - id: product-service
-          uri: http://product-service:8082
+        - id: product-service-proxy
+          uri: http://product-service-proxy:80
           predicates:
             - Path=/products/**
 

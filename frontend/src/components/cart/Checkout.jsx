@@ -1,9 +1,9 @@
 // kassenseite mit adress- und zahlformular (demo). kauf läuft über POST /products/{id}/buy.
 
 import { createSignal, createResource, onMount, For, Show } from "solid-js";
-import { errorMessage } from "../../lib/api.js";
+import { errorMessage, apiFetch } from "../../lib/api.js";
 import { getCart, checkout, loadCartItems } from "../../lib/cart.js";
-import { getUserInfo, isLoggedIn } from "../../lib/auth.js";
+import { getUserInfo, isLoggedIn, authHeader } from "../../lib/auth.js";
 import { formatPrice } from "../../lib/format.js";
 import ErrorBanner from "../ui/ErrorBanner.jsx";
 
@@ -21,13 +21,32 @@ export default function Checkout() {
   const [orderResult, setOrderResult] = createSignal(null);
   const [errorMsg, setErrorMsg] = createSignal("");
 
-  // login wird erst hier verlangt (der kauf braucht das token), onMount setzt den echten stand.
-  const [loggedIn, setLoggedIn] = createSignal(false);
+// login wird erst hier verlangt (der kauf braucht das token), onMount setzt den echten stand.
+const [loggedIn, setLoggedIn] = createSignal(false);
 
-  onMount(() => {
-    setIds(getCart());
-    setLoggedIn(isLoggedIn());
-  });
+onMount(async () => {
+  setIds(getCart());
+  setLoggedIn(isLoggedIn());
+
+  if (isLoggedIn()) {
+    const session = getUserInfo();
+    if (session?.id) {
+      try {
+        const headers = { ...authHeader() };
+        const userData = await apiFetch(`/user/by-auth/${session.id}`, { headers });
+        const addressData = await apiFetch(`/user/${userData.id}/addresses`, { headers });
+        const defaultAddr = addressData?.find((a) => a.defaultAddress) ?? addressData?.[0];
+        if (defaultAddr) {
+          setStreet(`${defaultAddr.street} ${defaultAddr.houseNumber}`.trim());
+          setZip(defaultAddr.postalCode ?? "");
+          setCity(defaultAddr.city ?? "");
+        }
+      } catch {
+        // addresses are optional, silently ignore
+      }
+    }
+  }
+});
 
   const total = () => (result() ?? []).reduce((sum, p) => sum + Number(p.price), 0);
 
