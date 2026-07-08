@@ -106,10 +106,21 @@ VALUES
         NULL,
         NOW(),
         NOW()
+    ),
+    (
+        5,
+        'noah',
+        'preyer.noah@gmail.com',
+        'Noah',
+        'Preyer',
+        '+491234567890',
+        NULL,
+        NOW(),
+        NOW()
     )
     ON CONFLICT (email) DO NOTHING;
 
-SELECT setval(pg_get_serial_sequence('user_profiles', 'id'), GREATEST((SELECT MAX(id) FROM user_profiles), 1));
+SELECT setval(pg_get_serial_sequence('user_profiles', 'id'), GREATEST((SELECT MAX(id) FROM user_profiles), 5));
 
 INSERT INTO addresses (
     street, house_number, postal_code, city, country,
@@ -132,6 +143,12 @@ VALUES
         'Bahnhofstraße', '10', '80331', 'Munich', 'Germany',
         'BILLING', FALSE,
         (SELECT id FROM user_profiles WHERE auth_user_id = 2),
+        NOW(), NOW()
+    ),
+    (
+        'Musterweg', '12', '22765', 'Hamburg', 'Germany',
+        'SHIPPING', TRUE,
+        (SELECT id FROM user_profiles WHERE auth_user_id = 5),
         NOW(), NOW()
     )
     ON CONFLICT DO NOTHING;

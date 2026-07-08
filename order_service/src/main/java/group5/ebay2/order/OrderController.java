@@ -24,36 +24,21 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @GetMapping("/{orderId}")
-    public ResponseEntity<OrderDto.Response> getOrder(@PathVariable Long orderId) {
-        return ResponseEntity.ok(orderService.getOrder(orderId));
-    }
 
-    @PutMapping("/{orderId}/status")
-    public ResponseEntity<OrderDto.Response> updateOrderStatus(
-            @PathVariable Long orderId,
-            @Valid @RequestBody OrderDto.StatusUpdateRequest request) {
-        return ResponseEntity.ok(orderService.updateOrderStatus(orderId, request));
-    }
-
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<OrderDto.Response>> getOrdersByUser(
-            @PathVariable Long userId) {
-        return ResponseEntity.ok(orderService.getOrdersByUser(userId));
-    }
 
     @PutMapping("/{orderId}/paid")
     public ResponseEntity<OrderDto.Response> markOrderPaid(@PathVariable Long orderId) {
         return ResponseEntity.ok(orderService.markOrderPaid(orderId));
     }
 
-    @PutMapping("/{orderId}/refunded")
-    public ResponseEntity<OrderDto.Response> markOrderRefunded(@PathVariable Long orderId) {
-        return ResponseEntity.ok(orderService.markOrderRefunded(orderId));
+    @GetMapping("/{orderId}")
+    public ResponseEntity<OrderDto.Response> getOrder(@PathVariable Long orderId) {
+        return ResponseEntity.ok(orderService.getOrder(orderId));
     }
 
-    @PostMapping("/{orderId}/refund")
-    public ResponseEntity<OrderDto.Response> refundOrder(@PathVariable Long orderId) {
-        return ResponseEntity.ok(orderService.refundOrder(orderId));
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<OrderDto.Response>> getOrdersByUser(
+            @PathVariable Long userId) {
+        return ResponseEntity.ok(orderService.getOrdersByUser(userId));
     }
 }

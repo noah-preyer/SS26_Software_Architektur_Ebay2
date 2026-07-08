@@ -1,56 +1,73 @@
-// bestellhistorie: ids aus dem sessionstorage, produktdetails werden per api nachgeladen.
-
-import { createSignal, createResource, createMemo, onMount, For, Show } from "solid-js";
+import { createSignal, createMemo, onMount, For, Show } from "solid-js";
 
 const PAGE_SIZE = 8;
-import { getProduct, errorMessage } from "../../lib/api.js";
-import { getPurchases, getOrderId } from "../../lib/cart.js";
+import { getProduct, getUserOrders, errorMessage } from "../../lib/api.js";
+import { getUserInfo } from "../../lib/auth.js";
 import { PRODUCT_SORT_OPTIONS, filterProducts, sortProducts } from "../../lib/productFilters.js";
 import ProductListItem from "../products/ProductListItem.jsx";
 import SearchSortBar from "../products/SearchSortBar.jsx";
 import ErrorBanner from "../ui/ErrorBanner.jsx";
 import OrderStatusBadge from "./OrderStatusBadge.jsx";
 
-async function loadOrders(ids) {
-  const items = [];
-  for (const id of ids) {
-    try {
-      const { data } = await getProduct(id);
-      if (data) items.push(data);
-    } catch {
-    }
-  }
-  return items;
-}
-
 export default function MyOrders() {
-  const [ids, setIds] = createSignal([]);
-  const [result] = createResource(ids, loadOrders);
+  const [items, setItems] = createSignal(null);
+  const [loading, setLoading] = createSignal(true);
+  const [error, setError] = createSignal(null);
   const [search, setSearch] = createSignal("");
   const [sort, setSort] = createSignal("newest");
   const [page, setPage] = createSignal(1);
 
   const filtered = createMemo(() =>
-    sortProducts(filterProducts(result() ?? [], search()), sort())
+    sortProducts(filterProducts(items() ?? [], search()), sort())
   );
 
   const totalPages = createMemo(() => Math.max(1, Math.ceil(filtered().length / PAGE_SIZE)));
   const visible = createMemo(() => filtered().slice((page() - 1) * PAGE_SIZE, page() * PAGE_SIZE));
 
-  onMount(() => setIds(getPurchases()));
+  onMount(async () => {
+    setLoading(true);
+    const user = getUserInfo();
+    if (!user?.id) {
+      setItems([]);
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const orders = await getUserOrders(user.id);
+      const result = [];
+      for (const order of orders) {
+        for (const item of (order.items ?? [])) {
+          try {
+            const { data: product } = await getProduct(item.productId);
+            if (product) {
+              product._orderId = order.id;
+              product._quantity = item.quantity;
+              result.push(product);
+            }
+          } catch {}
+        }
+      }
+      setItems(result);
+    } catch (err) {
+      setError(err);
+      setItems([]);
+    } finally {
+      setLoading(false);
+    }
+  });
 
   return (
     <div class="pb-8">
-
-      <p class="text-slate-600" classList={{ hidden: !result.loading }}>
-        Lädt...
-      </p>
-
-      <Show when={result.error}>
-        <ErrorBanner type="error" message={errorMessage(result.error)} />
+      <Show when={loading()}>
+        <p class="text-slate-600">Lädt...</p>
       </Show>
 
-      <Show when={!result.loading && (result() ?? []).length === 0}>
+      <Show when={!loading() && error()}>
+        <ErrorBanner type="error" message={errorMessage(error())} />
+      </Show>
+
+      <Show when={!loading() && !error() && items() && items().length === 0}>
         <div class="card p-8 text-center">
           <p class="mb-4">Du hast noch nichts gekauft.</p>
           <a href="/" class="btn-primary">
@@ -59,7 +76,7 @@ export default function MyOrders() {
         </div>
       </Show>
 
-      <Show when={(result() ?? []).length > 0}>
+      <Show when={!loading() && !error() && items() && items().length > 0}>
         <SearchSortBar
           placeholder="Käufe durchsuchen..."
           onSearch={(v) => { setSearch(v); setPage(1); }}
@@ -77,7 +94,7 @@ export default function MyOrders() {
               {(product) => (
                 <ProductListItem
                   product={product}
-                  badge={<OrderStatusBadge orderId={getOrderId(product.id)} />}
+                  badge={<OrderStatusBadge orderId={product._orderId} />}
                 >
                   <a href={`/product/${product.id}`} class="btn-primary">
                     Ansehen

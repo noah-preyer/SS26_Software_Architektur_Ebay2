@@ -1,5 +1,6 @@
 package group5.ebay2.product;
 
+import group5.ebay2.product.dtos.BulkBuyRequest;
 import group5.ebay2.product.dtos.BuyProductResponse;
 import group5.ebay2.product.dtos.CreateProductDto;
 import group5.ebay2.product.dtos.ProductResponse;
@@ -62,5 +63,11 @@ public class ProductController {
             @PathVariable Long id,
             @RequestHeader("X-User-Id") Long buyerId) {
         return productService.buyProduct(id, buyerId);
+    }
+
+    @PostMapping("/bulk-buy")
+    @ResponseStatus(HttpStatus.CREATED)
+    public List<BuyProductResponse> bulkBuy(@Valid @RequestBody BulkBuyRequest request) {
+        return productService.bulkBuy(request);
     }
 }

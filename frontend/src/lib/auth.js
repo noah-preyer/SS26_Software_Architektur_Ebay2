@@ -72,6 +72,9 @@ export function clearSession() {
   if (!hasStorage()) return;
   sessionStorage.removeItem(TOKEN_KEY);
   sessionStorage.removeItem(USER_KEY);
+  sessionStorage.removeItem("lp_cart");
+  sessionStorage.removeItem("lp_purchases");
+  sessionStorage.removeItem("lp_order_ids");
 }
 
 export function logout() {

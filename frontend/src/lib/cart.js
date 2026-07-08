@@ -1,6 +1,7 @@
 // warenkorb und kaufhistorie - aktuell alles im sessionstorage, kein backend nötig.
 
-import { buyProduct, getProduct } from "./api.js";
+import { buyProduct, getProduct, apiFetch } from "./api.js";
+import { getUserInfo } from "./auth.js";
 
 const CART_KEY = "lp_cart";
 const PURCHASES_KEY = "lp_purchases";
@@ -113,30 +114,41 @@ export async function loadCartItems(ids) {
   return items;
 }
 
-// POST /products/{id}/buy pro artikel. 409 = schon verkauft → aus cart, aber nicht in history.
+// POST /products/bulk-buy mit allen artikel-IDs auf einmal → ein auftrag → eine email.
 export async function checkout() {
   const ids = getCart();
   const purchased = [];
   const conflicts = [];
   const errors = [];
 
-  for (const id of ids) {
-    try {
-      const result = await buyProduct(id);
-      addPurchase(id);
-      recordOrderId(id, result?.orderId);
-      removeFromCart(id);
-      purchased.push(id);
-    } catch (err) {
-      if (err?.status === 409) {
-        removeFromCart(id);
-        conflicts.push(id);
-      } else if (err?.status === 403) {
-        removeFromCart(id);
-        errors.push({ id, error: err });
-      } else {
-        errors.push({ id, error: err });
-      }
+  if (ids.length === 0) return { purchased, conflicts, errors };
+
+  try {
+    const user = getUserInfo();
+    if (!user?.id) {
+      errors.push({ id: null, error: new Error("Nicht angemeldet") });
+      return { purchased, conflicts, errors };
+    }
+
+    const results = await apiFetch("/products/bulk-buy", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...(await import("./auth.js")).authHeader() },
+      body: JSON.stringify({ buyerId: user.id, productIds: ids }),
+    });
+
+    for (const result of results) {
+      addPurchase(result.productId);
+      recordOrderId(result.productId, result.orderId);
+      removeFromCart(result.productId);
+      purchased.push(result.productId);
+    }
+  } catch (err) {
+    if (err?.status === 409) {
+      // einzelne konflikte kann bulk-buy nicht melden, daher alle als konflikt
+      conflicts.push(...ids);
+      ids.forEach(removeFromCart);
+    } else {
+      errors.push({ id: null, error: err });
     }
   }
 

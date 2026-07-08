@@ -20,5 +20,7 @@ VALUES
     ('annam', 'anna.mueller@example.com',
      crypt('password123', gen_salt('bf', 10)), NOW(), NOW()),
     ('maxk', 'max.klein@example.com',
+     crypt('password123', gen_salt('bf', 10)), NOW(), NOW()),
+    ('noah', 'preyer.noah@gmail.com',
      crypt('password123', gen_salt('bf', 10)), NOW(), NOW())
 ON CONFLICT (email) DO NOTHING;

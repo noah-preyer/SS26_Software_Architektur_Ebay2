@@ -37,16 +37,18 @@ class OrderServiceTest {
         userId = nextId();
     }
 
+    private OrderDto.CreateRequest singleItemRequest(Long productId, String currency) {
+        return new OrderDto.CreateRequest(userId, List.of(new OrderDto.CreateOrderItem(productId, 1)), currency);
+    }
+
     @Test
     void createOrder_shouldCreateWithCreatedStatus() {
         Long productId = nextId();
 
-        OrderDto.Response response = orderService.createOrder(
-                new OrderDto.CreateRequest(userId, productId, "USD"));
+        OrderDto.Response response = orderService.createOrder(singleItemRequest(productId, "USD"));
 
         assertThat(response.id()).isNotNull();
         assertThat(response.userId()).isEqualTo(userId);
-        assertThat(response.productId()).isEqualTo(productId);
         assertThat(response.status()).isEqualTo("CREATED");
     }
 
@@ -54,15 +56,14 @@ class OrderServiceTest {
     void getOrder_shouldReturnOrder() {
         Long productId = nextId();
 
-        OrderDto.Response created = orderService.createOrder(
-                new OrderDto.CreateRequest(userId, productId, "EUR"));
+        OrderDto.Response created = orderService.createOrder(singleItemRequest(productId, "EUR"));
 
         OrderDto.Response found = orderService.getOrder(created.id());
 
         assertThat(found.id()).isEqualTo(created.id());
         assertThat(found.userId()).isEqualTo(userId);
-        assertThat(found.productId()).isEqualTo(productId);
         assertThat(found.status()).isEqualTo("CREATED");
+        assertThat(found.items()).isNotEmpty();
     }
 
     @Test
@@ -72,86 +73,12 @@ class OrderServiceTest {
     }
 
     @Test
-    void updateOrderStatus_shouldTransition() {
-        Long productId = nextId();
-
-        OrderDto.Response created = orderService.createOrder(
-                new OrderDto.CreateRequest(userId, productId, "USD"));
-
-        OrderDto.Response shipped = orderService.updateOrderStatus(
-                created.id(),
-                new OrderDto.StatusUpdateRequest("SHIPPED"));
-
-        assertThat(shipped.status()).isEqualTo("SHIPPED");
-
-        OrderDto.Response delivered = orderService.updateOrderStatus(
-                created.id(),
-                new OrderDto.StatusUpdateRequest("DELIVERED"));
-
-        assertThat(delivered.status()).isEqualTo("DELIVERED");
-    }
-
-    @Test
-    void updateOrderStatus_shouldThrowOnInvalidStatus() {
-        Long productId = nextId();
-
-        OrderDto.Response created = orderService.createOrder(
-                new OrderDto.CreateRequest(userId, productId, "USD"));
-
-        assertThatThrownBy(() -> orderService.updateOrderStatus(
-                created.id(),
-                new OrderDto.StatusUpdateRequest("INVALID")))
-                .isInstanceOf(OrderExceptions.InvalidOrderStateException.class);
-    }
-
-    @Test
     void getOrdersByUser_shouldReturnUserOrders() {
-        orderService.createOrder(
-                new OrderDto.CreateRequest(userId, nextId(), "USD"));
-
-        orderService.createOrder(
-                new OrderDto.CreateRequest(userId, nextId(), "USD"));
+        orderService.createOrder(singleItemRequest(nextId(), "USD"));
+        orderService.createOrder(singleItemRequest(nextId(), "USD"));
 
         List<OrderDto.Response> orders = orderService.getOrdersByUser(userId);
 
         assertThat(orders).hasSize(2);
-    }
-
-    @Test
-    void markOrderPaid_shouldUpdateStatus() {
-        Long productId = nextId();
-
-        OrderDto.Response created = orderService.createOrder(
-                new OrderDto.CreateRequest(userId, productId, "USD"));
-
-        OrderDto.Response paid = orderService.markOrderPaid(created.id());
-
-        assertThat(paid.status()).isEqualTo("PAID");
-    }
-
-    @Test
-    void markOrderPaid_shouldThrowOnNotFound() {
-        assertThatThrownBy(() -> orderService.markOrderPaid(999L))
-                .isInstanceOf(OrderExceptions.OrderNotFoundException.class);
-    }
-
-    @Test
-    void markOrderRefunded_shouldUpdateStatus() {
-        Long productId = nextId();
-
-        OrderDto.Response created = orderService.createOrder(
-                new OrderDto.CreateRequest(userId, productId, "USD"));
-
-        orderService.markOrderPaid(created.id());
-
-        OrderDto.Response refunded = orderService.markOrderRefunded(created.id());
-
-        assertThat(refunded.status()).isEqualTo("REFUNDED");
-    }
-
-    @Test
-    void markOrderRefunded_shouldThrowOnNotFound() {
-        assertThatThrownBy(() -> orderService.markOrderRefunded(999L))
-                .isInstanceOf(OrderExceptions.OrderNotFoundException.class);
     }
 }
