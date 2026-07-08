@@ -6,9 +6,24 @@ include:
   #- docker/payment-service.yml
   - order_service/docker-compose.yml
   - user_service/docker-compose.yml
+  - email_service/docker-compose.yml
   #- docker/image-service.yml
 
 services:
+  mqtt-broker:
+    image: eclipse-mosquitto:2
+    container_name: mqtt-broker
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./docker/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mosquitto_sub -t '$$SYS/broker/uptime' -C 1 || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
   api-gateway:
     container_name: api-gateway
     build: ./api_gateway
@@ -19,6 +34,6 @@ services:
       - auth-service
       - user-service
       - order-service
+      - email-service
       #- payment-service
-      #- notification-service
       #- image-service

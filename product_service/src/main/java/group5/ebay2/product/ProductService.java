@@ -1,13 +1,16 @@
 package group5.ebay2.product;
 
+import group5.ebay2.product.dtos.BulkBuyRequest;
 import group5.ebay2.product.dtos.BuyProductResponse;
 import group5.ebay2.product.dtos.CreateProductDto;
 import group5.ebay2.product.dtos.ProductResponse;
 import group5.ebay2.product.dtos.UpdateProductDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -81,6 +84,42 @@ public class ProductService {
         productRepository.delete(product);
     }
 
+    @Transactional
+    public List<BuyProductResponse> bulkBuy(BulkBuyRequest request) {
+        if (request.productIds().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product list must not be empty");
+        }
+
+        int updated = productRepository.markAllAsSold(request.productIds());
+        if (updated != request.productIds().size()) {
+            productRepository.markAllAsAvailable(request.productIds());
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "One or more products are already sold");
+        }
+
+        try {
+            List<OrderClient.CreateOrderItem> items = request.productIds().stream()
+                    .map(id -> new OrderClient.CreateOrderItem(id, 1))
+                    .toList();
+            OrderClient.OrderResponse order = orderClient.createBulkOrder(request.buyerId(), items, DEFAULT_CURRENCY);
+            OrderClient.OrderResponse paidOrder = orderClient.markOrderPaid(order.id());
+
+            List<BuyProductResponse> responses = new ArrayList<>();
+            for (Long productId : request.productIds()) {
+                Product product = productRepository.findById(productId)
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found: " + productId));
+                responses.add(new BuyProductResponse(
+                        product.getId(), product.getTitle(), product.getPrice(),
+                        paidOrder.id(), paidOrder.status()));
+            }
+            return responses;
+
+        } catch (Exception e) {
+            productRepository.markAllAsAvailable(request.productIds());
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
+                    "Order creation failed, purchase rolled back: " + e.getMessage());
+        }
+    }
+
     public BuyProductResponse buyProduct(Long productId, Long buyerId) {
         Product product = getProductEntityById(productId);
 
@@ -102,7 +141,6 @@ public class ProductService {
                     paidOrder.id(), paidOrder.status());
 
         } catch (Exception e) {
-            // Compensating transaction: restore availability if order creation fails
             productRepository.markAsAvailable(productId);
             throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
                     "Order creation failed, purchase rolled back: " + e.getMessage());

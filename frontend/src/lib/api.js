@@ -191,3 +191,7 @@ export async function getSeller(sellerId) {
 export async function getOrder(orderId) {
   return apiFetch(`/order/${orderId}`, { headers: { ...authHeader() } });
 }
+
+export async function getUserOrders(userId) {
+  return apiFetch(`/order/user/${userId}`, { headers: { ...authHeader() } });
+}

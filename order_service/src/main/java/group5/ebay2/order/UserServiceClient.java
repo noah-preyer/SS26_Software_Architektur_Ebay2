@@ -20,7 +20,7 @@ public class UserServiceClient {
 
     public UserDto getUser(Long userId) {
         try {
-            return restTemplate.getForObject(userServiceUrl + "/user/" + userId, UserDto.class);
+            return restTemplate.getForObject(userServiceUrl + "/" + userId, UserDto.class);
         } catch (Exception e) {
             log.error("Failed to fetch user {}: {}", userId, e.getMessage());
             return null;

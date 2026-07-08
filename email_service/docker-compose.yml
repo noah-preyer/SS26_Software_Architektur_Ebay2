@@ -1,0 +1,39 @@
+services:
+  email-service:
+    container_name: email_service
+    build: .
+    depends_on:
+      email-db:
+        condition: service_healthy
+    environment:
+      MQTT_BROKER: mqtt-broker
+      MQTT_PORT: "1883"
+      DB_HOST: email-db
+      DB_PORT: "5432"
+      DB_NAME: email_service
+      DB_USER: email_user
+      DB_PASSWORD: app_password
+      SMTP_HOST: smtp.gmail.com
+      SMTP_PORT: "587"
+      SMTP_FROM: rwuprojects@gmail.com
+      SMTP_USER: rwuprojects@gmail.com
+      SMTP_PASSWORD: "dgbx buuq zfkz mske"
+
+  email-db:
+    image: postgres:16
+    container_name: email-service-db
+    environment:
+      POSTGRES_USER: email_user
+      POSTGRES_PASSWORD: app_password
+      POSTGRES_DB: email_service
+    volumes:
+      - email_pgdata:/var/lib/postgresql/data
+      - ./email_db/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U email_user -d email_service"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  email_pgdata:

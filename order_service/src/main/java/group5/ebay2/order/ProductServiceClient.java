@@ -26,4 +26,5 @@ public class ProductServiceClient {
             return null;
         }
     }
+
 }

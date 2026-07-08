@@ -1,9 +1,11 @@
 package group5.ebay2.order;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
 
@@ -12,121 +14,48 @@ public class EmailServiceClient {
 
     private static final Logger log = LoggerFactory.getLogger(EmailServiceClient.class);
 
-    private final RestTemplate restTemplate;
-    private final String emailServiceUrl;
+    private final MqttClient mqttClient;
+    private final ObjectMapper objectMapper;
     private final UserServiceClient userServiceClient;
 
-    public EmailServiceClient(RestTemplate restTemplate, UserServiceClient userServiceClient) {
-        this.restTemplate = restTemplate;
-        this.emailServiceUrl = System.getenv().getOrDefault("EMAIL_SERVICE_URL", "http://notification-service:8080");
+    private static final String EVENT_TOPIC = "order/complete";
+
+    public EmailServiceClient(MqttClient mqttClient, ObjectMapper objectMapper, UserServiceClient userServiceClient) {
+        this.mqttClient = mqttClient;
+        this.objectMapper = objectMapper;
         this.userServiceClient = userServiceClient;
     }
 
-    public void sendPaymentConfirmation(Long userId, String orderId, String productTitle, String amount, String currency) {
+    public void sendOrderComplete(Long userId, String orderId, String products, String amount, String currency) {
         try {
             UserDto user = userServiceClient.getUser(userId);
             if (user == null || user.email() == null) {
                 log.warn("Could not find user or email for user {}", userId);
                 return;
             }
-
-            Map<String, String> placeholders = Map.of(
+            publish(Map.of(
+                    "email", user.email(),
+                    "username", user.username(),
                     "orderId", orderId,
-                    "productTitle", productTitle,
+                    "products", products,
                     "amount", amount,
                     "currency", currency
-            );
-
-            Map<String, Object> request = Map.of(
-                    "recipientEmail", user.email(),
-                    "templateCode", "ORDER_CONFIRMATION",
-                    "placeholders", placeholders
-            );
-
-            restTemplate.postForObject(emailServiceUrl + "/notification/send", request, Object.class);
-            log.info("Payment confirmation email sent to {} for order {}", user.email(), orderId);
+            ));
+            log.info("Published order/complete event for order {}", orderId);
         } catch (Exception e) {
-            log.error("Failed to send payment confirmation email for order {}: {}", orderId, e.getMessage());
+            log.error("Failed to publish order/complete event for order {}: {}", orderId, e.getMessage());
         }
     }
 
-    public void sendShippingConfirmation(Long userId, String orderId, String productTitle) {
+    private void publish(Map<String, Object> data) {
         try {
-            UserDto user = userServiceClient.getUser(userId);
-            if (user == null || user.email() == null) {
-                log.warn("Could not find user or email for user {}", userId);
-                return;
-            }
-
-            Map<String, String> placeholders = Map.of(
-                    "orderId", orderId,
-                    "productTitle", productTitle
-            );
-
-            Map<String, Object> request = Map.of(
-                    "recipientEmail", user.email(),
-                    "templateCode", "SHIPPING_CONFIRMATION",
-                    "placeholders", placeholders
-            );
-
-            restTemplate.postForObject(emailServiceUrl + "/notification/send", request, Object.class);
-            log.info("Shipping confirmation email sent to {} for order {}", user.email(), orderId);
+            String json = objectMapper.writeValueAsString(data);
+            MqttMessage message = new MqttMessage(json.getBytes());
+            message.setQos(1);
+            mqttClient.publish(EVENT_TOPIC, message);
+            log.info("Published event to MQTT topic {}", EVENT_TOPIC);
         } catch (Exception e) {
-            log.error("Failed to send shipping confirmation email for order {}: {}", orderId, e.getMessage());
-        }
-    }
-
-    public void sendDeliveryConfirmation(Long userId, String orderId, String productTitle) {
-        try {
-            UserDto user = userServiceClient.getUser(userId);
-            if (user == null || user.email() == null) {
-                log.warn("Could not find user or email for user {}", userId);
-                return;
-            }
-
-            Map<String, String> placeholders = Map.of(
-                    "orderId", orderId,
-                    "productTitle", productTitle
-            );
-
-            Map<String, Object> request = Map.of(
-                    "recipientEmail", user.email(),
-                    "templateCode", "DELIVERY_CONFIRMATION",
-                    "placeholders", placeholders
-            );
-
-            restTemplate.postForObject(emailServiceUrl + "/notification/send", request, Object.class);
-            log.info("Delivery confirmation email sent to {} for order {}", user.email(), orderId);
-        } catch (Exception e) {
-            log.error("Failed to send delivery confirmation email for order {}: {}", orderId, e.getMessage());
-        }
-    }
-
-    public void sendRefundConfirmation(Long userId, String orderId, String productTitle, String amount, String currency) {
-        try {
-            UserDto user = userServiceClient.getUser(userId);
-            if (user == null || user.email() == null) {
-                log.warn("Could not find user or email for user {}", userId);
-                return;
-            }
-
-            Map<String, String> placeholders = Map.of(
-                    "orderId", orderId,
-                    "productTitle", productTitle,
-                    "amount", amount,
-                    "currency", currency
-            );
-
-            Map<String, Object> request = Map.of(
-                    "recipientEmail", user.email(),
-                    "templateCode", "ORDER_CONFIRMATION",
-                    "placeholders", placeholders
-            );
-
-            restTemplate.postForObject(emailServiceUrl + "/notification/send", request, Object.class);
-            log.info("Refund confirmation email sent to {} for order {}", user.email(), orderId);
-        } catch (Exception e) {
-            log.error("Failed to send refund confirmation email for order {}: {}", orderId, e.getMessage());
+            log.error("Failed to publish to MQTT topic {}: {}", EVENT_TOPIC, e.getMessage());
         }
     }
 }
