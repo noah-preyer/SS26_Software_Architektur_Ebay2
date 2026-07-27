@@ -2,12 +2,9 @@ include:
   - frontend/docker-compose.yml
   - product_service/docker-compose.yml
   - auth_service/docker-compose.yml
-  #- docker/notification-service.yml
-  #- docker/payment-service.yml
   - order_service/docker-compose.yml
   - user_service/docker-compose.yml
   - email_service/docker-compose.yml
-  #- docker/image-service.yml
 
 services:
   mqtt-broker:
@@ -35,5 +32,4 @@ services:
       - user-service
       - order-service
       - email-service
-      #- payment-service
-      #- image-service
+

@@ -108,7 +108,7 @@ export async function loadCartItems(ids) {
       const { data } = await getProduct(id);
       if (data) items.push(data);
     } catch {
-      
+
     }
   }
   return items;

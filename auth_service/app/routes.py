@@ -1,5 +1,4 @@
 import os
-import traceback
 from datetime import datetime, timezone
 
 import bcrypt
@@ -53,7 +52,6 @@ def register_routes(app):
             return jsonify({"id": str(user_id), "username": username, "email": email}), 201
         except Exception as e:
             conn.rollback()
-            traceback.print_exc()
             return jsonify({"message": str(e)}), 500
         finally:
             conn.close()
@@ -138,7 +136,6 @@ def register_routes(app):
             return "", 204
         except Exception as e:
             conn.rollback()
-            traceback.print_exc()
             return jsonify({"message": str(e)}), 500
         finally:
             conn.close()

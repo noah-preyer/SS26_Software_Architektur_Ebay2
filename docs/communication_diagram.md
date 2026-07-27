@@ -31,7 +31,7 @@ This document contains UML diagrams for the microservices architecture. The diag
 ```mermaid
 graph TB
     Client[Client] --> GW[API Gateway]
-    
+
     GW --> Auth[Auth Service]
     GW --> User[User Service]
     GW --> Product[Product Service]
@@ -39,11 +39,11 @@ graph TB
     GW --> Payment[Payment Service]
     GW --> Email[Email Service]
     GW --> Image[Image Service]
-    
+
     Payment --> Order
     Payment --> User
     Payment --> Email
-    
+
     style GW fill:#f9f,stroke:#333,stroke-width:2px
     style Payment fill:#bbf,stroke:#333,stroke-width:2px
     style Order fill:#bfb,stroke:#333,stroke-width:2px
