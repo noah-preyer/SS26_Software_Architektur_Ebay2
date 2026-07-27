@@ -1,6 +1,6 @@
 // warenkorb und kaufhistorie - aktuell alles im sessionstorage, kein backend nötig.
 
-import { buyProduct, getProduct, apiFetch } from "./api.js";
+import { checkoutOrder, getProduct } from "./api.js";
 import { getUserInfo } from "./auth.js";
 
 const CART_KEY = "lp_cart";
@@ -114,7 +114,6 @@ export async function loadCartItems(ids) {
   return items;
 }
 
-// POST /products/bulk-buy mit allen artikel-IDs auf einmal → ein auftrag → eine email.
 export async function checkout() {
   const ids = getCart();
   const purchased = [];
@@ -130,10 +129,9 @@ export async function checkout() {
       return { purchased, conflicts, errors };
     }
 
-    const results = await apiFetch("/products/bulk-buy", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", ...(await import("./auth.js")).authHeader() },
-      body: JSON.stringify({ buyerId: user.id, productIds: ids }),
+    const results = await checkoutOrder({
+      userId: user.id,
+      items: ids.map((id) => ({ productId: id, quantity: 1 })),
     });
 
     for (const result of results) {
@@ -144,7 +142,6 @@ export async function checkout() {
     }
   } catch (err) {
     if (err?.status === 409) {
-      // einzelne konflikte kann bulk-buy nicht melden, daher alle als konflikt
       conflicts.push(...ids);
       ids.forEach(removeFromCart);
     } else {

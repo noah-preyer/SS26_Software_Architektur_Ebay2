@@ -49,4 +49,28 @@ public class OrderDto {
             Instant createdAt,
             Instant updatedAt
     ) {}
+
+    public record CheckoutItem(
+            @NotNull(message = "Product ID is required")
+            Long productId,
+
+            @NotNull(message = "Quantity is required")
+            Integer quantity
+    ) {}
+
+    public record CheckoutRequest(
+            @NotNull(message = "User ID is required")
+            Long userId,
+
+            @NotEmpty(message = "At least one product is required")
+            List<CheckoutItem> items
+    ) {}
+
+    public record CheckoutItemResult(
+            Long productId,
+            String productTitle,
+            java.math.BigDecimal price,
+            Long orderId,
+            String orderStatus
+    ) {}
 }

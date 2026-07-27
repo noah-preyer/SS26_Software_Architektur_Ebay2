@@ -134,10 +134,11 @@ export async function deleteProduct(id) {
   });
 }
 
-export async function buyProduct(id) {
-  return apiFetch(`/products/${id}/buy`, {
+export async function checkoutOrder(items) {
+  return apiFetch("/order/checkout", {
     method: "POST",
-    headers: { ...authHeader() },
+    headers: { "Content-Type": "application/json", ...authHeader() },
+    body: JSON.stringify(items),
   });
 }
 

@@ -2,8 +2,10 @@ package group5.ebay2.order;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 @Component
 public class ProductServiceClient {
@@ -24,6 +26,23 @@ public class ProductServiceClient {
         } catch (Exception e) {
             log.error("Failed to fetch product {}: {}", productId, e.getMessage());
             return null;
+        }
+    }
+
+    public void reserveProduct(Long productId) {
+        try {
+            restTemplate.put(productServiceUrl + "/products/" + productId + "/reserve", null);
+        } catch (Exception e) {
+            log.error("Failed to reserve product {}: {}", productId, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Failed to reserve product " + productId);
+        }
+    }
+
+    public void unreserveProduct(Long productId) {
+        try {
+            restTemplate.put(productServiceUrl + "/products/" + productId + "/unreserve", null);
+        } catch (Exception e) {
+            log.error("Failed to unreserve product {}: {}", productId, e.getMessage());
         }
     }
 
