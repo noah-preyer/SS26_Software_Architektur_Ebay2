@@ -69,5 +69,4 @@ public class Order {
     public void markShipped() { this.status = "SHIPPED"; }
     public void markDelivered() { this.status = "DELIVERED"; }
     public void markRefunded() { this.status = "REFUNDED"; }
-    public void markCancelled() { this.status = "CANCELLED"; }
 }

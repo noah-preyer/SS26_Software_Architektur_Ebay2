@@ -20,11 +20,11 @@ graph TB
     subgraph "External"
         Client[Client<br/>Web/Mobile]
     end
-    
+
     subgraph "API Layer"
         GW[API Gateway<br/>:8080]
     end
-    
+
     subgraph "Core Services"
         Auth[Auth Service<br/>:8081]
         User[User Service<br/>:8082]
@@ -32,12 +32,12 @@ graph TB
         Order[Order Service<br/>:8087]
         Payment[Payment Service<br/>:8086]
     end
-    
+
     subgraph "Support Services"
         Email[Email Service<br/>:8084]
         Image[Image Service<br/>:8088]
     end
-    
+
     subgraph "Databases"
         AuthDB[(auth-service-db)]
         UserDB[(user-service-db)]
@@ -47,9 +47,9 @@ graph TB
         EmailDB[(notification-service-db)]
         ImageDB[(image-service-db)]
     end
-    
+
     Client --> GW
-    
+
     GW --> Auth
     GW --> User
     GW --> Product
@@ -57,11 +57,11 @@ graph TB
     GW --> Payment
     GW --> Email
     GW --> Image
-    
+
     Payment --> Order
     Payment --> User
     Payment --> Email
-    
+
     Auth --> AuthDB
     User --> UserDB
     Product --> ProductDB
@@ -69,7 +69,7 @@ graph TB
     Payment --> PaymentDB
     Email --> EmailDB
     Image --> ImageDB
-    
+
     style GW fill:#f9f,stroke:#333,stroke-width:2px
     style Auth fill:#bbf,stroke:#333,stroke-width:2px
     style User fill:#bfb,stroke:#333,stroke-width:2px
@@ -111,7 +111,7 @@ sequenceDiagram
     GW->>GW: Check if public endpoint
     GW->>GW: Validate JWT Token (if protected)
     GW->>GW: Route to Service
-    
+
     alt Valid Route
         GW->>S: Forward Request<br/>(with X-User-Id header)
         S-->>GW: Response
@@ -133,7 +133,7 @@ graph LR
         O-->|GET /user/{id}| U
         O-->|POST /notification/send| E
     end
-    
+
     subgraph "Service Names"
         P[Payment Service]
         O[Order Service]
@@ -156,11 +156,11 @@ graph TB
         H8087[8087]
         H8088[8088]
     end
-    
+
     subgraph "Container Ports"
         C8080[8080]
     end
-    
+
     H8080 --> C8080
     H8081 --> C8080
     H8082 --> C8080
@@ -168,7 +168,7 @@ graph TB
     H8086 --> C8080
     H8087 --> C8080
     H8088 --> C8080
-    
+
     style H8080 fill:#f9f,stroke:#333
     style H8081 fill:#bbf,stroke:#333
     style H8082 fill:#bfb,stroke:#333
@@ -191,7 +191,7 @@ erDiagram
         string lastName
         string phoneNumber
     }
-    
+
     ORDERS {
         uuid id PK
         uuid userId FK
@@ -202,7 +202,7 @@ erDiagram
         timestamp createdAt
         timestamp updatedAt
     }
-    
+
     PAYMENTS {
         uuid id PK
         uuid orderId FK
@@ -215,7 +215,7 @@ erDiagram
         string transactionId
         timestamp paidAt
     }
-    
+
     USERS ||--o{ ORDERS : places
     USERS ||--o{ PAYMENTS : makes
     ORDERS ||--o{ PAYMENTS : has
@@ -235,13 +235,13 @@ The Order Service sends email notifications for the following events:
 ```mermaid
 graph LR
     O[Order Service] -->|POST /notification/send| E[Email Service]
-    
+
     subgraph "Email Templates"
         T1[ORDER_CONFIRMATION]
         T2[SHIPPING_CONFIRMATION]
         T3[DELIVERY_CONFIRMATION]
     end
-    
+
     E --> T1
     E --> T2
     E --> T3

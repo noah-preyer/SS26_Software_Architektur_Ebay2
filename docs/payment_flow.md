@@ -20,33 +20,33 @@ sequenceDiagram
     Note over Client,OrderDB: Process Payment
     Client->>GW: POST /payment/process<br/>{orderId, userId,<br/>amount, currency,<br/>paymentMethodType}
     GW->>Payment: POST /payment/process
-    
+
     Payment->>Order: GET /order/{orderId}
     Order->>OrderDB: SELECT order
     OrderDB-->>Order: Order data<br/>{productId, productTitle, totalAmount}
     Order-->>Payment: Order details
-    
+
     alt Order Status = CREATED
         Payment->>PayDB: INSERT payment<br/>status=PENDING
         PayDB-->>Payment: Payment saved
-        
+
         Payment->>Payment: markCompleted()<br/>Generate transactionId
-        
+
         Payment->>PayDB: UPDATE payment<br/>status=COMPLETED
         PayDB-->>Payment: Payment updated
-        
+
         Payment->>Order: PUT /order/{orderId}/paid
         Order->>OrderDB: UPDATE order<br/>status=PAID
         OrderDB-->>Order: Order updated
-        
+
         Order->>User: GET /user/{userId}
         User-->>Order: User email
-        
+
         Order->>Email: POST /notification/send<br/>{recipientEmail,<br/>templateCode: "ORDER_CONFIRMATION",<br/>placeholders: {orderId, productTitle,<br/>amount, currency}}
         Email-->>Order: 201 Created
-        
+
         Order-->>Payment: 200 OK
-        
+
         Payment-->>GW: 201 Created<br/>{payment}
         GW-->>Client: 201 Created
     else Order Status != CREATED
@@ -57,26 +57,26 @@ sequenceDiagram
     Note over Client,OrderDB: Process Refund
     Client->>GW: POST /order/{orderId}/refund
     GW->>Order: POST /order/{orderId}/refund
-    
+
     Order->>Payment: PUT /payment/order/{orderId}/refund
     Payment->>PayDB: SELECT payment for order
     PayDB-->>Payment: Payment data
-    
+
     alt Payment Found and Completed
         Payment->>Payment: markRefunded()
         Payment->>PayDB: UPDATE payment<br/>status=REFUNDED
         PayDB-->>Payment: Payment updated
         Payment-->>Order: 200 OK
-        
+
         Order->>OrderDB: UPDATE order<br/>status=REFUNDED
         OrderDB-->>Order: Order updated
-        
+
         Order->>User: GET /user/{userId}
         User-->>Order: User email
-        
+
         Order->>Email: POST /notification/send<br/>{recipientEmail,<br/>templateCode: "ORDER_CONFIRMATION",<br/>placeholders: {orderId, amount, currency}}
         Email-->>Order: 201 Created
-        
+
         Order-->>GW: 200 OK<br/>{order with status REFUNDED}
         GW-->>Client: 200 OK
     else No Completed Payment Found
@@ -96,7 +96,7 @@ sequenceDiagram
     participant Order as Order Service
 
     Note over Client,Order: Error Scenarios
-    
+
     rect rgb(255, 230, 230)
         Note right of Client: Order Not Found
         Client->>GW: POST /payment/process
@@ -106,7 +106,7 @@ sequenceDiagram
         Payment-->>GW: 404 Not Found<br/>{message: "Order not found"}
         GW-->>Client: 404 Not Found
     end
-    
+
     rect rgb(255, 230, 230)
         Note right of Client: Order Already Paid
         Client->>GW: POST /payment/process
@@ -116,7 +116,7 @@ sequenceDiagram
         Payment-->>GW: 409 Conflict<br/>{message: "Cannot pay for order<br/>with status: PAID"}
         GW-->>Client: 409 Conflict
     end
-    
+
     rect rgb(255, 230, 230)
         Note right of Client: Payment Already Refunded
         Client->>GW: POST /payment/{id}/refund
@@ -124,7 +124,7 @@ sequenceDiagram
         Payment-->>GW: 409 Conflict<br/>{message: "Payment already refunded"}
         GW-->>Client: 409 Conflict
     end
-    
+
     rect rgb(255, 230, 230)
         Note right of Client: Order Service Unavailable
         Client->>GW: POST /payment/process
@@ -147,7 +147,7 @@ stateDiagram-v2
     FAILED --> [*]
     COMPLETED --> [*]
     REFUNDED --> [*]
-    
+
     note right of PENDING: Initial state
     note right of COMPLETED: Payment confirmed
     note right of REFUNDED: Full refund processed

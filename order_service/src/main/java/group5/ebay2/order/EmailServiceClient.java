@@ -26,24 +26,31 @@ public class EmailServiceClient {
         this.userServiceClient = userServiceClient;
     }
 
-    public void sendOrderComplete(Long userId, String orderId, String products, String amount, String currency) {
+    public void sendOrderComplete(Long userId, Order order) {
         try {
             UserDto user = userServiceClient.getUser(userId);
             if (user == null || user.email() == null) {
                 log.warn("Could not find user or email for user {}", userId);
                 return;
             }
+
+            String products = order.getItems().stream()
+                    .map(i -> "  \u2022 " + i.getProductTitle() + " (x" + i.getQuantity() + ") \u2014 "
+                            + i.getPrice().multiply(java.math.BigDecimal.valueOf(i.getQuantity()))
+                            + " " + order.getCurrency())
+                    .collect(java.util.stream.Collectors.joining("\n"));
+
             publish(Map.of(
                     "email", user.email(),
                     "username", user.username(),
-                    "orderId", orderId,
+                    "orderId", order.getId().toString(),
                     "products", products,
-                    "amount", amount,
-                    "currency", currency
+                    "amount", order.getTotalAmount().toString(),
+                    "currency", order.getCurrency()
             ));
-            log.info("Published order/complete event for order {}", orderId);
+            log.info("Published order/complete event for order {}", order.getId());
         } catch (Exception e) {
-            log.error("Failed to publish order/complete event for order {}: {}", orderId, e.getMessage());
+            log.error("Failed to publish order/complete event for order {}: {}", order.getId(), e.getMessage());
         }
     }
 

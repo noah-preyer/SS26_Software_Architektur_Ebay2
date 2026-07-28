@@ -24,7 +24,12 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-
+    @PostMapping("/checkout")
+    public ResponseEntity<List<OrderDto.CheckoutItemResult>> checkout(
+            @Valid @RequestBody OrderDto.CheckoutRequest request) {
+        List<OrderDto.CheckoutItemResult> results = orderService.checkout(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(results);
+    }
 
     @PutMapping("/{orderId}/paid")
     public ResponseEntity<OrderDto.Response> markOrderPaid(@PathVariable Long orderId) {

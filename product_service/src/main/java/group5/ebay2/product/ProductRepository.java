@@ -11,8 +11,6 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByStatus(ProductStatus status);
     List<Product> findByCategoryAndStatus(String category, ProductStatus status);
-    List<Product> findBySellerId(Long sellerId);
-
     @Modifying
     @Transactional
     @Query(value = "UPDATE products SET status = 'SOLD' WHERE id = :id AND status = 'AVAILABLE'", nativeQuery = true)
@@ -22,14 +20,4 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Transactional
     @Query(value = "UPDATE products SET status = 'AVAILABLE' WHERE id = :id", nativeQuery = true)
     void markAsAvailable(@Param("id") Long id);
-
-    @Modifying
-    @Transactional
-    @Query(value = "UPDATE products SET status = 'SOLD' WHERE id IN :ids AND status = 'AVAILABLE'", nativeQuery = true)
-    int markAllAsSold(@Param("ids") List<Long> ids);
-
-    @Modifying
-    @Transactional
-    @Query(value = "UPDATE products SET status = 'AVAILABLE' WHERE id IN :ids", nativeQuery = true)
-    void markAllAsAvailable(@Param("ids") List<Long> ids);
 }

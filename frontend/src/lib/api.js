@@ -16,9 +16,6 @@ export async function apiFetch(path, options = {}) {
   const url = BASE_URL + path;
   const method = options.method ?? "GET";
 
-  console.log(`[apiFetch] → ${method} ${url}`, options.body ?? "");
-  console.log(`[apiFetch] Full URL: ${url}`);
-
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT);
 
@@ -33,8 +30,6 @@ export async function apiFetch(path, options = {}) {
   } finally {
     clearTimeout(timer);
   }
-
-  console.log(`[apiFetch] ← ${response.status} ${method} ${url}`);
 
   if (!response.ok) {
     if (response.status === 401) clearSession();
@@ -134,10 +129,11 @@ export async function deleteProduct(id) {
   });
 }
 
-export async function buyProduct(id) {
-  return apiFetch(`/products/${id}/buy`, {
+export async function checkoutOrder(items) {
+  return apiFetch("/order/checkout", {
     method: "POST",
-    headers: { ...authHeader() },
+    headers: { "Content-Type": "application/json", ...authHeader() },
+    body: JSON.stringify(items),
   });
 }
 

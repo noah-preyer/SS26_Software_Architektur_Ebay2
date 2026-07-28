@@ -30,10 +30,10 @@ sequenceDiagram
     Client->>GW: POST /auth/login<br/>{email, password}
     GW->>GW: Check if public endpoint<br/>(/auth/** → public)
     GW->>Auth: POST /auth/login
-    
+
     Auth->>DB: SELECT user by email
     DB-->>Auth: User credentials
-    
+
     alt Valid Password
         Auth->>Auth: Generate JWT Token
         Auth-->>GW: 200 OK<br/>{token, userId}
@@ -54,7 +54,7 @@ sequenceDiagram
     Client->>GW: POST /order<br/>{userId, productId, currency}
     GW->>GW: Check if public endpoint<br/>(/order/** POST → protected)
     GW->>GW: Validate JWT Token
-    
+
     alt Valid Token
         GW->>Auth: POST /auth/validate<br/>{token}
         Auth->>DB: Check token validity
@@ -72,7 +72,7 @@ sequenceDiagram
     Client->>GW: GET /user/{id}<br/>Authorization: Bearer {token}
     GW->>GW: Check if public endpoint<br/>(/user/** GET → protected)
     GW->>GW: Validate JWT Token
-    
+
     alt Valid Token
         GW->>Auth: POST /auth/validate<br/>{token}
         Auth->>DB: Check token validity
@@ -90,18 +90,18 @@ sequenceDiagram
     Client->>GW: POST /auth/register<br/>{email, password, username}
     GW->>GW: Check if public endpoint<br/>(/auth/** → public)
     GW->>Auth: POST /auth/register
-    
+
     Auth->>DB: Check if email exists
     DB-->>Auth: Email available
-    
+
     Auth->>Auth: Hash password
     Auth->>DB: INSERT new user
     DB-->>Auth: User created
-    
+
     Auth->>GW: POST /user<br/>{authUserId, email, username}
     GW->>User: POST /user
     User-->>GW: 201 Created
-    
+
     Auth-->>GW: 201 Created<br/>{token, userId}
     GW-->>Client: 201 Created<br/>{token, userId}
 ```
@@ -115,14 +115,14 @@ sequenceDiagram
     participant Auth as Auth Service
 
     Note over Client,Auth: Error Scenarios
-    
+
     rect rgb(255, 230, 230)
         Note right of Client: Missing Token on Protected Route
         Client->>GW: GET /user/{id}<br/>(no Authorization header)
         GW->>GW: Check if public endpoint<br/>(/user/** GET → protected)
         GW-->>Client: 401 Unauthorized<br/>{message: "Missing token"}
     end
-    
+
     rect rgb(255, 230, 230)
         Note right of Client: Expired Token
         Client->>GW: GET /user/{id}<br/>Authorization: Bearer {expired}
@@ -131,7 +131,7 @@ sequenceDiagram
         Auth-->>GW: 401 Unauthorized<br/>{message: "Token expired"}
         GW-->>Client: 401 Unauthorized
     end
-    
+
     rect rgb(255, 230, 230)
         Note right of Client: Service Unavailable
         Client->>GW: POST /auth/login

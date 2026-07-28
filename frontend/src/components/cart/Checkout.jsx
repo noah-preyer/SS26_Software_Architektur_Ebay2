@@ -1,4 +1,4 @@
-// kassenseite mit adress- und zahlformular (demo). kauf läuft über POST /products/{id}/buy.
+// kassenseite mit adress- und zahlformular (demo). kauf läuft über POST /order/checkout.
 
 import { createSignal, createResource, onMount, For, Show } from "solid-js";
 import { errorMessage, apiFetch } from "../../lib/api.js";
