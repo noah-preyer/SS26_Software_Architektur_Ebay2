@@ -60,7 +60,12 @@ public class Product {
     public void setSellerId(Long sellerId) { this.sellerId = sellerId; }
     public ProductStatus getStatus() { return status; }
     public void setStatus(ProductStatus status) { this.status = status; }
-    public List<String> getImageUrls() { return imageUrls; }
+    public List<String> getImageUrls() {
+        if (imageUrls == null || imageUrls.isEmpty()) {
+            return List.of("https://brunofuga.adv.br/?s=no-alcohol-icon-png-and-svg-vector-free-download-cc-v361DOCK");
+        }
+        return imageUrls;
+    }
     public void setImageUrls(List<String> imageUrls) { this.imageUrls = imageUrls; }
     public LocalDateTime getCreatedAt() { return createdAt; }
 }

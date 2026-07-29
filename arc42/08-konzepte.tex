@@ -1,0 +1,54 @@
+\section{Querschnittliche Konzepte}
+
+\subsection{Sicherheit}
+
+\begin{itemize}
+  \item \textbf{JWT-Ausstellung:} Auth Service signiert Tokens mit
+        HS256 und einem Secret
+  \item \textbf{JWT-Validierung:} Im API Gateway als GlobalFilter --
+        jeder geschützte Request wird geprüft
+  \item \textbf{Öffentliche Endpunkte:}
+        \texttt{/auth/**}, \texttt{GET /products/**},
+        \texttt{GET /image/**}
+  \item \textbf{Identitätsweitergabe:} Gateway setzt
+        \texttt{X-User-Id}-Header für Downstream-Services
+\end{itemize}
+
+\subsection{Kommunikation}
+
+\begin{description}
+  \item[REST (synchron)]
+    Für Abfragen und Kommandos, bei denen eine sofortige Antwort nötig
+    ist (Produktdetails, Bestellanlage).
+  \item[MQTT (asynchron, Publish/Subscribe)]
+    Für E-Mail-Benachrichtigungen: Der Order Service publiziert
+    \texttt{order/complete} an den Mosquitto-Broker, der Email Service
+    konsumiert das Event. Dies entkoppelt die Services -- der Email
+    Service kann ausfallen, ohne den Bestellfluss zu blockieren.
+\end{description}
+
+\subsection{Persistenz}
+
+Jeder Service besitzt eine eigene PostgreSQL-Instanz (Database-per-
+Service). Dies erzwingt lose Kopplung: servicübergreifende Abfragen
+erfolgen über REST-Aufrufe, nicht über Datenbank-Joins. Fremdreferenzen
+werden als einfache IDs (Long) abgebildet.
+
+\subsection{Polyglotter Tech-Stack}
+
+\begin{longtable}[]{@{}ll@{}}
+\caption{Tech-Stack pro Service}\\
+\toprule\noalign{}
+Service & Technologie \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+API Gateway & Java 17, Spring Cloud Gateway \\
+Auth Service & Java 17, Spring Boot 3 \\
+User Service & Java 17, Spring Boot 3 \\
+Product Service & Python 3, Flask \\
+Order Service & Java 17, Spring Boot 3 \\
+Email Service & Java 17, Spring Boot 3 \\
+Frontend & Astro, SolidJS, Node.js \\
+\end{longtable}

@@ -2,7 +2,7 @@
 
 import { createSignal, For, Show } from "solid-js";
 
-const PLACEHOLDER = "https://picsum.photos/seed/no-image/400/300";
+const PLACEHOLDER = "https://brunofuga.adv.br/?s=no-alcohol-icon-png-and-svg-vector-free-download-cc-v361DOCK";
 
 export default function ImageGallery(props) {
   const images = () => (props.images && props.images.length > 0 ? props.images : [PLACEHOLDER]);

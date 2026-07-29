@@ -3,6 +3,7 @@ import logging
 import signal
 import smtplib
 import sys
+import time
 import uuid
 from email.mime.text import MIMEText
 from string import Template
@@ -20,6 +21,9 @@ EVENT_TOPICS = ["order/complete"]
 TEMPLATE_CODE = "ORDER_CONFIRMATION"
 
 
+CLIENT_ID = "email-service"
+
+
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
         logger.info("Connected to MQTT broker")
@@ -28,6 +32,10 @@ def on_connect(client, userdata, flags, rc):
             logger.info("Subscribed to %s", topic)
     else:
         logger.error("Failed to connect to MQTT broker, rc=%s", rc)
+
+
+def on_disconnect(client, userdata, rc):
+    logger.warning("Disconnected from MQTT broker, rc=%s", rc)
 
 
 def render_template(template_code, placeholders):
@@ -94,9 +102,11 @@ def on_message(client, userdata, msg):
 
 
 def create_client():
-    client = mqtt.Client()
+    client = mqtt.Client(client_id=CLIENT_ID, clean_session=False)
     client.on_connect = on_connect
+    client.on_disconnect = on_disconnect
     client.on_message = on_message
+    client.reconnect_delay_set(min_delay=1, max_delay=60)
     return client
 
 
@@ -114,7 +124,9 @@ def main():
     try:
         logger.info("Connecting to MQTT broker at %s:%s", Config.MQTT_BROKER, Config.MQTT_PORT)
         client.connect(Config.MQTT_BROKER, Config.MQTT_PORT, 60)
-        client.loop_forever()
+        client.loop_start()
+        while True:
+            time.sleep(1)
     except Exception as e:
         logger.error("Connection error: %s", e)
         sys.exit(1)

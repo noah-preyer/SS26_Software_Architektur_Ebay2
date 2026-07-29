@@ -1,0 +1,34 @@
+\section{Architekturentscheidungen (ADRs)}
+
+\begin{longtable}[]{@{}p{2.5cm}p{4cm}p{4cm}@{}}
+\caption{Architekturentscheidungen}\\
+\toprule\noalign{}
+Entscheidung & Kontext & Konsequenz \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+ADR-1: Microservices & Demonstration der
+Microservices-Eigenschaften & Höhere运维-Komplexität,
+aber lose Kopplung \\
+ADR-2: API Gateway & Einheitlicher Einstiegspunkt
+für Sicherheit und Routing & Single Point of
+Failure, aber zentrale Kontrolle \\
+ADR-3: MQTT für E-Mails & Async-Kommunikation
+demonstrieren, Ausfalltoleranz & Email-Ausfall
+blockiert Bestellung nicht \\
+ADR-4: Database-per-Service & Vermeidung von
+geteilten Datenbanken & Keine servicübergreifenden
+Joins möglich \\
+ADR-5: Polyglotter Stack & Technologieunabhängigkeit
+demonstrieren & Höhere Einarbeitungszeit, aber
+bewusste Entscheidung \\
+ADR-6: Product Service
+Replikation & Horizontale Skalierung
+demonstrieren & Nginx als zusätzliche
+Infrastrukturkomponente \\
+ADR-7: Kompensierende
+Transaktion & Kein verteilter
+Transaction Manager & Manuelle
+Rückabwicklung bei Fehlern \\
+\end{longtable}

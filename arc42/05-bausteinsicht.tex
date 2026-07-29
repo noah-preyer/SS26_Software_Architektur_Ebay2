@@ -1,0 +1,76 @@
+\section{Bausteinsicht}
+
+\subsection{Whitebox Gesamtsystem}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphicsifexists{images/02-bausteinsicht.png}{0.5\textheight}
+  \caption{Bausteinsicht -- Übersicht aller Services mit Datenbanken und Infrastruktur (exportiert aus \texttt{diagramme/02-bausteinsicht.drawio})}
+\end{figure}
+
+\begin{description}
+  \item[Begründung]
+    Die Aufteilung folgt dem fachlichen Schnitt: jeder Service bildet
+    genau einen Bounded Context ab.
+  \item[Enthaltene Bausteine]
+    API Gateway, Auth Service, User Service, Product Service (3
+    Replikate + Nginx), Order Service, Email Service, Frontend,
+    MQTT-Broker (Mosquitto), je eine PostgreSQL-DB pro Service.
+  \item[Wichtige Schnittstellen]
+    Siehe Tabelle~\ref{tab:schnittstellen}.
+\end{description}
+
+\begin{longtable}[]{@{}lll@{}}
+\caption{Schnittstellenübersicht}\label{tab:schnittstellen}\\
+\toprule\noalign{}
+Von & Nach & Protokoll \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Client & API Gateway & HTTP/REST \\
+API Gateway & Auth Service & HTTP/REST \\
+API Gateway & Product Service & HTTP/REST \\
+API Gateway & Order Service & HTTP/REST \\
+API Gateway & User Service & HTTP/REST \\
+API Gateway & Email Service & HTTP/REST \\
+Order Service & MQTT Broker & MQTT (publish \texttt{order/complete}) \\
+MQTT Broker & Email Service & MQTT (subscribe \texttt{order/complete}) \\
+\end{longtable}
+
+\subsection{Kurzbeschreibung der Blackboxen}
+
+\begin{longtable}[]{@{}lp{3cm}p{3.5cm}l@{}}
+\caption{Service-Übersicht}\\
+\toprule\noalign{}
+Service & Verantwortung & Tech-Stack & DB \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+API Gateway & Routing, JWT-Validierung & Spring Cloud Gateway & --- \\
+Auth Service & Login, Register, Token & Spring Boot & PostgreSQL \\
+User Service & Benutzerprofile & Spring Boot & PostgreSQL \\
+Product Service & Produktkatalog, Kauf & Python/Flask & PostgreSQL \\
+Order Service & Bestellungen, Status & Spring Boot & PostgreSQL \\
+Email Service & E-Mail-Versand & Spring Boot & PostgreSQL \\
+\end{longtable}
+
+\subsection{Ebene 2 -- Whitebox Order Service (exemplarisch)}
+
+Der Order Service besteht aus:
+\begin{itemize}
+  \item \textbf{Controller:} REST-Endpunkte (\texttt{/order})
+  \item \textbf{Service:} Geschäftslogik, Status-Übergänge
+  \item \textbf{Repository:} Datenbankzugriff (Spring Data JPA)
+  \item \textbf{Clients:} REST-Client zu Product Service, User Service,
+        Email Service
+  \item \textbf{Scheduler:} Automatische Status-Updates (CREATED →
+        PAID nach 10s)
+\end{itemize}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphicsifexists{images/06-whitebox-order-service.png}{0.35\textheight}
+  \caption{Whitebox Order Service (exportiert aus \texttt{diagramme/06-whitebox-order-service.drawio})}
+\end{figure}

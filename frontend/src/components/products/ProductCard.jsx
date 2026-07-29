@@ -6,7 +6,7 @@ import { formatPrice, formatDate } from "../../lib/format.js";
 import { addToCart, isInCart, removeFromCart } from "../../lib/cart.js";
 import { getUserInfo } from "../../lib/auth.js";
 
-const PLACEHOLDER = "https://picsum.photos/seed/no-image/400/300";
+const PLACEHOLDER = "https://brunofuga.adv.br/?s=no-alcohol-icon-png-and-svg-vector-free-download-cc-v361DOCK";
 
 function CartIcon() {
   return (

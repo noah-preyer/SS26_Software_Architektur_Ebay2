@@ -1,0 +1,40 @@
+\section{Lösungsstrategie}
+
+\subsection{Warum Microservices?}
+
+Nach den Kriterien von Richards (Kopplung, Deploybarkeit,
+Skalierbarkeit, Fehlertoleranz, Teamaufteilung) bietet der
+Microservices-Stil für dieses Projekt folgende Vorteile:
+
+\begin{itemize}
+  \item Jeder Service fachlich abgegrenzt (Auth, User, Product, Order,
+        Email)
+  \item Unabhängige Technologieentscheidungen pro Service
+  \item Gezielte horizontale Skalierung lastintensiver Services
+\end{itemize}
+
+\subsection{Zentrale Entscheidungen}
+
+\begin{description}
+  \item[Fachlicher Service-Schnitt]
+    Auth, User, Product, Order, Email -- jeder Service genau eine
+    fachliche Verantwortung.
+  \item[API Gateway]
+    Spring Cloud Gateway als einziger Einstiegspunkt, Routing +
+    zentrale JWT-Validierung über GlobalFilter.
+  \item[Database-per-Service]
+    Jeder Service besitzt eine eigene PostgreSQL-Instanz. Keine
+    servicübergreifenden Joins, Referenzen erfolgen über IDs.
+  \item[Kommunikation]
+    Synchron REST für Abfragen, asynchron MQTT (Publish/Subscribe)
+    für E-Mail-Benachrichtigungen.
+  \item[Polyglotte Implementierung]
+    Java/Spring Boot (API Gateway, Auth, User, Order, Email) +
+    Python/Flask (Product Service) als Beleg für
+    Technologieunabhängigkeit.
+  \item[Horizontale Skalierung]
+    Product Service exemplarisch mit 3 Replikaten hinter Nginx-Load-Balancer.
+  \item[Kompensierende Transaktion]
+    Beim Kauf schlägt der Product Service bei Fehlern die Reservierung
+    zurück (``markAllAsAvailable'').
+\end{description}

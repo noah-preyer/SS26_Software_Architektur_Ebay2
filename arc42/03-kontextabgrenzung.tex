@@ -1,0 +1,66 @@
+\section{Kontextabgrenzung}
+
+\subsection{Fachlicher Kontext}
+
+Die E-Commerce-Plattform wird von registrierten und nicht registrierten
+Benutzern verwendet.
+Nicht registrierte Benutzer können Produkte suchen, aufrufen und sich registrieren.
+
+Registrierte Benutzer können zusätzlich eigene Produkte einstellen und
+Produkte kaufen.
+Nach einem erfolgreichen Kauf wird eine Bestellbestätigung
+versendet.
+
+Nach außen tritt die Plattform als eine zusammenhängende Anwendung auf.
+Die einzige Verbindung zu einem externen System besteht zum E-Mail-Dienst,
+der für den Versand der Bestellbestätigungen verwendet wird.
+
+
+\subsection{Technischer Kontext}
+
+Der Zugriff auf die E-Commerce-Plattform erfolgt ausschließlich über einen
+Webbrowser.
+Dieser lädt das mit Astro umgesetzte Frontend, das über HTTP-REST-Anfragen mit dem API Gateway auf Port 8080 kommuniziert.
+
+Das API Gateway bildet den zentralen Einstiegspunkt zu den internen Services
+und übernimmt.
+Die Kommunikation zwischen den Services erfolgt über REST und MQTT.
+
+Die einzige Verbindung zu einem externen System besteht zum Mailserver, über
+den Bestellbestätigungen versendet werden.
+
+\subsubsection{Externe Schnittstellen}
+
+{
+    \renewcommand{\arraystretch}{1.5}
+    \rowcolors{2}{tableRowColor}{white}
+
+    \begin{tabularx}{\linewidth}{
+        >{\bfseries\raggedright\arraybackslash}p{0.25\linewidth}
+        >{\raggedright\arraybackslash}p{0.15\linewidth}
+        >{\raggedright\arraybackslash}X
+    }
+        \toprule
+        \rowcolor{tableHeaderColor}
+        Gegenstelle & Richtung & Inhalt und Protokoll \\
+        \midrule
+
+        Nutzer über Webbrowser &
+        Bidirektional &
+        Zugriff auf die Plattform über HTTP/REST, beispielsweise für Anmeldung,
+        Produktverwaltung und Kaufabwicklung. \\
+
+        SMTP-Server (Gmail) &
+        Ausgehend &
+        Versand von Bestellbestätigungen über SMTP mit STARTTLS auf Port 587. \\
+
+        \bottomrule
+    \end{tabularx}
+}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\linewidth]{images/01-kontextdiagramm.pdf}
+    \caption{Kontextdiagramm der E-Commerce-Plattform}
+    \label{fig:kontextdiagramm}
+\end{figure}

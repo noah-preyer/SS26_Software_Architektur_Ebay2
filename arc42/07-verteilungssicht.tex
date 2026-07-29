@@ -1,0 +1,38 @@
+\section{Verteilungssicht}
+
+\subsection{Infrastruktur Ebene 1}
+
+Das Gesamtsystem wird mittels Docker Compose orchestriert:
+
+\begin{longtable}[]{@{}llll@{}}
+\caption{Container-Übersicht}\\
+\toprule\noalign{}
+Container & Port (Host) & Replikate & Netzwerk \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+API Gateway & 8080 & 1 & frontend \\
+Auth Service & 8081 & 1 & frontend \\
+User Service & 8082 & 1 & frontend \\
+Product Service & 8083 & 3 (hinter Nginx) & frontend \\
+Nginx (Product) & 8089 & 1 & frontend \\
+Order Service & 8087 & 1 & frontend \\
+Email Service & 8084 & 1 & frontend \\
+Frontend & 4321 & 1 & frontend \\
+MQTT Broker & 1883 & 1 & frontend \\
+PostgreSQL (×6) & --- & je 1 & frontend \\
+\end{longtable}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphicsifexists{images/05-deployment.png}{0.4\textheight}
+  \caption{Deployment-Diagramm (exportiert aus \texttt{diagramme/05-deployment.drawio})}
+\end{figure}
+
+\subsection{Skalierung}
+
+Der Product Service wird horizontal auf 3 Replikate skaliert. Ein
+Nginx-Reverse-Proxy verteilt die Anfragen im Round-Robin-Verfahren.
+Da der Service zustandslos ist (keine Session, keine lokalen Dateien),
+ist dies ohne Migrationseffekte möglich.

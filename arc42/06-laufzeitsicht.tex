@@ -1,0 +1,44 @@
+\section{Laufzeitsicht}
+
+\subsection{Szenario: Login / JWT-Validierung}
+
+\begin{enumerate}
+  \item Client sendet POST \texttt{/auth/login} mit E-Mail und Passwort
+  \item Gateway erkennt öffentlichen Endpunkt und leitet weiter
+  \item Auth Service validiert Credentials, generiert JWT (HS256,
+        60~Min. Gültigkeit)
+  \item Bei geschützten Endpunkten validiert das Gateway jeden Request
+        und leitet die User-ID per \texttt{X-User-Id}-Header an die
+        Services weiter
+\end{enumerate}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphicsifexists{images/04-sequenz-login.png}{0.4\textheight}
+  \caption{Sequenzdiagramm Login/JWT (exportiert aus \texttt{diagramme/04-sequenz-login.drawio})}
+\end{figure}
+
+\subsection{Szenario: Produkte kaufen (Kernablauf)}
+
+Dieser Flow zeigt sowohl synchrone als auch asynchrone Kommunikation:
+
+\begin{enumerate}
+  \item Frontend → Gateway → \textbf{Product Service}:
+        \texttt{POST /products/bulk-buy}
+  \item Product Service reserviert Artikel (\texttt{markAllAsSold})
+  \item Product Service → \textbf{Order Service}:
+        \texttt{POST /order} (Legt Bestellung an, Status CREATED)
+  \item Bei Fehler → kompensierende Transaktion
+        (\texttt{markAllAsAvailable})
+  \item Order Service → MQTT: publiziert \texttt{order/complete}
+  \item \textbf{Email Service} (Subscriber) rendert Template und
+        versendet E-Mail per SMTP
+  \item Scheduler aktualisiert Status automatisch:
+        CREATED → PAID (10s) → SHIPPED (10s) → DELIVERED (10s)
+\end{enumerate}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphicsifexists{images/03-sequenz-produkt-kaufen.png}{0.5\textheight}
+  \caption{Sequenzdiagramm Produkte kaufen inkl. Kompensation (exportiert aus \texttt{diagramme/03-sequenz-produkt-kaufen.drawio})}
+\end{figure}

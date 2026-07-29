@@ -207,7 +207,9 @@ async function handleCreateProduct(req, res, user) {
     category: body.category ?? null,
     sellerId: user.id, // kommt aus dem token, nicht vom client
     status: "AVAILABLE",
-    imageUrls: Array.isArray(body.imageUrls) ? body.imageUrls : [],
+    imageUrls: Array.isArray(body.imageUrls) && body.imageUrls.length > 0
+    ? body.imageUrls
+    : ["https://brunofuga.adv.br/?s=no-alcohol-icon-png-and-svg-vector-free-download-cc-v361DOCK"],
     createdAt: new Date().toISOString(),
   };
   products.push(product);

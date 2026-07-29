@@ -44,6 +44,8 @@ public class ProductService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
     }
 
+    private static final String DEFAULT_IMAGE_URL = "https://brunofuga.adv.br/?s=no-alcohol-icon-png-and-svg-vector-free-download-cc-v361DOCK";
+
     public Product createProduct(CreateProductDto dto, Long sellerId) {
         Product product = new Product();
         product.setTitle(dto.getTitle());
@@ -51,7 +53,11 @@ public class ProductService {
         product.setPrice(dto.getPrice());
         product.setCategory(dto.getCategory());
         product.setSellerId(sellerId);
-        product.setImageUrls(dto.getImageUrls());
+        List<String> images = dto.getImageUrls();
+        if (images == null || images.isEmpty()) {
+            images = List.of(DEFAULT_IMAGE_URL);
+        }
+        product.setImageUrls(images);
         return productRepository.save(product);
     }
 

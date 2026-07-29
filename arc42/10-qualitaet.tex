@@ -1,0 +1,17 @@
+\section{Qualitätsanforderungen}
+
+\subsection{Qualitätsszenarien}
+
+\begin{description}
+  \item[Szenario 1 -- Ausfalltoleranz]
+    \emph{Email Service fällt aus.} Bestellungen werden weiterhin
+    angenommen und gespeichert. Die E-Mail-Zustellung erfolgt erst
+    nach Wiederherstellung des Services (lose Kopplung durch MQTT).
+  \item[Szenario 2 -- Lastspitze]
+    \emph{Viele Nutzer browsen gleichzeitig Produkte.} Drei Replikate
+    des Product Service teilen sich die Last über den Nginx-Load-Balancer.
+  \item[Szenario 3 -- Unabhängiges Deployment]
+    \emph{Ein neuer Service (z.\,B. Rating Service) soll hinzugefügt
+    werden.} Keine Änderung an bestehenden Services nötig -- neues
+    Routing im Gateway, neue Docker-Compose-Datei.
+\end{description}

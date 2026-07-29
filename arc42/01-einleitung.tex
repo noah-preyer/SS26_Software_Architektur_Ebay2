@@ -1,0 +1,61 @@
+\section{Einführung und Ziele}
+
+\subsection{Aufgabenstellung}
+
+Im Kurs Software-Architektur sollte ein Architekturstil anhand einer
+Beispielanwendung umgesetzt und bewertet werden.
+Dafür wurde eine
+Microservice-Architektur für eine E-Commerce-Plattform entwickelt.
+
+Die Plattform eignet sich besonders als Beispielanwendung,
+da ihre Funktionen klar in Bereiche wie
+Authentifizierung, Produktverwaltung, Bestellabwicklung und Benachrichtigungen aufgeteilt werden können.
+Durch die modulare Struktur kann das System
+leicht um weitere Funktionen und Services erweitert werden.
+
+
+
+\subsection{Kernfunktionen}
+
+\begin{itemize}
+\item Registrierung und Anmeldung mittels JWT
+\item Erstellen, Bearbeiten, Löschen und Suchen von Produkten
+\item Kaufabwicklung und E-Mail-Benachrichtigungen
+\end{itemize}
+
+
+\subsection{Qualitätsziele}
+{
+    \renewcommand{\arraystretch}{1.5}
+    \rowcolors{2}{tableRowColor}{white}
+
+    \begin{tabularx}{\linewidth}{
+            >{\bfseries\raggedright\arraybackslash}p{0.25\linewidth}
+            >{\raggedright\arraybackslash}X
+    }
+        \midrule
+
+        Modularität &
+        Fachliche Bereiche sind in eigenständige Services aufgeteilt. \\
+
+        Lose Kopplung &
+        Die Kommunikation erfolgt über klar definierte REST-Schnittstellen und
+        MQTT-Nachrichten. \\
+
+        Skalierbarkeit &
+        Einzelne Services können unabhängig horizontal skaliert werden. \\
+
+        Sicherheit &
+        Authentifizierung und JWT-Validierung erfolgen zentral über das
+        API Gateway. \\
+
+        Erweiterbarkeit &
+        Neue Services können über bestehende Schnittstellen ergänzt werden. \\
+
+        Fehlertoleranz &
+        Der Ausfall eines einzelnen Services soll nicht das gesamte System
+        beeinträchtigen. \\
+
+        \bottomrule
+    \end{tabularx}
+}

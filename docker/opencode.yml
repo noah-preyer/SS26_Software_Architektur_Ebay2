@@ -4,7 +4,7 @@ services:
       file: ${HOME}/.config/opencode/compose.yml
       service: opencode-base
     volumes:
-      - ../:/workspace:cached
+      - ../:/workspace
       - opencode-data:/home/opencode/.local/share/opencode
       - opencode-config:/home/opencode/.config/opencode
 

@@ -1,0 +1,132 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage[top=2.5cm, bottom=2.5cm, left=2.8cm, right=2.8cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp}
+\else
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[R]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancypagestyle{plain}{\fancyhf{}\fancyhead[R]{\small\thepage}}
+\ifPDFTeX\else
+\fi
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{%
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath}
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{%
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{%
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{%
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc}
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em}
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{3}
+\ifLuaTeX
+  \usepackage{selnolig}
+\fi
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{}
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Architekturdokumentation -- eBay-Klon als Microservices-Architektur},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, shapes, arrows, positioning}
+\usepackage[export]{adjustbox}
+\usepackage{xparse}
+
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage[table]{xcolor}
+
+\colorlet{tableHeaderColor}{gray!25}
+\colorlet{tableRowColor}{gray!14}
+
+
+\newcommand{\includegraphicsifexists}[2]{%
+  \IfFileExists{#1}{%
+    \includegraphics[width=\textwidth,height=#2,keepaspectratio]{#1}%
+  }{%
+    \fbox{\parbox{\dimexpr\textwidth-2\fboxsep-2\fboxrule\relax}{\centering\vspace{2cm}
+      \textbf{Bild nicht gefunden}\\[4pt]
+      \texttt{#1}\\[4pt]
+      Aus \texttt{.drawio} als PNG exportieren und in \texttt{images/} ablegen\vspace{2cm}}}%
+  }%
+}
+
+
+\begin{document}
+\begin{titlepage}
+\centering
+\vspace*{\fill}
+\includegraphics[width=0.95\textwidth]{images/front_page.png}\\[12pt]
+{\Huge Architekturdokumentation}\\[4pt]
+{\Large eBay-Klon als Microservices-Architektur}\\[24pt]
+{\large Gruppe 5 -- Software-Architektur}\\[8pt]
+Dominik Duken 123456\\
+Noah Preyer 234567\\
+Ilker Türk 345678\\[8pt]
+Juli 2026
+\vspace*{\fill}
+\end{titlepage}
+\clearpage
+\author{Ilker Türk}
+\tableofcontents
+\newpage
+
+\input{01-einleitung}
+\input{02-randbedingungen}
+\include{03-kontextabgrenzung}
+\include{04-loesungsstrategie}
+\include{05-bausteinsicht}
+\include{06-laufzeitsicht}
+\include{07-verteilungssicht}
+\include{08-konzepte}
+\include{09-adrs}
+\include{10-qualitaet}
+\include{11-risiken}
+\include{12-glossar}
+
+\end{document}

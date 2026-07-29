@@ -87,7 +87,7 @@ export default function ProductForm(props) {
     setLoading(true);
     try {
       const finalImages =
-        images().length > 0 ? images() : [`https://picsum.photos/seed/product-${Date.now()}/400/300`];
+        images().length > 0 ? images() : ["https://brunofuga.adv.br/?s=no-alcohol-icon-png-and-svg-vector-free-download-cc-v361DOCK"];
 
       const payload = {
         title: trimmedTitle,
