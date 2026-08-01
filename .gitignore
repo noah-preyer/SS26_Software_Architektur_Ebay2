@@ -12,3 +12,5 @@ Thumbs.db
 docker/opencode.yml
 docker/cloudbeaver_workspace
 **/application-local.properties
+out
+!out/arc42.pdf

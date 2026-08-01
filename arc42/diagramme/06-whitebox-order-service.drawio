@@ -1,101 +1,142 @@
-<mxfile host="app.diagrams.net" type="device">
+<mxfile host="drawio-plugin" modified="2026-08-01T23:10:29.677Z" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36" etag="xdtyi56BAbJf1sctKDIU" version="22.1.22" type="embed">
   <diagram id="whitebox-order" name="Whitebox Order Service">
-    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="900" math="0" shadow="0">
+    <mxGraphModel dx="1760" dy="1659" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="900" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="title" value="Kapitel 5.3 – Bausteinsicht (Ebene 2): Order Service als Whitebox" style="text;html=1;fontSize=18;fontStyle=1;align=center;" vertex="1" parent="1">
-          <mxGeometry x="380" y="15" width="640" height="30" as="geometry" />
+        <mxCell id="gw" value="API Gateway&#xa;(leitet /order/** weiter, X-User-Id)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
+          <mxGeometry x="920" y="75" width="230" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="gw" value="API Gateway&#xa;(leitet /order/** weiter, X-User-Id)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
-          <mxGeometry x="80" y="90" width="230" height="60" as="geometry" />
+        <mxCell id="box" value="Order Service (Spring Boot, Java 21)" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fontStyle=1;fillColor=none;strokeColor=#6c8ebf;dashed=0;" parent="1" vertex="1">
+          <mxGeometry x="120" y="135" width="700" height="590" as="geometry" />
         </mxCell>
-        <mxCell id="psin" value="Product Service&#xa;(interner Aufruf beim Checkout)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;dashed=1;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="360" y="90" width="230" height="60" as="geometry" />
+        <mxCell id="ctrl" value="OrderController&#xa;@RestController&#xa;&#xa;POST /  ·  POST /checkout&#xa;GET /{orderId}  ·  GET /user/{userId}&#xa;PUT /{orderId}/paid" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;align=center;" parent="1" vertex="1">
+          <mxGeometry x="170" y="185" width="290" height="100" as="geometry" />
         </mxCell>
-        <mxCell id="epsin" value="POST /order,&#xa;PUT /order/{id}/paid" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;fontSize=10;" edge="1" parent="1" source="psin" target="ctrl">
+        <mxCell id="exh" value="GlobalExceptionHandler&#xa;+ ErrorResponse&#xa;(einheitliche Fehlerantworten)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="510" y="190" width="270" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="svc" value="OrderService&#xa;Geschäftslogik&#xa;&#xa;Bestellung anlegen, Preise ermitteln,&#xa;Status verwalten, Event auslösen" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="170" y="345" width="290" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="dto" value="DTOs / Domänenmodell&#xa;&#xa;OrderDto, Order, OrderItem&#xa;ProductDto, UserDto" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="510" y="345" width="270" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="repo" value="OrderRepository&#xa;(Spring Data JPA)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+          <mxGeometry x="170" y="515" width="290" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="sched" value="OrderStatusScheduler&#xa;@Scheduled (alle 10 s)&#xa;CREATED → PAID → SHIPPED → DELIVERED" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="205" y="620" width="220" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="clients" value="Ausgehende Clients (Anti-Corruption-Schicht)" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=none;strokeColor=#9673a6;dashed=1;fontSize=11;fontStyle=2;" parent="1" vertex="1">
+          <mxGeometry x="510" y="505" width="270" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="cprod" value="ProductServiceClient&#xa;(REST)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="530" y="535" width="230" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="cuser" value="UserServiceClient&#xa;(REST)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="530" y="590" width="230" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="cmail" value="EmailServiceClient&#xa;(MQTT-Publisher, Topic order/complete)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="530" y="645" width="230" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="db" value="order-service-db&#xa;(PostgreSQL 16)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=12;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
+          <mxGeometry x="225" y="755" width="180" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="extprod" value="Product Service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;dashed=1;" parent="1" vertex="1">
+          <mxGeometry x="940" y="555" width="190" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="extuser" value="User Service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;dashed=1;" parent="1" vertex="1">
+          <mxGeometry x="940" y="610" width="190" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="extmq" value="MQTT-Broker (Mosquitto)&#xa;→ Email Service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;dashed=1;" parent="1" vertex="1">
+          <mxGeometry x="940" y="665" width="190" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" value="HTTP/REST:&#xa;POST /checkout, PUT /{orderId}/paid" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;fontSize=10;" parent="1" source="gw" target="ctrl" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="box" value="Order Service (Spring Boot, Java 21)" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fontStyle=1;fillColor=none;strokeColor=#6c8ebf;dashed=0;" vertex="1" parent="1">
-          <mxGeometry x="80" y="190" width="700" height="590" as="geometry" />
-        </mxCell>
-        <mxCell id="ctrl" value="OrderController&#xa;@RestController&#xa;&#xa;POST /  ·  GET /{orderId}&#xa;GET /user/{userId}  ·  PUT /{orderId}/paid" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;align=center;" vertex="1" parent="1">
-          <mxGeometry x="130" y="240" width="290" height="100" as="geometry" />
-        </mxCell>
-        <mxCell id="exh" value="GlobalExceptionHandler&#xa;+ ErrorResponse&#xa;(einheitliche Fehlerantworten)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="470" y="245" width="270" height="90" as="geometry" />
-        </mxCell>
-        <mxCell id="svc" value="OrderService&#xa;Geschäftslogik&#xa;&#xa;Bestellung anlegen, Preise ermitteln,&#xa;Status verwalten, Event auslösen" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="130" y="400" width="290" height="110" as="geometry" />
-        </mxCell>
-        <mxCell id="dto" value="DTOs / Domänenmodell&#xa;&#xa;OrderDto, Order, OrderItem&#xa;ProductDto, UserDto" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="470" y="400" width="270" height="110" as="geometry" />
-        </mxCell>
-        <mxCell id="repo" value="OrderRepository&#xa;(Spring Data JPA)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
-          <mxGeometry x="130" y="570" width="290" height="70" as="geometry" />
-        </mxCell>
-        <mxCell id="clients" value="Ausgehende Clients (Anti-Corruption-Schicht)" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=none;strokeColor=#9673a6;dashed=1;fontSize=11;fontStyle=2;" vertex="1" parent="1">
-          <mxGeometry x="470" y="560" width="270" height="200" as="geometry" />
-        </mxCell>
-        <mxCell id="cprod" value="ProductServiceClient&#xa;(REST)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="490" y="590" width="230" height="45" as="geometry" />
-        </mxCell>
-        <mxCell id="cuser" value="UserServiceClient&#xa;(REST)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="490" y="645" width="230" height="45" as="geometry" />
-        </mxCell>
-        <mxCell id="cmail" value="EmailServiceClient&#xa;(MQTT-Publisher, Topic order/complete)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="490" y="700" width="230" height="45" as="geometry" />
-        </mxCell>
-        <mxCell id="db" value="order-service-db&#xa;(PostgreSQL 16)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=12;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
-          <mxGeometry x="185" y="820" width="180" height="70" as="geometry" />
-        </mxCell>
-        <mxCell id="extprod" value="Product Service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;dashed=1;" vertex="1" parent="1">
-          <mxGeometry x="900" y="590" width="190" height="45" as="geometry" />
-        </mxCell>
-        <mxCell id="extuser" value="User Service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;dashed=1;" vertex="1" parent="1">
-          <mxGeometry x="900" y="645" width="190" height="45" as="geometry" />
-        </mxCell>
-        <mxCell id="extmq" value="MQTT-Broker (Mosquitto)&#xa;→ Email Service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;dashed=1;" vertex="1" parent="1">
-          <mxGeometry x="900" y="700" width="190" height="45" as="geometry" />
-        </mxCell>
-        <mxCell id="e1" value="HTTP/REST" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="gw" target="ctrl">
+        <mxCell id="e2" value="delegiert" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" parent="1" source="ctrl" target="svc" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e2" value="delegiert" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="ctrl" target="svc">
+        <mxCell id="e3" value="speichert / lädt" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" parent="1" source="svc" target="repo" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e3" value="speichert / lädt" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="svc" target="repo">
+        <mxCell id="e4" value="JDBC" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="repo" target="db" edge="1">
+          <mxGeometry x="-0.1239" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="387" y="625" />
+              <mxPoint x="450" y="625" />
+              <mxPoint x="450" y="735" />
+              <mxPoint x="315" y="735" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" parent="1" target="cprod" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="460" y="435" />
+              <mxPoint x="490" y="435" />
+              <mxPoint x="490" y="558" />
+            </Array>
+            <mxPoint x="460" y="435" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e6" value="holt E-Mail-Adresse&#xa;des Bestellers" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=10;" parent="1" source="cmail" target="cuser" edge="1">
+          <mxGeometry x="-1" y="-30" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="490" y="668" />
+              <mxPoint x="490" y="613" />
+            </Array>
+            <mxPoint x="20" y="7" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;exitX=0.75;exitY=1;exitDx=0;exitDy=0;" parent="1" source="svc" target="cmail" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="388" y="495" />
+              <mxPoint x="470" y="495" />
+              <mxPoint x="470" y="685" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e8" value="GET /products/{id},&#xa;PUT /products/{id}/reserve,&#xa;PUT /products/{id}/unreserve" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;fontSize=10;" parent="1" source="cprod" target="extprod" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e4" value="JDBC" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="repo" target="db">
+        <mxCell id="e9" value="GET /user/{id}" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" parent="1" source="cuser" target="extuser" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="svc" target="cprod">
+        <mxCell id="e10" value="publish (QoS 1)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;dashed=1;" parent="1" source="cmail" target="extmq" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e6" value="holt E-Mail-Adresse&#xa;des Bestellers" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=10;" edge="1" parent="1" source="cmail" target="cuser">
-          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="450" y="723" /><mxPoint x="450" y="668" /></Array></mxGeometry>
+        <mxCell id="e11" value="fängt Exceptions ab" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;dashed=1;strokeColor=#999999;" parent="1" source="exh" target="ctrl" edge="1">
+          <mxGeometry x="-0.2" y="-20" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
         </mxCell>
-        <mxCell id="e7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;exitX=0.75;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="svc" target="cmail">
+        <mxCell id="e12" value="nutzt" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;dashed=1;strokeColor=#999999;" parent="1" source="svc" target="dto" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e8" value="GET /products/{id}" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="cprod" target="extprod">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="e13" value="markOrderPaid /&lt;br&gt;&amp;nbsp;markShipped /&lt;br&gt;&amp;nbsp;markDelivered" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;fontSize=10;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="sched" target="svc" edge="1">
+          <mxGeometry x="0.3521" y="-30" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="140" y="660" />
+              <mxPoint x="140" y="400" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
         </mxCell>
-        <mxCell id="e9" value="GET /user/{id}" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="cuser" target="extuser">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="e14" value="liest fällige Bestellungen" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;fontSize=10;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" parent="1" source="sched" target="repo" edge="1">
+          <mxGeometry x="-0.1429" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="315" y="605" />
+              <mxPoint x="315" y="605" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
         </mxCell>
-        <mxCell id="e10" value="publish (QoS 1)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;dashed=1;" edge="1" parent="1" source="cmail" target="extmq">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e11" value="fängt Exceptions ab" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;dashed=1;strokeColor=#999999;" edge="1" parent="1" source="exh" target="ctrl">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e12" value="nutzt" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;dashed=1;strokeColor=#999999;" edge="1" parent="1" source="svc" target="dto">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="legend" value="Legende: Schichtung Controller → Service → Repository. Ausgehende Aufrufe sind in eigene Client-Klassen gekapselt, sodass die Geschäftslogik nichts über Protokolle (REST bzw. MQTT) wissen muss. Gestrichelte Kästen = Bausteine außerhalb des Order Service." style="text;html=1;fontSize=11;align=left;fontStyle=2;" vertex="1" parent="1">
-          <mxGeometry x="80" y="830" width="800" height="50" as="geometry" />
+        <mxCell id="3" value="Legende: Schichtung Controller → Service → Repository. &lt;br&gt;Der OrderStatusScheduler treibt die Statusübergänge (CREATED → PAID → SHIPPED → DELIVERED) automatisch.&lt;br&gt;&amp;nbsp;Ausgehende Aufrufe sind in eigene Client-Klassen gekapselt, sodass die Geschäftslogik nichts über Protokolle (REST bzw. MQTT) wissen muss. &lt;br&gt;Gestrichelte Kästen = Bausteine außerhalb des Order Service." style="text;html=1;fontSize=11;align=left;fontStyle=2;" parent="1" vertex="1">
+          <mxGeometry x="530" y="755" width="750" height="70" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

@@ -1,76 +1,127 @@
 \section{Bausteinsicht}
 
-\subsection{Whitebox Gesamtsystem}
+\subsection{Ebene 1: Das Gesamtsystem}
+
+Das System besteht aus sieben eigenständig ausgelieferten Bausteinen sowie
+einem Nachrichtenbroker und einem Loadbalancer.
+Die Aufteilung orientiert sich an den fachlichen Verantwortungsbereichen des Systems.
+
+Abbildung~\ref{fig:bausteinsicht} zeigt die Bausteine, ihre Datenbanken und die Kommunikationsbeziehungen.
 
 \begin{figure}[htbp]
-  \centering
-  \includegraphicsifexists{images/02-bausteinsicht.png}{0.5\textheight}
-  \caption{Bausteinsicht -- Übersicht aller Services mit Datenbanken und Infrastruktur (exportiert aus \texttt{diagramme/02-bausteinsicht.drawio})}
+    \centering
+    \includegraphics[width=\linewidth]{images/02-bausteinsicht}
+    \caption{Bausteinsicht}
+    \label{fig:bausteinsicht}
 \end{figure}
 
-\begin{description}
-  \item[Begründung]
-    Die Aufteilung folgt dem fachlichen Schnitt: jeder Service bildet
-    genau einen Bounded Context ab.
-  \item[Enthaltene Bausteine]
-    API Gateway, Auth Service, User Service, Product Service (3
-    Replikate + Nginx), Order Service, Email Service, Frontend,
-    MQTT-Broker (Mosquitto), je eine PostgreSQL-DB pro Service.
-  \item[Wichtige Schnittstellen]
-    Siehe Tabelle~\ref{tab:schnittstellen}.
-\end{description}
+Die Verantwortlichkeiten der einzelnen Bausteine sind in
+Tabelle~\ref{tab:bausteine} zusammengefasst.
 
-\begin{longtable}[]{@{}lll@{}}
-\caption{Schnittstellenübersicht}\label{tab:schnittstellen}\\
-\toprule\noalign{}
-Von & Nach & Protokoll \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-Client & API Gateway & HTTP/REST \\
-API Gateway & Auth Service & HTTP/REST \\
-API Gateway & Product Service & HTTP/REST \\
-API Gateway & Order Service & HTTP/REST \\
-API Gateway & User Service & HTTP/REST \\
-API Gateway & Email Service & HTTP/REST \\
-Order Service & MQTT Broker & MQTT (publish \texttt{order/complete}) \\
-MQTT Broker & Email Service & MQTT (subscribe \texttt{order/complete}) \\
-\end{longtable}
+    {
+    \renewcommand{\arraystretch}{1.5}
 
-\subsection{Kurzbeschreibung der Blackboxen}
+    \begin{longtable}{@{}
+            >{\bfseries\raggedright\arraybackslash}p{0.18\linewidth}
+            >{\raggedright\arraybackslash}p{0.39\linewidth}
+            >{\raggedright\arraybackslash}p{0.18\linewidth}
+            >{\raggedright\arraybackslash}p{0.17\linewidth}
+        @{}}
+        \caption{Verantwortlichkeiten der Bausteine}
+        \label{tab:bausteine} \\
 
-\begin{longtable}[]{@{}lp{3cm}p{3.5cm}l@{}}
-\caption{Service-Übersicht}\\
-\toprule\noalign{}
-Service & Verantwortung & Tech-Stack & DB \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-API Gateway & Routing, JWT-Validierung & Spring Cloud Gateway & --- \\
-Auth Service & Login, Register, Token & Spring Boot & PostgreSQL \\
-User Service & Benutzerprofile & Spring Boot & PostgreSQL \\
-Product Service & Produktkatalog, Kauf & Python/Flask & PostgreSQL \\
-Order Service & Bestellungen, Status & Spring Boot & PostgreSQL \\
-Email Service & E-Mail-Versand & Spring Boot & PostgreSQL \\
-\end{longtable}
+        \toprule
+        \rowcolor{tableHeaderColor}
+        Baustein & Verantwortung & Technologie & Datenbank \\
+        \midrule
+        \endfirsthead
 
-\subsection{Ebene 2 -- Whitebox Order Service (exemplarisch)}
+        \multicolumn{4}{@{}l}{%
+            \tablename\ \thetable{} -- Fortsetzung
+        } \\
+
+        \toprule
+        \rowcolor{tableHeaderColor}
+        Baustein & Verantwortung & Technologie & Datenbank \\
+        \midrule
+        \endhead
+
+        \midrule
+        \multicolumn{4}{r@{}}{Fortsetzung auf der nächsten Seite} \\
+        \endfoot
+
+        \bottomrule
+        \endlastfoot
+
+        Frontend &
+        Stellt die Benutzeroberfläche für Produkte, Warenkorb und
+        Benutzerkonto bereit. &
+        Astro 5 &
+        Keine \\
+
+        \rowcolor{tableRowColor}
+        API Gateway &
+        Bildet den zentralen Zugang, validiert JWTs und leitet Anfragen
+        an den zuständigen Service weiter. &
+        Spring Cloud Gateway, Java 21 &
+        Keine \\
+
+        Auth Service &
+        Übernimmt Registrierung, Anmeldung und Ausstellung der
+        Zugriffstoken. &
+        Python, Flask &
+        \texttt{auth-service-db} \\
+
+        \rowcolor{tableRowColor}
+        User Service &
+        Verwaltet Benutzerprofile und Lieferadressen. &
+        Spring Boot &
+        \texttt{user-service-db} \\
+
+        Product Service &
+        Verwaltet den Produktkatalog und den Verkaufsstatus der Artikel. &
+        Spring Boot, drei Instanzen &
+        \texttt{product-db} \\
+
+        \rowcolor{tableRowColor}
+        Order Service &
+        Verwaltet Bestellungen, Positionen und Bestellstatus und löst
+        Benachrichtigungen aus. &
+        Spring Boot &
+        \texttt{order-service-db} \\
+
+        Email Service &
+        Verarbeitet Bestellereignisse und versendet
+        Bestellbestätigungen. &
+        Python, paho-mqtt &
+        \texttt{email-service-db} \\
+
+        \rowcolor{tableRowColor}
+        MQTT-Broker &
+        Vermittelt Ereignisse zwischen Order Service und Email Service. &
+        Eclipse Mosquitto 2 &
+        Keine \\
+
+    \end{longtable}
+}
+
+\subsection{Ebene 2 -- Order Service (exemplarisch)}
 
 Der Order Service besteht aus:
 \begin{itemize}
   \item \textbf{Controller:} REST-Endpunkte (\texttt{/order})
   \item \textbf{Service:} Geschäftslogik, Status-Übergänge
   \item \textbf{Repository:} Datenbankzugriff (Spring Data JPA)
-  \item \textbf{Clients:} REST-Client zu Product Service, User Service,
-        Email Service
+  \item \textbf{REST-Clients:} Client zu Product Service und User Service
+  \item \textbf{MQTT-Clients:} Client zum Email Service
+
   \item \textbf{Scheduler:} Automatische Status-Updates (CREATED →
         PAID nach 10s)
 \end{itemize}
 
 \begin{figure}[htbp]
-  \centering
-  \includegraphicsifexists{images/06-whitebox-order-service.png}{0.35\textheight}
-  \caption{Whitebox Order Service (exportiert aus \texttt{diagramme/06-whitebox-order-service.drawio})}
+    \centering
+    \includegraphics[width=\linewidth]{images/06-whitebox-order-service}
+    \caption{Order Service}
+    \label{fig:order_service}
 \end{figure}

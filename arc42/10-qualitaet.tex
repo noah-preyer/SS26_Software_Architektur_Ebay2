@@ -2,16 +2,29 @@
 
 \subsection{Qualitätsszenarien}
 
+Die Qualitätsziele aus Kapitel 1 werden anhand konkreter Szenarien
+überprüft.
+
 \begin{description}
-  \item[Szenario 1 -- Ausfalltoleranz]
-    \emph{Email Service fällt aus.} Bestellungen werden weiterhin
-    angenommen und gespeichert. Die E-Mail-Zustellung erfolgt erst
-    nach Wiederherstellung des Services (lose Kopplung durch MQTT).
-  \item[Szenario 2 -- Lastspitze]
-    \emph{Viele Nutzer browsen gleichzeitig Produkte.} Drei Replikate
-    des Product Service teilen sich die Last über den Nginx-Load-Balancer.
-  \item[Szenario 3 -- Unabhängiges Deployment]
-    \emph{Ein neuer Service (z.\,B. Rating Service) soll hinzugefügt
-    werden.} Keine Änderung an bestehenden Services nötig -- neues
-    Routing im Gateway, neue Docker-Compose-Datei.
+    \item[Szenario 1 -- Ausfalltoleranz]
+    Der Email Service ist nicht verfügbar. Bestellungen können weiterhin
+    abgeschlossen werden, da der E-Mail-Versand über MQTT vom Kaufvorgang
+    entkoppelt ist.
+
+    \item[Szenario 2 -- Skalierbarkeit]
+    Mehrere Produktanfragen treffen gleichzeitig ein. Nginx verteilt die
+    Anfragen auf drei Instanzen des Product Service.
+
+    \item[Szenario 3 -- Unabhängige Auslieferung]
+    Der Order Service wird neu gestartet. Währenddessen bleiben Anmeldung
+    und Produktkatalog weiterhin verfügbar.
+
+    \item[Szenario 4 -- Erweiterbarkeit]
+    Ein zusätzlicher Service kann über eine eigene Compose-Konfiguration und
+    eine neue Route im API Gateway eingebunden werden, ohne bestehende
+    Services grundlegend zu verändern.
+
+    \item[Szenario 5 -- Sicherheit]
+    Ein geschützter Endpunkt wird ohne gültiges JWT aufgerufen. Das API
+    Gateway weist die Anfrage ab, bevor sie den Zielservice erreicht.
 \end{description}

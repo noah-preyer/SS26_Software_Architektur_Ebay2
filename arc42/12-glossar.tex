@@ -1,23 +1,14 @@
-\section{Glossar}
+\section{Fazit}
 
-\begin{longtable}[]{@{}p{3cm}p{8cm}@{}}
-\toprule\noalign{}
-Begriff & Definition \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-API Gateway & Zentraler Einstiegspunkt, routet Anfragen an die
-entsprechenden Services \\
-JWT & JSON Web Token -- tokenbasiertes
-Authentifizierungsverfahren \\
-MQTT & Message Queue Telemetry Transport --
-asynchrones Publish/Subscribe-Protokoll \\
-Bounded Context & Fachliche Abgrenzung eines Services nach DDD \\
-Database-per-Service & Architekturmuster: jeder Service besitzt
-eine eigene Datenbank \\
-Polyglotter Stack & Verwendung verschiedener
-Programmiersprachen/-Frameworks innerhalb eines Systems \\
-Kompensierende Transaktion & Manuelles Rückgängigmachen einer
-vorherigen Aktion bei Fehlschlag \\
-\end{longtable}
+Die Umsetzung hat sowohl die Stärken als auch die Schwächen der Microservice-Architektur deutlich gezeigt.
+Die Services konnten aufgrund klarer Schnittstellen und eigener Datenbanken weitgehend unabhängig entwickelt werden.
+Zudem beeinträchtigt der Ausfall des Email Service den Kaufvorgang nicht, da die Kommunikation über MQTT entkoppelt ist.
+
+Gleichzeitig erhöht die verteilte Architektur die Komplexität.
+Der Kaufvorgang umfasst mehrere Services und benötigt eine eigene Rückabwicklungslogik.
+Auch Betrieb und Fehlersuche sind durch die große Anzahl an Containern und getrennten Protokollen aufwendiger.
+
+Microservices eignen sich besonders für größere Systeme mit mehreren Teams,
+unterschiedlich stark belasteten Bereichen oder hohen Anforderungen an die Fehlerisolation.
+Für die hier umgesetzte Anwendung wäre ein modularer Monolith wirtschaftlicher gewesen.
+Als Lernprojekt zur praktischen Untersuchung einer verteilten Architektur war der gewählte Ansatz jedoch sehr geeignet.

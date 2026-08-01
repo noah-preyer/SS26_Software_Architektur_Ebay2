@@ -1,32 +1,97 @@
 \section{Verteilungssicht}
 
-\subsection{Infrastruktur Ebene 1}
+\subsection{Infrastruktur -- Ebene 1}
 
-Das Gesamtsystem wird mittels Docker Compose orchestriert:
+Das Gesamtsystem wird mit Docker Compose orchestriert.
+Alle Container befinden sich in einem gemeinsamen Docker-Netzwerk.
+Der Product Service wird mit drei Replikaten ausgeführt, auf die ein Nginx-Loadbalancer die Anfragen verteilt.
+    {
+    \renewcommand{\arraystretch}{1.5}
 
-\begin{longtable}[]{@{}llll@{}}
-\caption{Container-Übersicht}\\
-\toprule\noalign{}
-Container & Port (Host) & Replikate & Netzwerk \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-API Gateway & 8080 & 1 & frontend \\
-Auth Service & 8081 & 1 & frontend \\
-User Service & 8082 & 1 & frontend \\
-Product Service & 8083 & 3 (hinter Nginx) & frontend \\
-Nginx (Product) & 8089 & 1 & frontend \\
-Order Service & 8087 & 1 & frontend \\
-Email Service & 8084 & 1 & frontend \\
-Frontend & 4321 & 1 & frontend \\
-MQTT Broker & 1883 & 1 & frontend \\
-PostgreSQL (×6) & --- & je 1 & frontend \\
-\end{longtable}
+    \begin{longtable}{@{}
+            >{\bfseries\raggedright\arraybackslash}p{0.27\linewidth}
+            >{\raggedright\arraybackslash}p{0.15\linewidth}
+            >{\raggedright\arraybackslash}p{0.15\linewidth}
+            >{\raggedright\arraybackslash}p{0.35\linewidth}
+        @{}}
+        \caption{Container- und Portübersicht}
+        \label{tab:container-ports} \\
 
+        \toprule
+        \rowcolor{tableHeaderColor}
+        Container & Port außen & Port innen & Anmerkung \\
+        \midrule
+        \endfirsthead
+
+        \toprule
+        \rowcolor{tableHeaderColor}
+        Container & Port außen & Port innen & Anmerkung \\
+        \midrule
+        \endhead
+
+        \bottomrule
+        \endlastfoot
+
+        Frontend &
+        4321 &
+        4321 &
+        Benutzeroberfläche im Webbrowser. \\
+
+        \rowcolor{tableRowColor}
+        API Gateway &
+        8080 &
+        8080 &
+        Zentraler Eingang für alle externen Schnittstellenaufrufe. \\
+
+        Auth Service &
+        8081 &
+        8080 &
+        -- \\
+
+        \rowcolor{tableRowColor}
+        User Service &
+        8082 &
+        8080 &
+        -- \\
+
+        Product-Service-Proxy &
+        8083 &
+        80 &
+        Nginx als Loadbalancer für den Product Service. \\
+
+        \rowcolor{tableRowColor}
+        Product Service &
+        8181--8183 &
+        8082 &
+        Drei parallel ausgeführte Instanzen. \\
+
+        Order Service &
+        8087 &
+        8080 &
+        -- \\
+
+        \rowcolor{tableRowColor}
+        Email Service &
+        -- &
+        -- &
+        Nur über MQTT erreichbar, kein veröffentlichter Port. \\
+
+        MQTT-Broker &
+        1883, 9001 &
+        1883, 9001 &
+        Eclipse Mosquitto; MQTT und WebSocket. \\
+
+        \rowcolor{tableRowColor}
+        PostgreSQL-Datenbanken &
+        Nur \texttt{product-db}: 5433 &
+        5432 &
+        Je Service eine PostgreSQL-16-Instanz. \\
+
+    \end{longtable}
+}
 \begin{figure}[htbp]
   \centering
-  \includegraphicsifexists{images/05-deployment.png}{0.4\textheight}
+  \includegraphics{images/05-deployment}
   \caption{Deployment-Diagramm (exportiert aus \texttt{diagramme/05-deployment.drawio})}
 \end{figure}
 

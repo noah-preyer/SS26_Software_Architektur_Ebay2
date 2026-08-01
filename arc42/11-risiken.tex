@@ -1,22 +1,24 @@
 \section{Risiken und technische Schulden}
 
 \begin{description}
-  \item[Kein zentrales Logging/Monitoring]
-    Es existiert keine Correlation-ID über Services hinweg; Fehlersuche
-    im verteilten System ist erschwert.
-  \item[Gateway als Single Point of Failure]
-    Fällt das API Gateway aus, ist das gesamte System nicht
-    erreichbar. Kein Failover-Mechanismus vorgesehen.
-  \item[Zyklische Abhängigkeit]
-    Product Service ↔ Order Service: Der Product Service ruft den
-    Order Service beim Kauf auf, der Order Service ruft den Product
-    Service für Produktdetails ab.
-  \item[Secrets im Klartext]
-    JWT-Secret und SMTP-Zugangsdaten liegen unverschlüsselt in den
-    Docker-Compose-Dateien.
-  \item[ID-Typ-Inkonsistenz]
-    \texttt{auth\_service} und \texttt{user\_service} verwenden UUIDs,
-    \texttt{product\_service} und \texttt{order\_service} wurden auf
-    Long umgestellt. Die \texttt{X-User-Id}-Kette ist damit
-    aktuell nicht durchgängig funktionsfähig.
+    \item[Fehlendes zentrales Logging und Monitoring]
+    Es gibt keine serviceübergreifende Correlation-ID. Dadurch ist die
+    Fehlersuche im verteilten System erschwert.
+
+    \item[API Gateway als Single Point of Failure]
+    Bei einem Ausfall des API Gateways ist das gesamte System nicht mehr
+    erreichbar. Ein Failover-Mechanismus ist nicht vorhanden.
+
+    \item[Zyklische Serviceabhängigkeit]
+    Product Service und Order Service rufen sich gegenseitig auf. Dies erhöht
+    die Kopplung und erschwert Änderungen sowie die Fehlerbehandlung.
+
+    \item[Unsichere Verwaltung von Zugangsdaten]
+    JWT-Secret, interner Service-Key und SMTP-Zugangsdaten werden unverschlüsselt
+    in der Konfiguration hinterlegt.
+
+    \item[Inkonsistente ID-Typen]
+    Auth Service und User Service verwenden UUIDs, während Product Service und
+    Order Service Long-Werte erwarten. Dadurch ist die Weitergabe der
+    Benutzer-ID über \texttt{X-User-Id} derzeit nicht durchgängig kompatibel.
 \end{description}

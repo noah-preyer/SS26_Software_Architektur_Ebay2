@@ -1,34 +1,69 @@
-\section{Architekturentscheidungen (ADRs)}
+\section{Architekturentscheidungen}
 
-\begin{longtable}[]{@{}p{2.5cm}p{4cm}p{4cm}@{}}
-\caption{Architekturentscheidungen}\\
-\toprule\noalign{}
-Entscheidung & Kontext & Konsequenz \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-ADR-1: Microservices & Demonstration der
-Microservices-Eigenschaften & Höhere运维-Komplexität,
-aber lose Kopplung \\
-ADR-2: API Gateway & Einheitlicher Einstiegspunkt
-für Sicherheit und Routing & Single Point of
-Failure, aber zentrale Kontrolle \\
-ADR-3: MQTT für E-Mails & Async-Kommunikation
-demonstrieren, Ausfalltoleranz & Email-Ausfall
-blockiert Bestellung nicht \\
-ADR-4: Database-per-Service & Vermeidung von
-geteilten Datenbanken & Keine servicübergreifenden
-Joins möglich \\
-ADR-5: Polyglotter Stack & Technologieunabhängigkeit
-demonstrieren & Höhere Einarbeitungszeit, aber
-bewusste Entscheidung \\
-ADR-6: Product Service
-Replikation & Horizontale Skalierung
-demonstrieren & Nginx als zusätzliche
-Infrastrukturkomponente \\
-ADR-7: Kompensierende
-Transaktion & Kein verteilter
-Transaction Manager & Manuelle
-Rückabwicklung bei Fehlern \\
-\end{longtable}
+{
+    \renewcommand{\arraystretch}{1.5}
+
+    \begin{longtable}{@{}
+            >{\bfseries\raggedright\arraybackslash}p{0.08\linewidth}
+            >{\raggedright\arraybackslash}p{0.22\linewidth}
+            >{\raggedright\arraybackslash}p{0.31\linewidth}
+            >{\raggedright\arraybackslash}p{0.31\linewidth}
+        @{}}
+        \caption{Architekturentscheidungen}
+        \label{tab:architekturentscheidungen} \\
+
+        \toprule
+        \rowcolor{tableHeaderColor}
+        Nr. & Entscheidung & Begründung & Konsequenz \\
+        \midrule
+        \endfirsthead
+
+        \toprule
+        \rowcolor{tableHeaderColor}
+        Nr. & Entscheidung & Begründung & Konsequenz \\
+        \midrule
+        \endhead
+
+        \bottomrule
+        \endlastfoot
+
+        AE 1 &
+        Microservices statt Monolith &
+        Praktische Erprobung des Architekturstils. &
+        Unabhängige Services, aber höherer Betriebsaufwand. \\
+
+        \rowcolor{tableRowColor}
+        AE 2 &
+        Zentrales API Gateway &
+        Zentrale Bündelung von Routing und Tokenprüfung. &
+        Einheitlicher Zugang, aber zentraler Ausfallpunkt. \\
+
+        AE 3 &
+        Eine Datenbank je Service &
+        Vermeidung eines gemeinsam gekoppelten Schemas. &
+        Unabhängige Datenmodelle, aber keine direkten Joins. \\
+
+        \rowcolor{tableRowColor}
+        AE 4 &
+        MQTT für Benachrichtigungen &
+        Der E-Mail-Versand soll den Kauf nicht blockieren. &
+        Entkoppelter Versand, aber zusätzlicher Broker. \\
+
+        AE 5 &
+        Gemischter Technologie-Stack &
+        Erprobung der Technologieunabhängigkeit. &
+        Flexible Auswahl, aber höherer Wartungsaufwand. \\
+
+        \rowcolor{tableRowColor}
+        AE 6 &
+        Drei Product-Service-Instanzen &
+        Demonstration horizontaler Skalierung. &
+        Gezielte Skalierung, aber zusätzlicher Loadbalancer. \\
+
+        AE 7 &
+        Kompensation statt verteilter Transaktion &
+        Verzicht auf Transaktionen über mehrere Datenbanken. &
+        Konsistenz durch Rückabwicklung, aber zusätzliche Logik. \\
+
+    \end{longtable}
+}

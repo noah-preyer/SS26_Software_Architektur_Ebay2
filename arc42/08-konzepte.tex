@@ -2,53 +2,34 @@
 
 \subsection{Sicherheit}
 
-\begin{itemize}
-  \item \textbf{JWT-Ausstellung:} Auth Service signiert Tokens mit
-        HS256 und einem Secret
-  \item \textbf{JWT-Validierung:} Im API Gateway als GlobalFilter --
-        jeder geschützte Request wird geprüft
-  \item \textbf{Öffentliche Endpunkte:}
-        \texttt{/auth/**}, \texttt{GET /products/**},
-        \texttt{GET /image/**}
-  \item \textbf{Identitätsweitergabe:} Gateway setzt
-        \texttt{X-User-Id}-Header für Downstream-Services
-\end{itemize}
+Der Auth Service stellt nach erfolgreicher Anmeldung ein 60 Minuten gültiges
+JWT aus. Die Validierung erfolgt zentral im API Gateway. Öffentliche
+Endpunkte, beispielsweise Anmeldung, Registrierung und Produktabfragen,
+können ohne Token aufgerufen werden.
+
+Bei geschützten Aufrufen liest das Gateway die Benutzer-ID aus dem Token und
+übergibt sie im Header \texttt{X-User-Id} an den zuständigen Service. Für
+interne Aufrufe zwischen dem User Service und dem Auth Service wird zusätzlich
+der Header \texttt{X-Internal-Key} verwendet.
 
 \subsection{Kommunikation}
 
-\begin{description}
-  \item[REST (synchron)]
-    Für Abfragen und Kommandos, bei denen eine sofortige Antwort nötig
-    ist (Produktdetails, Bestellanlage).
-  \item[MQTT (asynchron, Publish/Subscribe)]
-    Für E-Mail-Benachrichtigungen: Der Order Service publiziert
-    \texttt{order/complete} an den Mosquitto-Broker, der Email Service
-    konsumiert das Event. Dies entkoppelt die Services -- der Email
-    Service kann ausfallen, ohne den Bestellfluss zu blockieren.
-\end{description}
+Die synchrone Kommunikation zwischen den Services erfolgt über REST. Für den
+Versand von Bestellbestätigungen wird MQTT eingesetzt. Der Order Service
+veröffentlicht dazu ein Ereignis mit QoS~1, das vom Email Service unabhängig
+vom Kaufvorgang verarbeitet wird.
 
-\subsection{Persistenz}
+\subsection{Fehlerbehandlung}
 
-Jeder Service besitzt eine eigene PostgreSQL-Instanz (Database-per-
-Service). Dies erzwingt lose Kopplung: servicübergreifende Abfragen
-erfolgen über REST-Aufrufe, nicht über Datenbank-Joins. Fremdreferenzen
-werden als einfache IDs (Long) abgebildet.
+Die Spring-basierten Services verwenden zentrale Exception Handler und ein
+einheitliches Format für Fehlerantworten. Validierungsfehler werden mit
+\texttt{400 Bad Request}, nicht gefundene Ressourcen mit
+\texttt{404 Not Found} und Konflikte mit \texttt{409 Conflict} beantwortet.
+Nicht behandelte Fehler führen zu \texttt{500 Internal Server Error}.
 
-\subsection{Polyglotter Tech-Stack}
+\subsection{Datenhaltung}
 
-\begin{longtable}[]{@{}ll@{}}
-\caption{Tech-Stack pro Service}\\
-\toprule\noalign{}
-Service & Technologie \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-API Gateway & Java 17, Spring Cloud Gateway \\
-Auth Service & Java 17, Spring Boot 3 \\
-User Service & Java 17, Spring Boot 3 \\
-Product Service & Python 3, Flask \\
-Order Service & Java 17, Spring Boot 3 \\
-Email Service & Java 17, Spring Boot 3 \\
-Frontend & Astro, SolidJS, Node.js \\
-\end{longtable}
+Jeder zustandsbehaftete Service besitzt eine eigene PostgreSQL-Datenbank.
+Andere Services greifen nicht direkt auf diese Datenbank zu. Beziehungen
+zwischen den fachlichen Bereichen werden daher über IDs statt über
+datenbankübergreifende Fremdschlüssel abgebildet.

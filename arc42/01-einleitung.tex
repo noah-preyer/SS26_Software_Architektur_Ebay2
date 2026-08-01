@@ -2,18 +2,13 @@
 
 \subsection{Aufgabenstellung}
 
-Im Kurs Software-Architektur sollte ein Architekturstil anhand einer
-Beispielanwendung umgesetzt und bewertet werden.
-Dafür wurde eine
-Microservice-Architektur für eine E-Commerce-Plattform entwickelt.
+Die Aufgabenstellung bestand darin, einen Architekturstil anhand einer
+Beispielanwendung umzusetzen. Dabei fiel die Wahl auf die
+Microservice-Architektur.
 
-Die Plattform eignet sich besonders als Beispielanwendung,
-da ihre Funktionen klar in Bereiche wie
-Authentifizierung, Produktverwaltung, Bestellabwicklung und Benachrichtigungen aufgeteilt werden können.
-Durch die modulare Struktur kann das System
-leicht um weitere Funktionen und Services erweitert werden.
-
-
+Als Beispielanwendung wurde eine E-Commerce-Plattform gewählt, da sich deren
+Funktionen in mehrere klar abgrenzbare Bereiche unterteilen lassen. Die
+Umsetzung konzentriert sich auf die folgenden Kernfunktionen:
 
 \subsection{Kernfunktionen}
 
@@ -25,37 +20,37 @@ leicht um weitere Funktionen und Services erweitert werden.
 
 
 \subsection{Qualitätsziele}
-{
-    \renewcommand{\arraystretch}{1.5}
-    \rowcolors{2}{tableRowColor}{white}
 
-    \begin{tabularx}{\linewidth}{
-            >{\bfseries\raggedright\arraybackslash}p{0.25\linewidth}
-            >{\raggedright\arraybackslash}X
-    }
+\begin{table}[ht]
+    \centering
+    {
+        \renewcommand{\arraystretch}{1.5}
+        \rowcolors{2}{tableRowColor}{white}
+
+        \begin{tabularx}{\linewidth}{
+                >{\bfseries\raggedright\arraybackslash}p{0.20\linewidth}
+                >{\raggedright\arraybackslash}X
+        }
+        \toprule
+        Qualitätsziel & Beschreibung \\
         \midrule
 
         Modularität &
-        Fachliche Bereiche sind in eigenständige Services aufgeteilt. \\
-
-        Lose Kopplung &
-        Die Kommunikation erfolgt über klar definierte REST-Schnittstellen und
-        MQTT-Nachrichten. \\
-
-        Skalierbarkeit &
-        Einzelne Services können unabhängig horizontal skaliert werden. \\
+        Die Services sollen fachlich klar voneinander abgegrenzt sein. \\
 
         Sicherheit &
-        Authentifizierung und JWT-Validierung erfolgen zentral über das
-        API Gateway. \\
+        Geschützte Service-Funktionen sollen nur für berechtigte Benutzer zugänglich sein. \\
 
         Erweiterbarkeit &
-        Neue Services können über bestehende Schnittstellen ergänzt werden. \\
+        Neue Services sollen mit möglichst wenigen Änderungen am bestehenden System ergänzt werden können. \\
 
-        Fehlertoleranz &
-        Der Ausfall eines einzelnen Services soll nicht das gesamte System
-        beeinträchtigen. \\
+        Skalierbarkeit &
+        Ein Service soll bei Bedarf unabhängig vom restlichen System durch mehrere Replikate skaliert werden können. \\
 
         \bottomrule
-    \end{tabularx}
-}
+        \end{tabularx}
+    }
+
+    \caption{Qualitätsziele der Architektur}
+    \label{tab:qualitaetsziele}
+\end{table}

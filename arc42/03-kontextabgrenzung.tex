@@ -2,62 +2,57 @@
 
 \subsection{Fachlicher Kontext}
 
-Die E-Commerce-Plattform wird von registrierten und nicht registrierten
-Benutzern verwendet.
-Nicht registrierte Benutzer können Produkte suchen, aufrufen und sich registrieren.
+Die E-Commerce-Plattform wird von registrierten und nicht registrierten Benutzern verwendet.
+Nicht registrierte Benutzer können Produkte suchen und anzeigen sowie ein Benutzerkonto erstellen.
+Registrierte Benutzer können zusätzlich Produkte einstellen und kaufen.
 
-Registrierte Benutzer können zusätzlich eigene Produkte einstellen und
-Produkte kaufen.
-Nach einem erfolgreichen Kauf wird eine Bestellbestätigung
-versendet.
-
-Nach außen tritt die Plattform als eine zusammenhängende Anwendung auf.
-Die einzige Verbindung zu einem externen System besteht zum E-Mail-Dienst,
-der für den Versand der Bestellbestätigungen verwendet wird.
+Nach einem erfolgreichen Kauf wird eine Bestellbestätigung über einen externen E-Mail-Dienst versendet.
 
 
 \subsection{Technischer Kontext}
 
-Der Zugriff auf die E-Commerce-Plattform erfolgt ausschließlich über einen
-Webbrowser.
-Dieser lädt das mit Astro umgesetzte Frontend, das über HTTP-REST-Anfragen mit dem API Gateway auf Port 8080 kommuniziert.
+Das System tritt nach außen als eine zusammenhängende Anwendung auf und wird über einen Webbrowser genutzt.
+Das Frontend kommuniziert über HTTP/REST mit dem API Gateway, das den zentralen Einstiegspunkt bildet.
 
-Das API Gateway bildet den zentralen Einstiegspunkt zu den internen Services
-und übernimmt.
-Die Kommunikation zwischen den Services erfolgt über REST und MQTT.
+Die interne Kommunikation zwischen den Services erfolgt über REST und MQTT.
+Die externen Schnittstellen sind in
+Tabelle~\ref{tab:externe_schnittstellen} dargestellt.
 
-Die einzige Verbindung zu einem externen System besteht zum Mailserver, über
-den Bestellbestätigungen versendet werden.
+\subsection{Externe Schnittstellen}
 
-\subsubsection{Externe Schnittstellen}
+\begin{table}[ht]
+    \centering
+    {
+        \renewcommand{\arraystretch}{1.5}
+        \rowcolors{2}{tableRowColor}{white}
 
-{
-    \renewcommand{\arraystretch}{1.5}
-    \rowcolors{2}{tableRowColor}{white}
 
-    \begin{tabularx}{\linewidth}{
-        >{\bfseries\raggedright\arraybackslash}p{0.25\linewidth}
-        >{\raggedright\arraybackslash}p{0.15\linewidth}
-        >{\raggedright\arraybackslash}X
-    }
+        \begin{tabularx}{\linewidth}{
+                >{\bfseries\raggedright\arraybackslash}p{0.20\linewidth}
+                >{\raggedright\arraybackslash}p{0.18\linewidth}
+                >{\raggedright\arraybackslash}X
+        }
         \toprule
-        \rowcolor{tableHeaderColor}
         Gegenstelle & Richtung & Inhalt und Protokoll \\
         \midrule
 
-        Nutzer über Webbrowser &
+        Webbrowser &
         Bidirektional &
-        Zugriff auf die Plattform über HTTP/REST, beispielsweise für Anmeldung,
-        Produktverwaltung und Kaufabwicklung. \\
+        Bedienung der Plattform über HTTP/REST. \\
 
-        SMTP-Server (Gmail) &
+        SMTP-Server &
         Ausgehend &
-        Versand von Bestellbestätigungen über SMTP mit STARTTLS auf Port 587. \\
+        Versand von Bestellbestätigungen über SMTP mit STARTTLS
+        auf Port 587. \\
 
         \bottomrule
-    \end{tabularx}
-}
+        \end{tabularx}
+    }
 
+    \caption{Externe Schnittstellen}
+    \label{tab:externe_schnittstellen}
+
+\end{table}
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=\linewidth]{images/01-kontextdiagramm.pdf}
