@@ -2,8 +2,8 @@ services:
   user-service:
     container_name: user_service
     build: .
-    ports:
-      - "8082:8080"
+    networks:
+      - app-net
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://user-db:5432/user_service
       SPRING_DATASOURCE_USERNAME: user_user
@@ -15,6 +15,8 @@ services:
   user-db:
     image: postgres:16
     container_name: user-service-db
+    networks:
+      - app-net
     environment:
       POSTGRES_USER: user_user
       POSTGRES_PASSWORD: app_password
@@ -27,6 +29,10 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+
+networks:
+  app-net:
+    name: app-net
 
 volumes:
   user_pgdata:

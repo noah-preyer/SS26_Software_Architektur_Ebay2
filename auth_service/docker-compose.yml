@@ -2,8 +2,8 @@ services:
   auth-service:
     container_name: auth_service
     build: .
-    ports:
-      - "8081:8080"
+    networks:
+      - app-net
     environment:
       DB_HOST: auth-db
       DB_PORT: "5432"
@@ -19,6 +19,8 @@ services:
   auth-db:
     image: postgres:16
     container_name: auth-service-db
+    networks:
+      - app-net
     environment:
       POSTGRES_USER: auth_user
       POSTGRES_PASSWORD: app_password
@@ -31,6 +33,10 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+
+networks:
+  app-net:
+    name: app-net
 
 volumes:
   auth_pgdata:

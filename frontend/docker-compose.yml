@@ -14,11 +14,17 @@ services:
     build: .
     ports:
       - "4321:4321"
+    networks:
+      - app-net
     env_file: ../frontend/.env
     environment:
       BACKEND_TARGET: ${BACKEND_TARGET_OVERRIDE:-http://api-gateway:8080}
     extra_hosts:
       - "host.docker.internal:host-gateway"
+
+networks:
+  app-net:
+    name: app-net
 
 volumes:
   test-backend-data:

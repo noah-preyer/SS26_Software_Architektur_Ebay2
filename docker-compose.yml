@@ -6,6 +6,10 @@ include:
   - user_service/docker-compose.yml
   - email_service/docker-compose.yml
 
+networks:
+  app-net:
+    name: app-net
+
 services:
   mqtt-broker:
     image: eclipse-mosquitto:2
@@ -13,6 +17,8 @@ services:
     expose:
       - "1883"
       - "9001"
+    networks:
+      - app-net
     volumes:
       - ./docker/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
     healthcheck:
@@ -24,8 +30,8 @@ services:
   api-gateway:
     container_name: api-gateway
     build: ./api_gateway
-    ports:
-      - "8080:8080"
+    networks:
+      - app-net
     depends_on:
       - product-service
       - auth-service
