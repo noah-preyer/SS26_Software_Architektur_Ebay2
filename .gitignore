@@ -8,8 +8,6 @@ dist/
 *.log
 .DS_Store
 Thumbs.db
-**/opencode.yml
-docker/opencode.yml
 docker/cloudbeaver_workspace
 **/application-local.properties
 out
