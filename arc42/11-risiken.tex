@@ -1,19 +1,15 @@
 \section{Risiken und technische Schulden}\label{sec:risiken}
 
 \begin{description}
-    \item[Fehlendes zentrales Logging und Monitoring]
-    Es gibt keine serviceübergreifende Correlation-ID. Dadurch ist die
-    Fehlersuche im verteilten System erschwert.
-
     \item[API Gateway als Single Point of Failure]
-    Bei einem Ausfall des API Gateways ist das gesamte System nicht mehr
-    erreichbar. Ein Failover-Mechanismus ist nicht vorhanden.
+    Bei einem Ausfall des API Gateways ist das gesamte System nicht mehr erreichbar.
+    Ein Failover-Mechanismus ist nicht vorhanden.
 
-    \item[Zyklische Serviceabhängigkeit]
-    Product Service und Order Service rufen sich gegenseitig auf. Dies erhöht
-    die Kopplung und erschwert Änderungen sowie die Fehlerbehandlung.
+    \item[Synchrone Serviceabhängigkeiten]
+    Der Order Service ruft den Product Service und den User Service synchron über REST auf.
+    Sind diese nicht erreichbar, kann der Kaufvorgang nicht abgeschlossen werden.
 
-    \item[Unsichere Verwaltung von Zugangsdaten]
-    JWT-Secret, interner Service-Key und SMTP-Zugangsdaten werden unverschlüsselt
-    in der Konfiguration hinterlegt.
+    \item[Keine automatische Skalierung]
+    Die Anzahl der Product-Service-Replikate ist fest konfiguriert und
+    wird nicht automatisch an die aktuelle Last angepasst.
 \end{description}

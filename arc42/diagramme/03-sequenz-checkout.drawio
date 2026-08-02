@@ -1,6 +1,6 @@
-<mxfile host="drawio-plugin" modified="2026-08-01T23:09:19.142Z" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36" etag="8R4wuvTdTYi_K43yHFa6" version="22.1.22" type="embed">
+<mxfile host="drawio-plugin" modified="2026-08-02T09:08:30.579Z" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36" etag="o00Pskp5d_y-lFo0hzeU" version="22.1.22" type="embed">
   <diagram id="seq-checkout" name="Sequenz Checkout (Order Service orchestriert)">
-    <mxGraphModel dx="1760" dy="1659" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1500" pageHeight="1080" math="0" shadow="0">
+    <mxGraphModel dx="2460" dy="968" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1500" pageHeight="1080" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -76,7 +76,7 @@
             <mxPoint x="1308" y="888" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="m1" value="1: POST /order/checkout&#xa;(userId, items, Bearer JWT)" style="html=1;endArrow=block;" parent="1" edge="1">
+        <mxCell id="m1" value="1: POST /order/checkout&lt;br&gt;(items, Bearer JWT)" style="html=1;endArrow=block;" parent="1" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="118" y="198" as="sourcePoint" />
             <mxPoint x="288" y="198" as="targetPoint" />

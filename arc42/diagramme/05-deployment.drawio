@@ -1,6 +1,6 @@
-<mxfile host="drawio-plugin" modified="2026-08-01T23:10:13.465Z" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36" version="22.1.22" etag="t34vTvMhYn4CruxD9od0" type="embed">
+<mxfile host="drawio-plugin" modified="2026-08-02T10:13:18.874Z" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36" etag="MZX47IMOL5qNY__CWVtG" version="22.1.22" type="embed">
   <diagram id="deployment" name="Verteilungssicht">
-    <mxGraphModel dx="2240" dy="2111" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
+    <mxGraphModel dx="886" dy="780" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -16,31 +16,31 @@
         <mxCell id="fe" value="frontend (Astro)&#xa;4321 → 4321" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
           <mxGeometry x="305" y="105" width="190" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="gw" value="api-gateway&#xa;(Spring Cloud Gateway)&#xa;8080 → 8080" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
+        <mxCell id="gw" value="api-gateway&lt;br&gt;(Spring Cloud Gateway)&lt;br&gt;interner Port 8080" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
           <mxGeometry x="375" y="305" width="190" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="auth" value="auth_service (Flask)&#xa;8081 → 8080" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+        <mxCell id="auth" value="auth_service (Flask)&lt;br&gt;&lt;code&gt;interner Port 8080&lt;/code&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
           <mxGeometry x="635" y="205" width="180" height="60" as="geometry" />
         </mxCell>
         <mxCell id="authdb" value="auth-service-db&#xa;(Postgres 16)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=12;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
           <mxGeometry x="655" y="105" width="140" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="user" value="user_service (Spring)&#xa;8082 → 8080" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+        <mxCell id="user" value="user_service (Spring)&lt;br&gt;&lt;code&gt;interner Port 8080&lt;/code&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
           <mxGeometry x="875" y="210" width="180" height="60" as="geometry" />
         </mxCell>
         <mxCell id="userdb" value="user-service-db&#xa;(Postgres 16)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=12;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
           <mxGeometry x="895" y="110" width="140" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="prodproxy" value="product_service_proxy&#xa;(Nginx) 8083 → 80" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
+        <mxCell id="prodproxy" value="product_service_proxy&lt;br&gt;&lt;code&gt;interner Port 80&lt;/code&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
           <mxGeometry x="1115" y="310" width="200" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="prod" value="product-service × 3 Replikate&#xa;(Spring) 8181–8183 → 8082" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+        <mxCell id="prod" value="product-service × 3 Replikate&lt;br&gt;&lt;code&gt;interner Port 8082&lt;/code&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
           <mxGeometry x="1115" y="205" width="200" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="proddb" value="product_service_db&#xa;(Postgres 16) 5433 → 5432" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=12;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
+        <mxCell id="proddb" value="product_service_db&lt;br&gt;(Postgres 16)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=12;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
           <mxGeometry x="1135" y="105" width="160" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="order" value="order_service (Spring)&#xa;8087 → 8080" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+        <mxCell id="order" value="order_service (Spring)&lt;br&gt;&lt;code&gt;interner Port 8080&lt;/code&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
           <mxGeometry x="495" y="415" width="180" height="60" as="geometry" />
         </mxCell>
         <mxCell id="orderdb" value="order-service-db&#xa;(Postgres 16)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=12;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
@@ -52,13 +52,10 @@
         <mxCell id="emaildb" value="email-service-db&#xa;(Postgres 16)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=12;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
           <mxGeometry x="895" y="615" width="140" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="broker" value="mqtt-broker (Mosquitto)&#xa;1883, 9001" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
+        <mxCell id="broker" value="mqtt-broker (Mosquitto)&lt;br&gt;&lt;code&gt;interne Ports 1883, 9001&lt;/code&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
           <mxGeometry x="665" y="515" width="180" height="60" as="geometry" />
         </mxCell>
         <mxCell id="e1" value="HTTP :4321" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" parent="1" source="browser" target="fe" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e2" value="REST :8080" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" parent="1" source="browser" target="gw" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e3" value="BACKEND_TARGET&#xa;(SSR-Proxy)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" parent="1" source="fe" target="gw" edge="1">

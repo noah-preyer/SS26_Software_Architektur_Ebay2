@@ -1,5 +1,24 @@
 \section{Laufzeitsicht}
 
+\subsection{Registrierung eines Nutzers}
+
+Das API Gateway leitet die Registrierungsdaten an den User Service weiter.
+Dieser prüft, ob Benutzername und E-Mail-Adresse bereits vergeben sind, und
+legt anschließend die Zugangsdaten über den Auth Service an.
+Danach wird das Benutzerprofil gespeichert.
+
+Schlägt das Speichern des Profils fehl,
+wird der zuvor angelegte Auth-Benutzer durch einen kompensierenden Aufruf wieder gelöscht.
+Der Ablauf ist in Abbildung~\ref{fig:registrierung} dargestellt.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth,trim=5cm 3cm 5cm 2cm,clip]{images/08-sequenz-registrierung}
+    \caption{Registrierung eines Nutzers}
+    \label{fig:registrierung}
+\end{figure}
+
+
 \subsection{Anmeldung und Zugriff auf geschützte Bereiche}
 
 Bei der Anmeldung leitet das API Gateway die Zugangsdaten an den Auth Service weiter.
@@ -11,9 +30,9 @@ Andernfalls wird die Benutzer-ID aus dem JWT-Claim ausgelesen und als
 \texttt{X-User-Id}-Header an den zuständigen Service weitergegeben.
 Der vollständige Ablauf ist in Abbildung~\ref{fig:login} dargestellt.
 
-\begin{figure}[htbp]
+\begin{figure}[H]
     \centering
-    \includegraphics[width=\linewidth]{images/04-sequenz-login.pdf}
+    \includegraphics[width=\linewidth,trim=0cm 4cm 0.5cm 3cm,clip]{images/04-sequenz-login.pdf}
     \caption{Anmeldung und anschließender Zugriff mit Token}
     \label{fig:login}
 \end{figure}
@@ -44,9 +63,9 @@ Order Status Scheduler durchgeführt.
 Der vollständige Ablauf ist in Abbildung~\ref{fig:buying} dargestellt.
 
 
-\begin{figure}[htbp]
+\begin{figure}[H]
     \centering
-    \includegraphics[width=\linewidth]{images/03-sequenz-checkout}
+    \includegraphics[width=\linewidth,trim=0.5cm 1.5cm 2.5cm 2cm,clip]{images/03-sequenz-checkout.pdf}
     \caption{Kauf von Artikeln und Versand der Bestellbestätigung}
     \label{fig:buying}
 \end{figure}

@@ -2,102 +2,86 @@
 
 \subsection{Infrastruktur -- Ebene 1}
 
-Das Gesamtsystem wird mit Docker Compose orchestriert.
-Alle Container befinden sich in einem gemeinsamen Docker-Netzwerk.
-Der Product Service wird mit drei Replikaten ausgeführt, auf die ein Nginx-Loadbalancer die Anfragen verteilt.
+Das Gesamtsystem wird mit Docker Compose betrieben. Alle Container befinden
+sich im gemeinsamen Docker-Netzwerk \texttt{app-net}.
+
+Nur das Frontend veröffentlicht mit Port~\texttt{4321} einen Port auf dem
+Docker-Host. Es leitet Backend-Anfragen intern über
+\texttt{http://api-gateway:8080} an das API Gateway weiter.
+
+Die Services, Datenbanken und der MQTT-Broker sind ausschließlich innerhalb
+des Docker-Netzwerks erreichbar. Der Product Service wird mit drei Replikaten
+ausgeführt, auf die ein interner Nginx-Loadbalancer die Anfragen verteilt.
     {
-    \renewcommand{\arraystretch}{1.5}
+    \renewcommand{\arraystretch}{1.4}
 
-    \begin{longtable}{@{}
-            >{\bfseries\raggedright\arraybackslash}p{0.27\linewidth}
-            >{\raggedright\arraybackslash}p{0.15\linewidth}
-            >{\raggedright\arraybackslash}p{0.15\linewidth}
-            >{\raggedright\arraybackslash}p{0.35\linewidth}
-        @{}}
+    \begin{table}[H]
+        \centering
+        \begin{tabularx}{\linewidth}{
+                >{\bfseries\raggedright\arraybackslash}p{0.25\linewidth}
+                >{\raggedright\arraybackslash}p{0.14\linewidth}
+                >{\raggedright\arraybackslash}p{0.18\linewidth}
+                >{\raggedright\arraybackslash}X
+        }
+            \toprule
+            \rowcolor{tableHeaderColor}
+            Container & Host-Port & Interner Port & Anmerkung \\
+            \midrule
+
+            Frontend &
+            4321 &
+            4321 &
+            Einziger von außen erreichbarer Container. \\
+
+            \rowcolor{tableRowColor}
+            API Gateway &
+            -- &
+            8080 &
+            Zentraler Backend-Einstieg, nur intern erreichbar. \\
+
+            Auth, User und Order Service &
+            -- &
+            8080 &
+            Nur innerhalb von \texttt{app-net} erreichbar. \\
+
+            \rowcolor{tableRowColor}
+            Product Service &
+            -- &
+            8082 &
+            Drei Replikate, nur intern erreichbar. \\
+
+            Product-Service-Proxy &
+            -- &
+            80 &
+            Interner Nginx-Loadbalancer. \\
+
+            \rowcolor{tableRowColor}
+            Email Service &
+            -- &
+            -- &
+            Kommunikation ausschließlich über MQTT. \\
+
+            MQTT-Broker &
+            -- &
+            1883, 9001 &
+            Nur innerhalb von \texttt{app-net} erreichbar. \\
+
+            \rowcolor{tableRowColor}
+            PostgreSQL-Datenbanken &
+            -- &
+            5432 &
+            Je zustandsbehaftetem Service eine Instanz. \\
+
+            \bottomrule
+        \end{tabularx}
+
         \caption{Container- und Portübersicht}
-        \label{tab:container-ports} \\
-
-        \toprule
-        \rowcolor{tableHeaderColor}
-        Container & Port außen & Port innen & Anmerkung \\
-        \midrule
-        \endfirsthead
-
-        \toprule
-        \rowcolor{tableHeaderColor}
-        Container & Port außen & Port innen & Anmerkung \\
-        \midrule
-        \endhead
-
-        \bottomrule
-        \endlastfoot
-
-        Frontend &
-        4321 &
-        4321 &
-        Benutzeroberfläche im Webbrowser. \\
-
-        \rowcolor{tableRowColor}
-        API Gateway &
-        8080 &
-        8080 &
-        Zentraler Eingang für alle externen Schnittstellenaufrufe. \\
-
-        Auth Service &
-        8081 &
-        8080 &
-        -- \\
-
-        \rowcolor{tableRowColor}
-        User Service &
-        8082 &
-        8080 &
-        -- \\
-
-        Product-Service-Proxy &
-        8083 &
-        80 &
-        Nginx als Loadbalancer für den Product Service. \\
-
-        \rowcolor{tableRowColor}
-        Product Service &
-        8181--8183 &
-        8082 &
-        Drei parallel ausgeführte Instanzen. \\
-
-        Order Service &
-        8087 &
-        8080 &
-        -- \\
-
-        \rowcolor{tableRowColor}
-        Email Service &
-        -- &
-        -- &
-        Nur über MQTT erreichbar, kein veröffentlichter Port. \\
-
-        MQTT-Broker &
-        1883, 9001 &
-        1883, 9001 &
-        Eclipse Mosquitto; MQTT und WebSocket. \\
-
-        \rowcolor{tableRowColor}
-        PostgreSQL-Datenbanken &
-        Nur \texttt{product-db}: 5433 &
-        5432 &
-        Je Service eine PostgreSQL-16-Instanz. \\
-
-    \end{longtable}
+        \label{tab:container-ports}
+    \end{table}
 }
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
-  \includegraphics{images/05-deployment}
-  \caption{Deployment-Diagramm (exportiert aus \texttt{diagramme/05-deployment.drawio})}
+  \includegraphics[width=\linewidth,trim=1cm 1.5cm 1cm 1cm,clip]{images/05-deployment}
+  \caption{Deployment-Diagramm}
 \end{figure}
 
-\subsection{Skalierung}
-
-Der Product Service wird horizontal auf 3 Replikate skaliert. Ein
-Nginx-Reverse-Proxy verteilt die Anfragen im Round-Robin-Verfahren.
-Da der Service zustandslos ist (keine Session, keine lokalen Dateien),
-ist dies ohne Migrationseffekte möglich.

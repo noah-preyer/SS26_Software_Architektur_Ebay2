@@ -35,8 +35,7 @@
 
 ## 4. Lösungsstrategie  *(ca. 0,5–1 Seite)*
 
-- Warum Microservices für diesen Anwendungsfall (Kriterien nach Richards:
-  Kopplung, Deploybarkeit, Skalierbarkeit, Fehlertoleranz, Team-Aufteilung)
+- Warum Microservices für diesen Anwendungsfall
 - Zentrale Entscheidungen im Überblick:
   - Fachlicher Service-Schnitt (Auth, User, Product, Order, Email)
   - API Gateway (Spring Cloud Gateway) als einziger Einstiegspunkt

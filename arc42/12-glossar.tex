@@ -1,14 +1,20 @@
 \section{Fazit}
 
-Die Umsetzung hat sowohl die Stärken als auch die Schwächen der Microservice-Architektur deutlich gezeigt.
-Die Services konnten aufgrund klarer Schnittstellen und eigener Datenbanken weitgehend unabhängig entwickelt werden.
-Zudem beeinträchtigt der Ausfall des Email Service den Kaufvorgang nicht, da die Kommunikation über MQTT entkoppelt ist.
+Die Umsetzung verdeutlicht sowohl die Vorteile als auch die Nachteile einer Microservice-Architektur.
+Die fachliche Aufteilung, klar definierte Schnittstellen und
+getrennte Datenbanken ermöglichen eine weitgehend unabhängige Entwicklung der einzelnen Services.
+Durch die Kombination aus synchroner und asynchroner Kommunikation konnten unterschiedliche Formen der Servicekopplung praktisch umgesetzt und erprobt werden.
 
-Gleichzeitig erhöht die verteilte Architektur die Komplexität.
-Der Kaufvorgang umfasst mehrere Services und benötigt eine eigene Rückabwicklungslogik.
-Auch Betrieb und Fehlersuche sind durch die große Anzahl an Containern und getrennten Protokollen aufwendiger.
+Gleichzeitig erhöht die Verteilung der Anwendung den technischen Aufwand.
+Betrieb und Fehlersuche erstrecken sich über mehrere Services, Container und Kommunikationswege.
+Serviceübergreifende Vorgänge können nicht durch eine gemeinsame Datenbanktransaktion abgesichert werden und
+benötigen deshalb zusätzliche Kompensationslogik.
+Zudem bleibt der Kaufvorgang von synchron aufgerufenen Services wie dem Product Service und dem User Service abhängig.
 
-Microservices eignen sich besonders für größere Systeme mit mehreren Teams,
-unterschiedlich stark belasteten Bereichen oder hohen Anforderungen an die Fehlerisolation.
-Für die hier umgesetzte Anwendung wäre ein modularer Monolith wirtschaftlicher gewesen.
-Als Lernprojekt zur praktischen Untersuchung einer verteilten Architektur war der gewählte Ansatz jedoch sehr geeignet.
+Für größere Systeme mit mehreren Entwicklungsteams,
+unterschiedlich belasteten Teilbereichen oder
+hohen Anforderungen an die Fehlerisolation kann eine Microservice-Architektur sinnvoll sein.
+Für den begrenzten Umfang der umgesetzten Beispielanwendung wäre ein modularer Monolith einfacher zu entwickeln und
+zu betreiben gewesen.
+Als Lernprojekt war die gewählte Architektur dennoch geeignet, da ihre Auswirkungen auf Implementierung,
+Kommunikation, Datenhaltung und Fehlerbehandlung praktisch untersucht werden konnten.

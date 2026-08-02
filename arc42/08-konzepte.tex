@@ -1,35 +1,44 @@
 \section{Querschnittliche Konzepte}
 
+Die folgenden technischen Regeln gelten serviceübergreifend.
+
 \subsection{Sicherheit}
 
-Der Auth Service stellt nach erfolgreicher Anmeldung ein 60 Minuten gültiges
-JWT aus. Die Validierung erfolgt zentral im API Gateway. Öffentliche
-Endpunkte, beispielsweise Anmeldung, Registrierung und Produktabfragen,
-können ohne Token aufgerufen werden.
-
-Bei geschützten Aufrufen liest das Gateway die Benutzer-ID aus dem Token und
-übergibt sie im Header \texttt{X-User-Id} an den zuständigen Service. Für
-interne Aufrufe zwischen dem User Service und dem Auth Service wird zusätzlich
-der Header \texttt{X-Internal-Key} verwendet.
-
+Der Auth Service stellt JWTs mit einer Gültigkeit von 60 Minuten aus.
+Das API Gateway validiert die Tokens und übergibt die Benutzer-ID über den Header \texttt{X-User-Id}.
+Der interne Aufruf des User Service an den Auth Service wird zusätzlich durch den Header \texttt{X-Internal-Key} autorisiert.
 \subsection{Kommunikation}
 
-Die synchrone Kommunikation zwischen den Services erfolgt über REST. Für den
-Versand von Bestellbestätigungen wird MQTT eingesetzt. Der Order Service
-veröffentlicht dazu ein Ereignis mit QoS~1, das vom Email Service unabhängig
-vom Kaufvorgang verarbeitet wird.
+Synchrone Serviceaufrufe erfolgen über REST.
+Bestellereignisse werden über MQTT mit Zustellbestätigung übertragen.
 
 \subsection{Fehlerbehandlung}
 
-Die Spring-basierten Services verwenden zentrale Exception Handler und ein
-einheitliches Format für Fehlerantworten. Validierungsfehler werden mit
-\texttt{400 Bad Request}, nicht gefundene Ressourcen mit
-\texttt{404 Not Found} und Konflikte mit \texttt{409 Conflict} beantwortet.
-Nicht behandelte Fehler führen zu \texttt{500 Internal Server Error}.
+Die Spring-basierten Services verwenden ein einheitliches Fehlerformat.
+Validierungsfehler liefern \texttt{400}, fehlende Ressourcen \texttt{404}, Konflikte \texttt{409} und
+unerwartete Fehler \texttt{500}.
 
 \subsection{Datenhaltung}
 
 Jeder zustandsbehaftete Service besitzt eine eigene PostgreSQL-Datenbank.
-Andere Services greifen nicht direkt auf diese Datenbank zu. Beziehungen
-zwischen den fachlichen Bereichen werden daher über IDs statt über
+Nur der jeweilige Service darf direkt auf seine Datenbank zugreifen.
+Serviceübergreifende Beziehungen werden über IDs statt über
 datenbankübergreifende Fremdschlüssel abgebildet.
+
+\subsection{Serviceübergreifende Konsistenz}
+
+Serviceübergreifende Datenbanktransaktionen werden nicht verwendet.
+Schlägt die Änderung eines Produkts während des Kaufvorgangs fehl, setzt der
+Order Service bereits vorgenommene Änderungen durch kompensierende Aufrufe
+zurück.
+
+\subsection{Skalierung}
+
+Die Instanzen des Product Service speichern keine Sitzungsdaten oder lokalen
+Dateien. Dadurch können Anfragen über Nginx im Round-Robin-Verfahren auf drei
+Replikate verteilt werden.
+
+Alle Replikate greifen auf dieselbe \texttt{product-db} zu. Die Datenbank
+kann daher bei hoher Last zum Engpass werden. Eine automatische,
+lastabhängige Skalierung ist nicht umgesetzt; die Anzahl der Replikate wird
+beim Start festgelegt.

@@ -1,9 +1,9 @@
 \section{Lösungsstrategie}
 
-Die Anwendung wurde als Microservice-Architektur umgesetzt. Die wichtigsten
-Lösungsansätze sind in Tabelle~\ref{tab:loesungsstrategie} zusammengefasst.
+Zur Umsetzung der Microservice-Architektur wurden folgende zentrale
+Architekturmaßnahmen gewählt:
 
-\begin{table}[ht]
+\begin{table}[htbp]
     \centering
 
     {
@@ -11,39 +11,42 @@ Lösungsansätze sind in Tabelle~\ref{tab:loesungsstrategie} zusammengefasst.
         \rowcolors{2}{tableRowColor}{white}
 
         \begin{tabularx}{\linewidth}{
-                >{\bfseries\raggedright\arraybackslash}p{0.20\linewidth}
-                >{\raggedright\arraybackslash}p{0.35\linewidth}
+                >{\bfseries\raggedright\arraybackslash}p{0.25\linewidth}
                 >{\raggedright\arraybackslash}X
         }
-        \toprule
-        Bereich & Umsetzung & Begründung \\
-        \midrule
+            \toprule
+            Architekturmaßnahme & Umsetzung \\
+            \midrule
 
-        Systemaufteilung &
-        Aufteilung in fachlich getrennte Microservices &
-        Unterstützt Modularität und Erweiterbarkeit. \\
+            Systemaufteilung &
+            Aufteilung in fachlich getrennte Microservices. \\
 
-        Betrieb &
-        Containerisierung mit Docker &
-        Vereinfacht die Bereitstellung und lokale Ausführung der Anwendung. \\
+            Betrieb &
+            Containerisierung der Services mit Docker. \\
 
-        Zugriff &
-        Zentrales API Gateway mit JWT-Validierung &
-        Fasst die einzelnen Services nach außen zu einem einheitlichen System
-        zusammen und stellt einen zentralen, geschützten Zugang bereit. \\
+            Zugriff &
+            Ein zentrales API Gateway bündelt die externen Zugriffe und
+            validiert die JWTs. \\
 
-        Kommunikation &
-        REST für Anfragen und MQTT für Ereignisse &
-        Schafft klar definierte Kommunikationswege. \\
+            Kommunikation &
+            REST für synchrone Serviceaufrufe und MQTT für asynchrone
+            Bestellereignisse. \\
 
-        Technologien &
-        Spring Boot, Flask, Astro und SolidJS &
-        Ermöglicht passende Technologien für jeden Bereich. \\
+            Datenkonsistenz &
+            Kompensierende Rückabwicklung statt serviceübergreifender
+            Datenbanktransaktionen. \\
 
-        \bottomrule
+            Technologien &
+            Einsatz von Spring Boot, Flask, Astro und SolidJS. \\
+
+            Skalierung &
+            Zustandslose Services können unabhängig repliziert werden.
+            Der Product Service läuft exemplarisch mit drei Replikaten hinter Nginx. \\
+
+            \bottomrule
         \end{tabularx}
     }
 
-    \caption{Zentrale Lösungsansätze}
+    \caption{Zentrale Architekturmaßnahmen}
     \label{tab:loesungsstrategie}
 \end{table}

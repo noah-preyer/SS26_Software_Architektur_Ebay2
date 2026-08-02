@@ -1,69 +1,66 @@
 \section{Architekturentscheidungen}
 
-{
-    \renewcommand{\arraystretch}{1.5}
+Die folgenden Entscheidungen prägen den Aufbau und die Implementierung
+des Systems. Neben der Begründung werden auch die daraus entstehenden
+Nachteile und zusätzlichen Aufwände betrachtet.
 
-    \begin{longtable}{@{}
-            >{\bfseries\raggedright\arraybackslash}p{0.08\linewidth}
+    {
+    \renewcommand{\arraystretch}{1.4}
+
+    \begin{tabularx}{\linewidth}{@{}
+            >{\bfseries\raggedright\arraybackslash}p{0.09\linewidth}
             >{\raggedright\arraybackslash}p{0.22\linewidth}
-            >{\raggedright\arraybackslash}p{0.31\linewidth}
-            >{\raggedright\arraybackslash}p{0.31\linewidth}
+            >{\raggedright\arraybackslash}X
+            >{\raggedright\arraybackslash}X
         @{}}
-        \caption{Architekturentscheidungen}
-        \label{tab:architekturentscheidungen} \\
 
-        \toprule
-        \rowcolor{tableHeaderColor}
-        Nr. & Entscheidung & Begründung & Konsequenz \\
-        \midrule
-        \endfirsthead
+\toprule
+\rowcolor{tableHeaderColor}
+Nr. & Entscheidung & Begründung & Konsequenz \\
+\midrule
 
-        \toprule
-        \rowcolor{tableHeaderColor}
-        Nr. & Entscheidung & Begründung & Konsequenz \\
-        \midrule
-        \endhead
+AE 1 &
+Fachliche Aufteilung in eigenständige Services &
+Authentifizierung, Benutzerverwaltung, Produkte, Bestellungen und
+Benachrichtigungen besitzen getrennte Verantwortlichkeiten und sollen
+unabhängig entwickelt werden können. &
+Die Services können getrennt entwickelt und betrieben werden.
+Dafür entstehen zusätzlicher Deployment-Aufwand, Netzwerkkommunikation
+und verteilte Fehlerfälle. \\
 
-        \bottomrule
-        \endlastfoot
+\rowcolor{tableRowColor}
+AE 2 &
+Zentrales API Gateway &
+Routing und JWT-Prüfung sollen nicht in jedem Service einzeln
+implementiert werden. &
+Das Gateway bildet einen einheitlichen Zugang, verursacht aber einen
+zusätzlichen Netzwerkhop und ist ein zentraler Ausfallpunkt. \\
 
-        AE 1 &
-        Microservices statt Monolith &
-        Praktische Erprobung des Architekturstils. &
-        Unabhängige Services, aber höherer Betriebsaufwand. \\
+AE 3 &
+Eigene Datenbank je Service &
+Jeder Service soll alleiniger Eigentümer seiner Daten und seines
+Datenmodells sein. &
+Die Services bleiben hinsichtlich ihrer Datenhaltung unabhängig.
+Serviceübergreifende Fremdschlüssel und gemeinsame Transaktionen sind
+jedoch nicht möglich. \\
 
-        \rowcolor{tableRowColor}
-        AE 2 &
-        Zentrales API Gateway &
-        Zentrale Bündelung von Routing und Tokenprüfung. &
-        Einheitlicher Zugang, aber zentraler Ausfallpunkt. \\
+AE 4 &
+Kompensation statt verteilter Transaktion &
+Product Service und Order Service besitzen getrennte Datenbanken,
+sodass keine gemeinsame Datenbanktransaktion verwendet werden kann. &
+Bereits geänderte Produkte werden bei einem Fehler durch Gegenaufrufe
+wieder freigegeben. Diese Rückabwicklung erfordert zusätzliche
+Programmlogik. \\
 
-        AE 3 &
-        Eine Datenbank je Service &
-        Vermeidung eines gemeinsam gekoppelten Schemas. &
-        Unabhängige Datenmodelle, aber keine direkten Joins. \\
+\rowcolor{tableRowColor}
+AE 5 &
+Zustandslose Product-Service-Replikate &
+Produktanfragen sollen exemplarisch auf mehrere Instanzen verteilt
+werden können. &
+Drei Product-Service-Instanzen können über Nginx angesprochen werden.
+Die gemeinsam verwendete Produktdatenbank bleibt jedoch ein möglicher
+Engpass. \\
 
-        \rowcolor{tableRowColor}
-        AE 4 &
-        MQTT für Benachrichtigungen &
-        Der E-Mail-Versand soll den Kauf nicht blockieren. &
-        Entkoppelter Versand, aber zusätzlicher Broker. \\
-
-        AE 5 &
-        Gemischter Technologie-Stack &
-        Erprobung der Technologieunabhängigkeit. &
-        Flexible Auswahl, aber höherer Wartungsaufwand. \\
-
-        \rowcolor{tableRowColor}
-        AE 6 &
-        Drei Product-Service-Instanzen &
-        Demonstration horizontaler Skalierung. &
-        Gezielte Skalierung, aber zusätzlicher Loadbalancer. \\
-
-        AE 7 &
-        Kompensation statt verteilter Transaktion &
-        Verzicht auf Transaktionen über mehrere Datenbanken. &
-        Konsistenz durch Rückabwicklung, aber zusätzliche Logik. \\
-
-    \end{longtable}
+\bottomrule
+    \end{tabularx}
 }

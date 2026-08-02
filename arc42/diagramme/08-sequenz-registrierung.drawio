@@ -1,6 +1,6 @@
-<mxfile host="drawio-plugin" modified="2026-08-01T23:11:20.868Z" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36" etag="SIfA08uinkHTv3Y_MWQN" version="22.1.22" type="embed">
+<mxfile host="drawio-plugin" modified="2026-08-02T08:59:39.088Z" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36" etag="HiHkfD574Un1iSK0bmFE" version="22.1.22" type="embed">
   <diagram id="seq-register" name="Sequenz Registrierung">
-    <mxGraphModel dx="2240" dy="2111" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1500" pageHeight="980" math="0" shadow="0">
+    <mxGraphModel dx="519" dy="457" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1500" pageHeight="980" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -43,13 +43,13 @@
         <mxCell id="lUD" style="html=1;endArrow=none;dashed=1;strokeColor=#999999;" parent="1" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="835" y="140" as="sourcePoint" />
-            <mxPoint x="835" y="840" as="targetPoint" />
+            <mxPoint x="830" y="780" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="lAU" style="html=1;endArrow=none;dashed=1;strokeColor=#999999;" parent="1" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="1025" y="140" as="sourcePoint" />
-            <mxPoint x="1025" y="840" as="targetPoint" />
+            <mxPoint x="1025" y="780" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="lAD" style="html=1;endArrow=none;dashed=1;strokeColor=#999999;" parent="1" edge="1">
@@ -122,7 +122,7 @@
           <mxGeometry x="220" y="680" width="700" height="80" as="geometry" />
         </mxCell>
         <mxCell id="legend" value="Legende: durchgezogen = synchroner Aufruf, gestrichelt = Antwort. &lt;br&gt;Der User Service legt die fachlichen Profildaten an, der Auth Service die Zugangsdaten (Passwort-Hash). &lt;br&gt;Der X-Internal-Key autorisiert den Backend-Aufruf zwischen User Service und Auth Service." style="text;html=1;fontSize=11;align=left;fontStyle=2;" parent="1" vertex="1">
-          <mxGeometry x="345" y="850" width="800" height="50" as="geometry" />
+          <mxGeometry x="665" y="790" width="540" height="50" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

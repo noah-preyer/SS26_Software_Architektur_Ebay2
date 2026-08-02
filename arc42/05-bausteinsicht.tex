@@ -5,128 +5,172 @@
 Das System besteht aus sieben eigenständig ausgelieferten Bausteinen sowie
 einem Nachrichtenbroker und einem Loadbalancer.
 Die Aufteilung orientiert sich an den fachlichen Verantwortungsbereichen des Systems.
+Abbildung~\ref{fig:bausteinsicht} zeigt den Aufbau des Systems.
 
-Abbildung~\ref{fig:bausteinsicht} zeigt die Bausteine, ihre Datenbanken und die Kommunikationsbeziehungen.
-
-\begin{figure}[htbp]
+\begin{figure}[H]
     \centering
-    \includegraphics[width=\linewidth]{images/02-bausteinsicht}
+    \includegraphics[width=\linewidth,trim=2cm 2cm 2cm 2cm,clip]{images/02-bausteinsicht}
     \caption{Bausteinsicht}
     \label{fig:bausteinsicht}
 \end{figure}
 
-Die Verantwortlichkeiten der einzelnen Bausteine sind in
-Tabelle~\ref{tab:bausteine} zusammengefasst.
-
+Die Verantwortlichkeiten der einzelnen Bausteine sind in Tabelle~\ref{tab:bausteine} zusammengefasst.
     {
     \renewcommand{\arraystretch}{1.5}
 
     \begin{longtable}{@{}
             >{\bfseries\raggedright\arraybackslash}p{0.18\linewidth}
-            >{\raggedright\arraybackslash}p{0.39\linewidth}
-            >{\raggedright\arraybackslash}p{0.18\linewidth}
-            >{\raggedright\arraybackslash}p{0.17\linewidth}
+            >{\raggedright\arraybackslash}p{0.82\linewidth}
         @{}}
         \caption{Verantwortlichkeiten der Bausteine}
         \label{tab:bausteine} \\
 
         \toprule
         \rowcolor{tableHeaderColor}
-        Baustein & Verantwortung & Technologie & Datenbank \\
+        Baustein & Verantwortung \\
         \midrule
         \endfirsthead
 
-        \multicolumn{4}{@{}l}{%
+        \multicolumn{2}{@{}l}{%
             \tablename\ \thetable{} -- Fortsetzung
         } \\
 
         \toprule
         \rowcolor{tableHeaderColor}
-        Baustein & Verantwortung & Technologie & Datenbank \\
+        Baustein & Verantwortung \\
         \midrule
         \endhead
 
         \midrule
-        \multicolumn{4}{r@{}}{Fortsetzung auf der nächsten Seite} \\
+        \multicolumn{2}{r@{}}{Fortsetzung auf der nächsten Seite} \\
         \endfoot
 
         \bottomrule
         \endlastfoot
 
         Frontend &
-        Stellt die Benutzeroberfläche für Produkte, Warenkorb und
-        Benutzerkonto bereit. &
-        Astro 5 &
-        Keine \\
+        Mit Astro und SolidJS umgesetzt. Stellt Komponenten und Seiten für
+        Produkte, Warenkorb und Benutzerkonto bereit. \\
 
         \rowcolor{tableRowColor}
         API Gateway &
-        Bildet den zentralen Zugang, validiert JWTs und leitet Anfragen
-        an den zuständigen Service weiter. &
-        Spring Cloud Gateway, Java 21 &
-        Keine \\
+        Als Spring-Cloud-Gateway-Anwendung umgesetzt. Enthält die Routen zu den
+        Services sowie einen Filter zur JWT-Validierung. \\
 
         Auth Service &
-        Übernimmt Registrierung, Anmeldung und Ausstellung der
-        Zugriffstoken. &
-        Python, Flask &
-        \texttt{auth-service-db} \\
+        Als Flask-Anwendung umgesetzt. Enthält REST-Endpunkte für Registrierung
+        und Anmeldung sowie die Erzeugung von JWTs. \\
 
         \rowcolor{tableRowColor}
         User Service &
-        Verwaltet Benutzerprofile und Lieferadressen. &
-        Spring Boot &
-        \texttt{user-service-db} \\
+        Als Spring-Boot-Anwendung mit Controller-, Service- und
+        Repository-Schicht umgesetzt. Verwaltet Benutzerprofile und
+        Lieferadressen. \\
 
         Product Service &
-        Verwaltet den Produktkatalog und den Verkaufsstatus der Artikel. &
-        Spring Boot, drei Instanzen &
-        \texttt{product-db} \\
+        Als Spring-Boot-Anwendung mit Controller-, Service- und
+        Repository-Schicht umgesetzt. Verwaltet Produkte und deren
+        Verkaufsstatus. \\
 
         \rowcolor{tableRowColor}
         Order Service &
-        Verwaltet Bestellungen, Positionen und Bestellstatus und löst
-        Benachrichtigungen aus. &
-        Spring Boot &
-        \texttt{order-service-db} \\
+        Als Spring-Boot-Anwendung umgesetzt. Koordiniert den Kaufvorgang über
+        REST-Clients, speichert Bestellungen und veröffentlicht
+        Bestellereignisse über MQTT. \\
 
         Email Service &
-        Verarbeitet Bestellereignisse und versendet
-        Bestellbestätigungen. &
-        Python, paho-mqtt &
-        \texttt{email-service-db} \\
+        Als Python-Anwendung mit \texttt{paho-mqtt} umgesetzt. Abonniert
+        Bestellereignisse, rendert E-Mail-Vorlagen und versendet
+        Bestellbestätigungen. \\
 
         \rowcolor{tableRowColor}
         MQTT-Broker &
-        Vermittelt Ereignisse zwischen Order Service und Email Service. &
-        Eclipse Mosquitto 2 &
-        Keine \\
+        Vermittelt die asynchronen Bestellereignisse zwischen Order Service
+        und Email Service. \\
 
         Nginx &
-        Verteilt Produktanfragen auf die Instanzen des Product Service. &
-        Nginx &
-        Keine \\
+        Verteilt Produktanfragen im Round-Robin-Verfahren auf die drei
+        Instanzen des Product Service. \\
 
     \end{longtable}
 }
 
 \subsection{Ebene 2 -- Order Service (exemplarisch)}
 
-Der Order Service besteht aus:
-\begin{itemize}
-  \item \textbf{Controller:} REST-Endpunkte (\texttt{/order})
-  \item \textbf{Service:} Geschäftslogik, Status-Übergänge
-  \item \textbf{Repository:} Datenbankzugriff (Spring Data JPA)
-  \item \textbf{REST-Clients:} Client zu Product Service und User Service
-  \item \textbf{MQTT-Clients:} Client zum MQTT-Broker
+Der Order Service ist intern in Controller, Geschäftslogik,
+Datenzugriff und ausgehende Clients gegliedert.
+Die ausgehenden REST- und MQTT-Aufrufe sind in eigenen Client-Klassen gekapselt.
+Dadurch bleibt die eigentliche Kaufabwicklung im \texttt{OrderService} weitgehend unabhängig von den verwendeten Kommunikationsprotokollen.
 
-  \item \textbf{Scheduler:} Automatische Status-Updates (CREATED →
-        PAID nach 10s)
-\end{itemize}
-
-\begin{figure}[htbp]
+Tabelle~\ref{tab:order-codebausteine} beschreibt die wichtigsten
+Codebausteine und Abbildung~\ref{fig:order_service} zeigt deren
+Abhängigkeiten.
+\begin{table}[H]
     \centering
-    \includegraphics[width=\linewidth]{images/06-whitebox-order-service}
+    \caption{Codebausteine des Order Service}
+    \label{tab:order-codebausteine}
+
+    \renewcommand{\arraystretch}{1.4}
+
+    \begin{tabularx}{\linewidth}{@{}
+            >{\bfseries\raggedright\arraybackslash}p{0.27\linewidth}
+            >{\raggedright\arraybackslash}X
+        @{}}
+
+        \toprule
+        \rowcolor{tableHeaderColor}
+        Codebaustein & Aufgabe \\
+        \midrule
+
+        OrderController &
+        Stellt die REST-Endpunkte des Order Service bereit, nimmt Anfragen
+        entgegen und delegiert die Verarbeitung an den
+        \texttt{OrderService}. \\
+
+        \rowcolor{tableRowColor}
+        OrderService &
+        Enthält die Geschäftslogik des Kaufvorgangs. Prüft Produkte,
+        reserviert Artikel, legt Bestellungen an und löst die
+        Bestellbestätigung aus. \\
+
+        OrderRepository &
+        Kapselt mit Spring Data JPA den Zugriff auf die
+        \texttt{order-service-db}. \\
+
+        \rowcolor{tableRowColor}
+        ProductServiceClient &
+        Kapselt die REST-Aufrufe zum Product Service, beispielsweise zum
+        Abrufen, Reservieren und Freigeben eines Produkts. \\
+
+        UserServiceClient &
+        Ruft die Benutzerdaten und die E-Mail-Adresse des Käufers beim
+        User Service ab. \\
+
+        \rowcolor{tableRowColor}
+        EmailServiceClient &
+        Veröffentlicht nach einem erfolgreichen Kauf ein MQTT-Ereignis auf
+        dem Topic \texttt{order/complete}. \\
+
+        OrderStatusScheduler &
+        Sucht regelmäßig nach fälligen Bestellungen und führt die
+        Statusübergänge \texttt{CREATED}, \texttt{PAID},
+        \texttt{SHIPPED} und \texttt{DELIVERED} aus. \\
+
+        \rowcolor{tableRowColor}
+        GlobalExceptionHandler &
+        Wandelt Exceptions in einheitliche HTTP-Fehlerantworten um. \\
+
+        DTOs und Domänenklassen &
+        Enthalten die internen Bestellobjekte sowie die Datenmodelle für die
+        Kommunikation mit Product Service und User Service. \\
+
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth,trim=3cm 1cm 4cm 1cm,clip]{images/06-whitebox-order-service}
     \caption{Order Service}
     \label{fig:order_service}
 \end{figure}
