@@ -31,8 +31,7 @@ public class OrderService {
     }
 
     @Transactional
-    public List<OrderDto.CheckoutItemResult> checkout(OrderDto.CheckoutRequest request) {
-        Long userId = request.userId();
+    public List<OrderDto.CheckoutItemResult> checkout(Long userId, OrderDto.CheckoutRequest request) {
         List<OrderDto.CheckoutItem> items = request.items();
 
         if (items.isEmpty()) {
@@ -97,10 +96,10 @@ public class OrderService {
     }
 
     @Transactional
-    public OrderDto.Response createOrder(OrderDto.CreateRequest request) {
-        log.info("Creating order for user: {} with {} items", request.userId(), request.items().size());
+    public OrderDto.Response createOrder(Long userId, OrderDto.CreateRequest request) {
+        log.info("Creating order for user: {} with {} items", userId, request.items().size());
 
-        Order order = new Order(request.userId(), request.currency());
+        Order order = new Order(userId, request.currency());
 
         for (OrderDto.CreateOrderItem item : request.items()) {
             ProductDto product = productServiceClient.getProduct(item.productId());

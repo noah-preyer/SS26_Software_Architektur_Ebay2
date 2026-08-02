@@ -102,6 +102,11 @@ Tabelle~\ref{tab:bausteine} zusammengefasst.
         Eclipse Mosquitto 2 &
         Keine \\
 
+        Nginx &
+        Verteilt Produktanfragen auf die Instanzen des Product Service. &
+        Nginx &
+        Keine \\
+
     \end{longtable}
 }
 
@@ -113,7 +118,7 @@ Der Order Service besteht aus:
   \item \textbf{Service:} Geschäftslogik, Status-Übergänge
   \item \textbf{Repository:} Datenbankzugriff (Spring Data JPA)
   \item \textbf{REST-Clients:} Client zu Product Service und User Service
-  \item \textbf{MQTT-Clients:} Client zum Email Service
+  \item \textbf{MQTT-Clients:} Client zum MQTT-Broker
 
   \item \textbf{Scheduler:} Automatische Status-Updates (CREATED →
         PAID nach 10s)

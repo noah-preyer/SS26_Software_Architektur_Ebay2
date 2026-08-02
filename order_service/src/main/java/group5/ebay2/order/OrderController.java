@@ -19,15 +19,19 @@ public class OrderController {
 
     @PostMapping
     public ResponseEntity<OrderDto.Response> createOrder(
+            @RequestHeader(value = "X-User-Id", required = false) Long xUserId,
             @Valid @RequestBody OrderDto.CreateRequest request) {
-        OrderDto.Response response = orderService.createOrder(request);
+        Long userId = xUserId != null ? xUserId : request.userId();
+        OrderDto.Response response = orderService.createOrder(userId, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/checkout")
     public ResponseEntity<List<OrderDto.CheckoutItemResult>> checkout(
+            @RequestHeader(value = "X-User-Id", required = false) Long xUserId,
             @Valid @RequestBody OrderDto.CheckoutRequest request) {
-        List<OrderDto.CheckoutItemResult> results = orderService.checkout(request);
+        Long userId = xUserId != null ? xUserId : request.userId();
+        List<OrderDto.CheckoutItemResult> results = orderService.checkout(userId, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(results);
     }
 

@@ -45,7 +45,7 @@ class OrderServiceTest {
     void createOrder_shouldCreateWithCreatedStatus() {
         Long productId = nextId();
 
-        OrderDto.Response response = orderService.createOrder(singleItemRequest(productId, "USD"));
+        OrderDto.Response response = orderService.createOrder(userId, singleItemRequest(productId, "USD"));
 
         assertThat(response.id()).isNotNull();
         assertThat(response.userId()).isEqualTo(userId);
@@ -56,7 +56,7 @@ class OrderServiceTest {
     void getOrder_shouldReturnOrder() {
         Long productId = nextId();
 
-        OrderDto.Response created = orderService.createOrder(singleItemRequest(productId, "EUR"));
+        OrderDto.Response created = orderService.createOrder(userId, singleItemRequest(productId, "EUR"));
 
         OrderDto.Response found = orderService.getOrder(created.id());
 
@@ -74,8 +74,8 @@ class OrderServiceTest {
 
     @Test
     void getOrdersByUser_shouldReturnUserOrders() {
-        orderService.createOrder(singleItemRequest(nextId(), "USD"));
-        orderService.createOrder(singleItemRequest(nextId(), "USD"));
+        orderService.createOrder(userId, singleItemRequest(nextId(), "USD"));
+        orderService.createOrder(userId, singleItemRequest(nextId(), "USD"));
 
         List<OrderDto.Response> orders = orderService.getOrdersByUser(userId);
 

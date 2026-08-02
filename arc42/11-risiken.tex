@@ -1,4 +1,4 @@
-\section{Risiken und technische Schulden}
+\section{Risiken und technische Schulden}\label{sec:risiken}
 
 \begin{description}
     \item[Fehlendes zentrales Logging und Monitoring]
@@ -16,9 +16,4 @@
     \item[Unsichere Verwaltung von Zugangsdaten]
     JWT-Secret, interner Service-Key und SMTP-Zugangsdaten werden unverschlüsselt
     in der Konfiguration hinterlegt.
-
-    \item[Inkonsistente ID-Typen]
-    Auth Service und User Service verwenden UUIDs, während Product Service und
-    Order Service Long-Werte erwarten. Dadurch ist die Weitergabe der
-    Benutzer-ID über \texttt{X-User-Id} derzeit nicht durchgängig kompatibel.
 \end{description}

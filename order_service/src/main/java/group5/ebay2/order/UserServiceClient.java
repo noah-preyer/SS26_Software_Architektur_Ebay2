@@ -18,11 +18,11 @@ public class UserServiceClient {
         this.userServiceUrl = System.getenv().getOrDefault("USER_SERVICE_URL", "http://user-service:8080");
     }
 
-    public UserDto getUser(Long userId) {
+    public UserDto getUser(Long authUserId) {
         try {
-            return restTemplate.getForObject(userServiceUrl + "/" + userId, UserDto.class);
+            return restTemplate.getForObject(userServiceUrl + "/by-auth/" + authUserId, UserDto.class);
         } catch (Exception e) {
-            log.error("Failed to fetch user {}: {}", userId, e.getMessage());
+            log.error("Failed to fetch user {}: {}", authUserId, e.getMessage());
             return null;
         }
     }

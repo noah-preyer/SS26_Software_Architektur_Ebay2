@@ -77,6 +77,13 @@
 \usepackage[export]{adjustbox}
 \usepackage{xparse}
 
+% Deutsche Bezeichnungen für Inhaltsverzeichnis, Abbildungen und Tabellen
+\renewcommand{\contentsname}{Inhaltsverzeichnis}
+\renewcommand{\listfigurename}{Abbildungsverzeichnis}
+\renewcommand{\listtablename}{Tabellenverzeichnis}
+\renewcommand{\figurename}{Abbildung}
+\renewcommand{\tablename}{Tabelle}
+
 \usepackage{tabularx}
 \usepackage{booktabs}
 \usepackage[table]{xcolor}
@@ -125,8 +132,8 @@ Juli 2026
 \include{07-verteilungssicht}
 \include{08-konzepte}
 \include{09-adrs}
-\include{10-qualitaet}
-\include{11-risiken}
-\include{12-glossar}
+\input{10-qualitaet}
+\input{11-risiken}
+\input{12-glossar}
 
 \end{document}

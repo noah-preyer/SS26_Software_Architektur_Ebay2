@@ -7,7 +7,8 @@ Nach erfolgreicher Prüfung stellt dieser ein 60 Minuten gültiges JWT aus.
 
 Bei geschützten Aufrufen validiert das API Gateway das Token.
 Ungültige oder abgelaufene Tokens werden mit \texttt{401 Unauthorized} abgewiesen.
-Andernfalls wird die Benutzer-ID ausgelesen und an den zuständigen Service weitergegeben.
+Andernfalls wird die Benutzer-ID aus dem JWT-Claim ausgelesen und als
+\texttt{X-User-Id}-Header an den zuständigen Service weitergegeben.
 Der vollständige Ablauf ist in Abbildung~\ref{fig:login} dargestellt.
 
 \begin{figure}[htbp]
@@ -26,7 +27,11 @@ Schlägt eine Prüfung fehl, wird der gesamte Kauf abgebrochen.
 
 Anschließend markiert der Order Service die Artikel als verkauft.
 Tritt dabei ein Fehler auf, werden bereits vorgenommene Änderungen zurückgesetzt.
-Danach wird die Bestellung im Status \texttt{CREATED} gespeichert und die E-Mail-Adresse beim User Service abgerufen.
+Danach wird die Bestellung im Status \texttt{CREATED} gespeichert.
+Die Benutzer-ID bezieht der Order Service aus dem \texttt{X-User-Id}-Header,
+den das API Gateway aus dem JWT gesetzt hat; mit ihr wird die E-Mail-Adresse
+beim User Service abgerufen (\texttt{GET /user/by-auth/\{authUserId\}}),
+um die Bestellbestätigung zusammenzustellen.
 
 Der Order Service veröffentlicht über MQTT ein Ereignis,
 das vom Email Service unabhängig verarbeitet wird.
